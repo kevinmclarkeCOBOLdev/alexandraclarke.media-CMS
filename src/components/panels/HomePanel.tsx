@@ -19,9 +19,6 @@ export default function HomePanel({ onNavigate }: HomePanelProps) {
             Creative Director, Filmmaker & Visual Storyteller
           </p>
         </div>
-        <span className="font-sans text-xs text-neutral-grey tracking-widest hidden md:block">
-          LON / NYC
-        </span>
       </div>
 
       {/* Showreel Card / Center content */}

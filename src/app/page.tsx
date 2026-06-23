@@ -166,22 +166,6 @@ export default function Page() {
             </>
           )}
         </div>
-
-        {/* Global Navigation Links */}
-        <nav className="flex items-center gap-6 pointer-events-auto bg-neutral-dark/60 border border-white/5 px-4 py-2 rounded-full backdrop-blur-md">
-          {PANELS.map((panel) => (
-            <button
-              key={panel.id}
-              onClick={() => handlePanelChange(panel.id)}
-              data-cursor="pointer"
-              className={`font-sans text-[10px] font-bold uppercase tracking-widest transition-colors duration-300 ${
-                activePanel === panel.id ? "text-accent" : "text-foreground/60 hover:text-foreground"
-              }`}
-            >
-              {panel.title}
-            </button>
-          ))}
-        </nav>
       </header>
 
       {/* Panels Container */}
