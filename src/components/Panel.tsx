@@ -164,9 +164,6 @@ export default function Panel({
         <span className="font-sans text-[10px] font-bold text-accent tracking-widest uppercase lg:rotate-90 lg:my-4">
           {index}
         </span>
-        <h2 className="font-editorial text-sm md:text-base font-bold text-foreground/80 tracking-widest uppercase lg:vertical-text lg:rotate-180 lg:my-auto">
-          {title}
-        </h2>
         <div className="h-1.5 w-1.5 rounded-full bg-accent/40 lg:my-4 hidden lg:block" />
       </div>
 
