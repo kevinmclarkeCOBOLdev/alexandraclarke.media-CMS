@@ -7,7 +7,6 @@ import gsap from "gsap";
 interface PanelProps {
   id: string;
   title: string;
-  index: string;
   isActive: boolean;
   bgImage: string;
   onClick: () => void;
@@ -17,7 +16,6 @@ interface PanelProps {
 export default function Panel({
   id,
   title,
-  index,
   isActive,
   bgImage,
   onClick,
@@ -159,11 +157,8 @@ export default function Panel({
       {/* Collapsed Preview Title (Desktop: Vertical text, Mobile: Horizontal header) */}
       <div
         ref={titleRef}
-        className="absolute inset-0 flex flex-row lg:flex-col items-center justify-between p-4 lg:py-8 lg:px-0 pointer-events-none select-none z-10 transition-opacity"
+        className="absolute inset-0 flex flex-row lg:flex-col items-center justify-end p-4 lg:py-8 lg:px-0 pointer-events-none select-none z-10 transition-opacity"
       >
-        <span className="font-sans text-[10px] font-bold text-accent tracking-widest uppercase lg:rotate-90 lg:my-4">
-          {index}
-        </span>
         <div className="h-1.5 w-1.5 rounded-full bg-accent/40 lg:my-4 hidden lg:block" />
       </div>
 
