@@ -1,6 +1,10 @@
 "use client";
 
+import { useState } from "react";
+
 export default function HomePanel() {
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
   return (
     <div className="relative flex h-full w-full flex-col justify-between p-6 md:p-12 lg:p-16 overflow-hidden">
       {/* Background Video Player */}
@@ -13,7 +17,7 @@ export default function HomePanel() {
           title="Background Showreel"
         ></iframe>
         {/* Dark overlay to ensure text readability */}
-        <div className="absolute inset-0 bg-black/45 pointer-events-none" />
+        <div className="absolute inset-0 bg-black/20 pointer-events-none" />
       </div>
 
       {/* Top Header */}
@@ -73,6 +77,49 @@ export default function HomePanel() {
           </svg>
         </a>
       </div>
+
+      {/* Play Showreel Button (Centered, level with TikTok icon) */}
+      <div className="absolute bottom-6 left-1/2 -translate-x-1/2 md:bottom-12 lg:bottom-16 z-10">
+        <button
+          onClick={() => setIsModalOpen(true)}
+          data-cursor="pointer"
+          className="flex h-12 w-[190px] items-center justify-center bg-[#1F1F1F] hover:bg-[#2F2F2F] text-white rounded-[50px] font-sans text-xs md:text-sm font-semibold tracking-wider transition-all duration-300 hover:scale-105 shadow-lg border border-white/5 cursor-pointer"
+        >
+          Play Showreel
+          <svg viewBox="0 0 24 24" fill="currentColor" className="w-4 h-4 ml-2.5">
+            <path d="M8 5v14l11-7z" />
+          </svg>
+        </button>
+      </div>
+
+      {/* Immersive Video Modal Popup (90% of screen dimensions) */}
+      {isModalOpen && (
+        <div className="fixed inset-0 bg-black/85 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <div className="w-[90vw] h-[90vh] bg-black border border-white/10 rounded-xl relative overflow-hidden flex items-center justify-center shadow-2xl">
+            {/* Close Button 'X' at top right */}
+            <button
+              onClick={() => setIsModalOpen(false)}
+              className="absolute top-4 right-4 z-10 flex items-center justify-center bg-black/60 hover:bg-black/90 text-white rounded-full p-2 border border-white/10 transition-all duration-300 hover:scale-110 cursor-pointer"
+              title="Close Modal"
+            >
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5">
+                <line x1="18" y1="6" x2="6" y2="18"></line>
+                <line x1="6" y1="6" x2="18" y2="18"></line>
+              </svg>
+            </button>
+
+            {/* Video Iframe (Unmuted showreel playback) */}
+            <iframe
+              className="w-full h-full"
+              src="https://www.youtube.com/embed/jEye9YVJ7q4?autoplay=1&controls=1&rel=0&playsinline=1"
+              frameBorder="0"
+              allow="autoplay; encrypted-media"
+              allowFullScreen
+              title="Showreel Video Player"
+            ></iframe>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
