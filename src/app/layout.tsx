@@ -1,17 +1,29 @@
 import type { Metadata } from "next";
-import { Playfair_Display, Plus_Jakarta_Sans } from "next/font/google";
+import { Poppins } from "next/font/google";
+import localFont from "next/font/local";
 import CustomCursor from "@/components/CustomCursor";
 import "./globals.css";
 
-const playfair = Playfair_Display({
+const agency = localFont({
+  src: [
+    {
+      path: "../../public/fonts/agencyfb.ttf",
+      weight: "400",
+      style: "normal",
+    },
+    {
+      path: "../../public/fonts/agencyfb-bold.ttf",
+      weight: "700",
+      style: "normal",
+    },
+  ],
   variable: "--font-editorial",
-  subsets: ["latin"],
-  display: "swap",
 });
 
-const plusJakarta = Plus_Jakarta_Sans({
+const poppins = Poppins({
   variable: "--font-sans",
   subsets: ["latin"],
+  weight: ["300", "400", "500", "600", "700", "800"],
   display: "swap",
 });
 
@@ -41,7 +53,7 @@ export default function RootLayout({
   return (
     <html lang="en" className="h-full w-full bg-background selection:bg-accent selection:text-background">
       <body
-        className={`${playfair.variable} ${plusJakarta.variable} font-sans antialiased h-full w-full overflow-hidden`}
+        className={`${agency.variable} ${poppins.variable} font-sans antialiased h-full w-full overflow-hidden`}
       >
         <CustomCursor />
         {children}
