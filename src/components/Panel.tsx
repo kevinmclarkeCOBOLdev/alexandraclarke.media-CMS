@@ -37,15 +37,15 @@ export default function Panel({
         // Animate panel width to active state
         gsap.to(panel, {
           width: "76%",
-          duration: 0.8,
-          ease: "power3.inOut",
+          duration: 1.0,
+          ease: "power4.out",
         });
         // Fade in content
         gsap.to(content, {
           opacity: 1,
           pointerEvents: "auto",
-          duration: 0.6,
-          delay: 0.2,
+          duration: 0.8,
+          delay: 0.15,
           ease: "power2.out",
         });
         // Fade out collapsed title
@@ -58,14 +58,14 @@ export default function Panel({
         // Animate panel width to inactive state
         gsap.to(panel, {
           width: "6%",
-          duration: 0.8,
-          ease: "power3.inOut",
+          duration: 1.0,
+          ease: "power4.out",
         });
         // Fade out content
         gsap.to(content, {
           opacity: 0,
           pointerEvents: "none",
-          duration: 0.3,
+          duration: 0.4,
           ease: "power2.out",
         });
         // Fade in collapsed title
@@ -82,14 +82,15 @@ export default function Panel({
         gsap.to(panel, {
           height: "calc(100vh - 240px)",
           minHeight: "450px",
-          duration: 0.6,
-          ease: "power3.inOut",
+          duration: 0.8,
+          ease: "power4.out",
         });
         gsap.to(content, {
           opacity: 1,
           pointerEvents: "auto",
-          duration: 0.4,
+          duration: 0.6,
           delay: 0.1,
+          ease: "power2.out",
         });
         gsap.to(titleEl, {
           opacity: 0,
@@ -99,17 +100,18 @@ export default function Panel({
         gsap.to(panel, {
           height: "60px",
           minHeight: "60px",
-          duration: 0.6,
-          ease: "power3.inOut",
+          duration: 0.8,
+          ease: "power4.out",
         });
         gsap.to(content, {
           opacity: 0,
           pointerEvents: "none",
-          duration: 0.2,
+          duration: 0.3,
+          ease: "power2.out",
         });
         gsap.to(titleEl, {
           opacity: 1,
-          duration: 0.4,
+          duration: 0.5,
         });
       }
     }
@@ -119,7 +121,7 @@ export default function Panel({
     <div
       id={id}
       ref={panelRef}
-      className={`relative overflow-hidden border-b lg:border-b-0 lg:border-r border-white/10 bg-background transition-all duration-300 ${
+      className={`relative overflow-hidden border-b lg:border-b-0 lg:border-r border-white/10 bg-background transition-colors duration-300 ${
         isActive ? "z-10" : "z-0"
       } ${
         isActive
@@ -141,6 +143,8 @@ export default function Panel({
           sizes="20vw"
           priority
         />
+        {/* Black overlay with opacity 0.5 */}
+        <div className="absolute inset-0 bg-black/50" />
       </div>
 
       {/* Click Trigger Area for Inactive State */}
@@ -148,7 +152,7 @@ export default function Panel({
         <button
           onClick={onClick}
           data-cursor="pointer"
-          className="absolute inset-0 z-20 h-full w-full bg-transparent text-left focus:outline-none"
+          className="absolute inset-0 z-20 h-full w-full bg-transparent text-left focus:outline-none cursor-pointer"
           aria-label={`Expand ${title}`}
         />
       )}
