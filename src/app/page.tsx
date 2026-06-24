@@ -176,7 +176,6 @@ export default function Page() {
             id={panel.id}
             title={panel.title}
             isActive={activePanel === panel.id}
-            bgImage={panel.bgImage}
             onClick={() => handlePanelChange(panel.id)}
           >
             {panel.id === "home" && (

@@ -8,7 +8,6 @@ interface PanelProps {
   id: string;
   title: string;
   isActive: boolean;
-  bgImage: string;
   onClick: () => void;
   children: React.ReactNode;
 }
@@ -17,7 +16,6 @@ export default function Panel({
   id,
   title,
   isActive,
-  bgImage,
   onClick,
   children,
 }: PanelProps) {
@@ -129,21 +127,20 @@ export default function Panel({
           : "w-full h-[60px] min-h-[60px] lg:w-[6%] lg:h-full"
       }`}
     >
-      {/* Background Image Preview (low opacity when inactive, fades out when active) */}
+      {/* Background Image Preview (fades out when active) */}
       <div
         className={`absolute inset-0 bg-neutral-dark transition-opacity duration-700 pointer-events-none ${
-          isActive ? "opacity-0" : "opacity-15 group-hover:opacity-25"
+          isActive ? "opacity-0" : "opacity-100"
         }`}
       >
-        {bgImage && (
-          <Image
-            src={bgImage}
-            alt=""
-            fill
-            className="object-cover filter grayscale contrast-125"
-            sizes="20vw"
-          />
-        )}
+        <Image
+          src="/textured-overlay.jpg"
+          alt=""
+          fill
+          className="object-cover"
+          sizes="20vw"
+          priority
+        />
       </div>
 
       {/* Click Trigger Area for Inactive State */}
