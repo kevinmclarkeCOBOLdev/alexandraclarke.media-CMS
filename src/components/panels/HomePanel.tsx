@@ -7,7 +7,12 @@ interface YTPlayer {
   destroy: () => void;
 }
 
-export default function HomePanel() {
+interface HomePanelProps {
+  theme?: "dark" | "light";
+  toggleTheme?: () => void;
+}
+
+export default function HomePanel({ theme = "dark", toggleTheme }: HomePanelProps) {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isVideoEnded, setIsVideoEnded] = useState(false);
 
@@ -114,7 +119,7 @@ export default function HomePanel() {
       </div>
 
       {/* Top Header */}
-      <div className="relative z-10 flex justify-between items-start mt-[50px]">
+      <div className="relative z-10 flex justify-between items-start mt-[50px] gap-4">
         <div>
           <h2 className="font-editorial text-7xl md:text-9xl lg:text-[10rem] font-bold tracking-tight stroked-title">
             ALEXANDRA CLARKE{" "}
@@ -130,8 +135,34 @@ export default function HomePanel() {
             </span>
           </h2>
           <p className="font-sans text-[27px] md:text-3xl font-medium text-[#FBAB3C] mt-2 tracking-wide">
-            filmmaker, 3d-modeller, animator, & social media manager
+            filmmaker, 3d-modeller, animator, &amp; social media manager
           </p>
+        </div>
+
+        {/* Theme Toggle Pill */}
+        <div className="flex items-center bg-neutral-dark/80 border border-white/5 rounded-full p-1 backdrop-blur-md shrink-0 pointer-events-auto mt-4 mr-4 md:mr-0 select-none">
+          <button
+            onClick={() => theme === "light" && toggleTheme?.()}
+            data-cursor="pointer"
+            className={`flex items-center justify-center h-8 px-3 rounded-full text-xs font-sans font-bold tracking-widest uppercase transition-all duration-300 cursor-pointer ${
+              theme === "dark"
+                ? "bg-[#FBAB3C] text-black shadow-md"
+                : "text-foreground/50 hover:text-foreground"
+            }`}
+          >
+            DARK
+          </button>
+          <button
+            onClick={() => theme === "dark" && toggleTheme?.()}
+            data-cursor="pointer"
+            className={`flex items-center justify-center h-8 px-3 rounded-full text-xs font-sans font-bold tracking-widest uppercase transition-all duration-300 cursor-pointer ${
+              theme === "light"
+                ? "bg-[#FBAB3C] text-black shadow-md"
+                : "text-foreground/50 hover:text-foreground"
+            }`}
+          >
+            LIGHT
+          </button>
         </div>
       </div>
 
