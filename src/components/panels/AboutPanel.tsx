@@ -21,10 +21,10 @@ export default function AboutPanel() {
   return (
     <div className="flex h-full w-full flex-col lg:flex-row overflow-y-auto no-scrollbar p-6 md:p-12 lg:p-16 gap-8 lg:gap-12">
       {/* Left Column: Portrait & Creative Philosophy */}
-      <div className="w-full lg:w-5/12 flex flex-col justify-between gap-6">
+      <div className="w-full lg:w-[calc(41.67%-150px)] lg:min-w-[250px] flex flex-col justify-between gap-6">
         <div className="relative aspect-square w-full max-w-[400px] overflow-hidden rounded-lg border border-accent/20 bg-neutral-dark shadow-2xl">
           <Image
-            src="/alexandra-portrait.png"
+            src="/alexandra-clarke-about-me.webp"
             alt="Alexandra Clarke"
             fill
             className="object-cover object-top filter grayscale contrast-110 brightness-95 hover:grayscale-0 transition-all duration-500"
@@ -49,14 +49,11 @@ export default function AboutPanel() {
           <span className="font-sans text-[10px] font-bold tracking-widest text-accent uppercase">
             Biography
           </span>
-          <h3 className="font-editorial text-2xl md:text-3xl font-bold mt-2 text-foreground">
-            THE ART OF THE SHOT
-          </h3>
           <p className="font-sans text-xs md:text-sm text-neutral-grey mt-4 leading-relaxed tracking-wide">
-            Alexandra Clarke is a London and New York-based creative director and filmmaker who blends commercial sophistication with authentic documentary realism. Over the last decade, she has directed award-winning campaigns, visual installations, and fashion stories that focus on tactile textures, raw emotions, and compelling narratives.
+            A dynamic filmmaker with over 7 years of filmmaking experience, adept at creating a wide range of video content (from 3D animation to interviews &amp; social media content). Possessing strong problem-solving skills and a naturally outgoing personality, I communicate effectively with a diverse clientele for projects.
           </p>
           <p className="font-sans text-xs md:text-sm text-neutral-grey mt-3 leading-relaxed tracking-wide">
-            Her work has been featured in leading design galleries and visual festivals internationally. She works closely with high-end brands to execute creative visions from concept to final cut.
+            I am committed to maintaining high standards of quality and efficiency in all of my projects.
           </p>
         </div>
 

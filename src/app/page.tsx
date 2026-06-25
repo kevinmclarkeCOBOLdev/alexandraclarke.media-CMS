@@ -10,7 +10,7 @@ import ContactPanel from "@/components/panels/ContactPanel";
 
 const PANELS = [
   { id: "home", title: "Home", index: "01", bgImage: "" },
-  { id: "about", title: "About", index: "02", bgImage: "/alexandra-portrait.png" },
+  { id: "about", title: "About", index: "02", bgImage: "/alexandra-clarke-about-me.webp" },
   { id: "portfolio", title: "Portfolio", index: "03", bgImage: "/portfolio-fashion.png" },
   { id: "testimonials", title: "Testimonials", index: "04", bgImage: "/portfolio-commercial.png" },
   { id: "contact", title: "Contact", index: "05", bgImage: "/portfolio-fashion.png" },
