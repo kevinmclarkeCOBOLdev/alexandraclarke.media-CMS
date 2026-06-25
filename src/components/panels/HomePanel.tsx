@@ -11,6 +11,7 @@ export default function HomePanel() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isVideoEnded, setIsVideoEnded] = useState(false);
   const [isPageLoaded, setIsPageLoaded] = useState(false);
+  const [shouldStartTagAnimation, setShouldStartTagAnimation] = useState(false);
   const [shouldPlayVideo, setShouldPlayVideo] = useState(false);
   const [isVideoPlaying, setIsVideoPlaying] = useState(false);
   const [shouldShrinkTags, setShouldShrinkTags] = useState(false);
@@ -30,11 +31,20 @@ export default function HomePanel() {
   useEffect(() => {
     if (isPageLoaded) {
       const timer = setTimeout(() => {
+        setShouldStartTagAnimation(true);
+      }, 2000);
+      return () => clearTimeout(timer);
+    }
+  }, [isPageLoaded]);
+
+  useEffect(() => {
+    if (shouldStartTagAnimation) {
+      const timer = setTimeout(() => {
         setShouldPlayVideo(true);
       }, 2700);
       return () => clearTimeout(timer);
     }
-  }, [isPageLoaded]);
+  }, [shouldStartTagAnimation]);
 
   useEffect(() => {
     if (isVideoPlaying) {
@@ -54,6 +64,13 @@ export default function HomePanel() {
         // @ts-expect-error window.YT is not typed
         player = new window.YT.Player("bg-video-iframe", {
           events: {
+            onReady: (event: { target: { setPlaybackRate: (rate: number) => void } }) => {
+              try {
+                event.target.setPlaybackRate(1.5);
+              } catch (e) {
+                console.error("Failed to set playback rate:", e);
+              }
+            },
             onStateChange: (event: { data: number }) => {
               // @ts-expect-error window.YT is not typed
               if (event.data === window.YT.PlayerState.ENDED) {
@@ -151,6 +168,13 @@ export default function HomePanel() {
         />
         {/* Dark overlay to ensure text readability */}
         <div className="absolute inset-0 bg-black/20 pointer-events-none z-[2]" />
+
+        {/* Black fade-in cover */}
+        <div
+          className={`absolute inset-0 bg-black pointer-events-none transition-opacity duration-[5000ms] ease-out z-[3] ${
+            isPageLoaded ? "opacity-0" : "opacity-100"
+          }`}
+        />
       </div>
 
       {/* Top Header */}
@@ -176,16 +200,16 @@ export default function HomePanel() {
                 : "text-[54px] md:text-[60px] gap-2 mt-6"
             }`}
           >
-            <span className={`block opacity-0 ${isPageLoaded ? "animate-slide-in-left" : ""}`} style={{ animationDelay: "270ms" }}>
+            <span className={`block opacity-0 ${shouldStartTagAnimation ? "animate-slide-in-left" : ""}`} style={{ animationDelay: "270ms" }}>
               filmmaker,
             </span>
-            <span className={`block opacity-0 ${isPageLoaded ? "animate-slide-in-left" : ""}`} style={{ animationDelay: "530ms" }}>
+            <span className={`block opacity-0 ${shouldStartTagAnimation ? "animate-slide-in-left" : ""}`} style={{ animationDelay: "530ms" }}>
               3d-modeller,
             </span>
-            <span className={`block opacity-0 ${isPageLoaded ? "animate-slide-in-left" : ""}`} style={{ animationDelay: "800ms" }}>
+            <span className={`block opacity-0 ${shouldStartTagAnimation ? "animate-slide-in-left" : ""}`} style={{ animationDelay: "800ms" }}>
               animator,
             </span>
-            <span className={`block opacity-0 ${isPageLoaded ? "animate-slide-in-left" : ""}`} style={{ animationDelay: "1070ms" }}>
+            <span className={`block opacity-0 ${shouldStartTagAnimation ? "animate-slide-in-left" : ""}`} style={{ animationDelay: "1070ms" }}>
               &amp; social media manager
             </span>
           </div>
@@ -253,6 +277,19 @@ export default function HomePanel() {
             <path d="M8 5v14l11-7z" />
           </svg>
         </button>
+      </div>
+
+      {/* Powered by Atypikal Studio (Bottom right, level with Play Showreel) */}
+      <div className="absolute bottom-6 right-6 md:bottom-12 md:right-12 lg:bottom-16 lg:right-16 z-10 flex h-12 items-center justify-end pointer-events-auto">
+        <a
+          href="https://atypikalstudio.dev"
+          target="_blank"
+          rel="noopener noreferrer"
+          data-cursor="pointer"
+          className="font-sans text-[10px] md:text-xs tracking-[1.5px] uppercase text-[#FBAB3C]/60 hover:text-[#FBAB3C] transition-all duration-300 font-medium"
+        >
+          Powered by Atypikal Studio
+        </a>
       </div>
 
       {/* Immersive Video Modal Popup (90% of screen dimensions) */}
