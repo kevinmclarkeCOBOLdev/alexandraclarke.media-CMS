@@ -117,7 +117,17 @@ export default function HomePanel() {
       <div className="relative z-10 flex justify-between items-start mt-[50px]">
         <div>
           <h2 className="font-editorial text-7xl md:text-9xl lg:text-[10rem] font-bold tracking-tight stroked-title">
-            ALEXANDRA CLARKE
+            ALEXANDRA CLARKE{" "}
+            <span
+              className="inline-block font-editorial text-[#FBAB3C]"
+              style={{
+                fontSize: "0.5em",
+                WebkitTextFillColor: "#FBAB3C",
+                WebkitTextStroke: "0px",
+              }}
+            >
+              B.A.
+            </span>
           </h2>
           <p className="font-sans text-[27px] md:text-3xl font-medium text-[#FBAB3C] mt-2 tracking-wide">
             filmmaker, 3d-modeller, animator, & social media manager
