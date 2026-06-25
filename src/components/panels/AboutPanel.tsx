@@ -56,7 +56,7 @@ export default function AboutPanel() {
           }}
         />
         {/* Dark overlay to ensure text readability */}
-        <div className="absolute inset-0 bg-black/60" />
+        <div className="absolute inset-0 bg-black/75" />
       </div>
 
       {/* Left Column: Portrait & CV Download */}
@@ -90,7 +90,7 @@ export default function AboutPanel() {
                 className="object-contain filter brightness-90 group-hover:brightness-100 transition-all duration-300"
               />
             </div>
-            <span className="font-sans text-[12px] font-bold text-foreground group-hover:text-[#FBAB3C] transition-colors uppercase tracking-wider">
+            <span className="font-sans text-[12px] font-bold text-white group-hover:text-[#FBAB3C] transition-colors uppercase tracking-wider">
               Open CV (PDF)
             </span>
           </a>
@@ -98,17 +98,17 @@ export default function AboutPanel() {
       </div>
 
       {/* Right Column: Bio, Timeline & Info (Scrollable Content) */}
-      <div className="relative z-10 flex-1 flex flex-col gap-10">
+      <div className="relative z-10 flex-1 flex flex-col gap-10 lg:pl-[75px]">
         {/* Biography */}
         <div>
           <h3 className="font-sans text-[20px] font-bold tracking-widest text-[#FBAB3C] uppercase">
             Biography
           </h3>
-          <p className="font-sans text-[14px] text-neutral-grey mt-4 leading-relaxed tracking-wide">
+          <p className="font-sans text-[14px] text-white mt-4 leading-relaxed tracking-wide">
             A dynamic filmmaker with over 7 years of filmmaking experience, adept at creating a wide range of video content (from 3D animation to interviews &amp; social media content). Possessing strong problem-solving skills and a naturally outgoing personality, I communicate effectively with a diverse clientele for projects.
           </p>
           <p>&nbsp;</p>
-          <p className="font-sans text-[14px] text-neutral-grey mt-3 leading-relaxed tracking-wide">
+          <p className="font-sans text-[14px] text-white mt-3 leading-relaxed tracking-wide">
             I am committed to maintaining high standards of quality and efficiency in all of my projects.
           </p>
         </div>
@@ -124,7 +124,7 @@ export default function AboutPanel() {
                 <h4 className="font-sans text-[14px] font-bold text-[#FBAB3C] tracking-wide">
                   {e.institution}
                 </h4>
-                <div className="flex flex-col md:flex-row md:items-center justify-between gap-1 text-[14px] text-neutral-grey">
+                <div className="flex flex-col md:flex-row md:items-center justify-between gap-1 text-[14px] text-white">
                   <span>{e.degree}</span>
                   <span className="font-sans font-bold text-[#FBAB3C] md:ml-4 whitespace-nowrap">
                     {e.period}
@@ -146,7 +146,7 @@ export default function AboutPanel() {
                 <h4 className="font-sans text-[14px] font-bold text-[#FBAB3C] tracking-wide">
                   {exp.company}
                 </h4>
-                <div className="flex flex-col md:flex-row md:items-center justify-between gap-1 text-[14px] text-neutral-grey">
+                <div className="flex flex-col md:flex-row md:items-center justify-between gap-1 text-[14px] text-white">
                   <span>{exp.role}</span>
                   <span className="font-sans font-bold text-[#FBAB3C] md:ml-4 whitespace-nowrap">
                     {exp.period}
@@ -167,7 +167,7 @@ export default function AboutPanel() {
               <h4 className="font-sans text-[14px] font-bold text-[#FBAB3C] tracking-wide uppercase">
                 Filmmaking &amp; Creative
               </h4>
-              <p className="font-sans text-[14px] text-neutral-grey mt-1 leading-relaxed">
+              <p className="font-sans text-[14px] text-white mt-1 leading-relaxed">
                 Filmmaking (directing, editing, script writing, acting) &bull; 3D Modelling + 3D Animation &bull; Problem solving &bull; Teamwork &bull; Time management &bull; Effective communication
               </p>
             </div>
@@ -175,7 +175,7 @@ export default function AboutPanel() {
               <h4 className="font-sans text-[14px] font-bold text-[#FBAB3C] tracking-wide uppercase">
                 Software &amp; Tools
               </h4>
-              <p className="font-sans text-[14px] text-neutral-grey mt-1 leading-relaxed">
+              <p className="font-sans text-[14px] text-white mt-1 leading-relaxed">
                 DaVinci Resolve (film editing) &bull; Blender (3D modelling) &bull; Photoshop (photo editing)
               </p>
             </div>
@@ -189,11 +189,11 @@ export default function AboutPanel() {
           </h3>
           <div className="mt-4 flex flex-col gap-2 border-l border-[#FBAB3C]/20 pl-4">
             <div className="flex items-center justify-between text-[14px]">
-              <span className="font-sans font-bold text-foreground tracking-wide">ENGLISH</span>
+              <span className="font-sans font-bold text-white tracking-wide">ENGLISH</span>
               <span className="font-sans font-bold text-[#FBAB3C]">NATIVE SPEAKER</span>
             </div>
             <div className="flex items-center justify-between text-[14px]">
-              <span className="font-sans font-bold text-foreground tracking-wide">CZECH</span>
+              <span className="font-sans font-bold text-white tracking-wide">CZECH</span>
               <span className="font-sans font-bold text-[#FBAB3C]">FLUENT</span>
             </div>
           </div>
