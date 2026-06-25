@@ -35,9 +35,32 @@ export default function AboutPanel() {
   ];
 
   return (
-    <div className="flex h-full w-full flex-col lg:flex-row overflow-y-auto no-scrollbar p-6 md:p-12 lg:p-16 gap-8 lg:gap-12">
+    <div className="relative flex h-full w-full flex-col lg:flex-row overflow-y-auto no-scrollbar p-6 md:p-12 lg:p-16 gap-8 lg:gap-12">
+      {/* Background Image Container */}
+      <div className="absolute inset-0 z-0 pointer-events-none">
+        <Image
+          src="/about-background-image.webp"
+          alt=""
+          fill
+          className="object-cover"
+          priority
+        />
+        {/* Textured Overlay (50% opacity) */}
+        <div 
+          className="absolute inset-0 opacity-50"
+          style={{ 
+            backgroundImage: "url('/textured-overlay.jpg')",
+            backgroundSize: "cover",
+            backgroundPosition: "center",
+            backgroundRepeat: "no-repeat"
+          }}
+        />
+        {/* Dark overlay to ensure text readability */}
+        <div className="absolute inset-0 bg-black/60" />
+      </div>
+
       {/* Left Column: Portrait & CV Download */}
-      <div className="w-full lg:w-[calc(41.67%-150px)] lg:min-w-[250px] flex flex-col gap-6">
+      <div className="relative z-10 w-full lg:w-[calc(41.67%-150px)] lg:min-w-[250px] flex flex-col gap-6">
         <div className="relative aspect-square w-full max-w-[400px] overflow-hidden rounded-lg border border-[#FBAB3C]/20 bg-neutral-dark shadow-2xl">
           <Image
             src="/alexandra-clarke-about-me.webp"
@@ -75,7 +98,7 @@ export default function AboutPanel() {
       </div>
 
       {/* Right Column: Bio, Timeline & Info (Scrollable Content) */}
-      <div className="flex-1 flex flex-col gap-10">
+      <div className="relative z-10 flex-1 flex flex-col gap-10">
         {/* Biography */}
         <div>
           <h3 className="font-sans text-[20px] font-bold tracking-widest text-[#FBAB3C] uppercase">
