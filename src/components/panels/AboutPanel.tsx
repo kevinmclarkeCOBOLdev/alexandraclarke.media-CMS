@@ -36,7 +36,7 @@ export default function AboutPanel() {
 
   return (
     <div className="flex h-full w-full flex-col lg:flex-row overflow-y-auto no-scrollbar p-6 md:p-12 lg:p-16 gap-8 lg:gap-12">
-      {/* Left Column: Portrait & Creative Philosophy */}
+      {/* Left Column: Portrait & CV Download */}
       <div className="w-full lg:w-[calc(41.67%-150px)] lg:min-w-[250px] flex flex-col gap-6">
         <div className="relative aspect-square w-full max-w-[400px] overflow-hidden rounded-lg border border-[#FBAB3C]/20 bg-neutral-dark shadow-2xl">
           <Image
@@ -47,6 +47,30 @@ export default function AboutPanel() {
             sizes="(max-width: 1024px) 100vw, 400px"
             priority
           />
+        </div>
+        <div className="mt-2 flex flex-col items-start gap-3">
+          <h4 className="font-sans text-[14px] font-bold text-[#FBAB3C] uppercase tracking-wider">
+            Download my CV
+          </h4>
+          <a
+            href="/Alexandra-Clarke-CV-English-v1.pdf"
+            target="_blank"
+            rel="noopener noreferrer"
+            data-cursor="pointer"
+            className="group flex items-center gap-3 p-3 rounded bg-neutral-dark border border-white/5 hover:border-[#FBAB3C] transition-all duration-300 w-full max-w-[200px]"
+          >
+            <div className="relative h-10 w-10 shrink-0">
+              <Image
+                src="/pdf.png"
+                alt="PDF Icon"
+                fill
+                className="object-contain filter brightness-90 group-hover:brightness-100 transition-all duration-300"
+              />
+            </div>
+            <span className="font-sans text-[12px] font-bold text-foreground group-hover:text-[#FBAB3C] transition-colors uppercase tracking-wider">
+              Open CV (PDF)
+            </span>
+          </a>
         </div>
       </div>
 
