@@ -61,12 +61,12 @@ export default function AboutPanel() {
 
       {/* Left Column: Portrait & CV Download */}
       <div className="relative z-10 w-full lg:w-[calc(41.67%-150px)] lg:min-w-[250px] flex flex-col gap-6">
-        <div className="relative aspect-square w-full max-w-[400px] overflow-hidden rounded-lg border border-[#FBAB3C]/20 bg-neutral-dark shadow-2xl">
+        <div className="relative aspect-square w-full max-w-[400px] overflow-hidden rounded-tl-[50px] rounded-br-[50px] rounded-tr-none rounded-bl-none border border-[#FBAB3C]/20 bg-neutral-dark shadow-2xl">
           <Image
-            src="/alexandra-clarke-about-me.webp"
+            src="/alex-intro-image-ylo-bg.webp"
             alt="Alexandra Clarke"
             fill
-            className="object-cover object-top filter grayscale contrast-110 brightness-95 hover:grayscale-0 transition-all duration-500"
+            className="object-cover object-top"
             sizes="(max-width: 1024px) 100vw, 400px"
             priority
           />
