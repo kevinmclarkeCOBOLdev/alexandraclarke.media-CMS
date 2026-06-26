@@ -422,7 +422,7 @@ export default function ContactPanel() {
                 <button
                   type="submit"
                   disabled={isSubmitting}
-                  className="w-full py-3.5 bg-[#FBAB3C] hover:bg-[#FBAB3C]/95 text-white font-sans text-sm font-semibold tracking-wide rounded transition-colors duration-300 flex items-center justify-center gap-2"
+                  className="w-full py-3.5 bg-[#FBAB3C] hover:bg-[#FBAB3C]/95 text-[#202020] font-sans text-sm font-semibold tracking-wide rounded transition-colors duration-300 flex items-center justify-center gap-2"
                 >
                   {isSubmitting ? "Sending..." : "Send Enquiry"}
                 </button>
