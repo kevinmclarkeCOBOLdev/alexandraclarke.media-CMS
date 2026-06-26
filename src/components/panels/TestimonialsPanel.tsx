@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { Quote, ChevronLeft, ChevronRight } from "lucide-react";
 
 interface Testimonial {
   quote: string;
@@ -16,34 +16,11 @@ export default function TestimonialsPanel() {
   const testimonials: Testimonial[] = [
     {
       quote:
-        "Alexandra Clarke is a visionary director. She captured our brand's heritage with breathtaking aesthetic choices and a cinematic narrative that exceeded all key metrics.",
-      author: "Eleanor Sterling",
-      role: "Global Creative Director",
-      company: "Vogue Creative Lab",
+        "Alexandra Clarke’s work as a videographer has earned my theater group a first-rate reputation in Prague’s theater scene for our promotional materials—so much so that other groups ask us for help with their own campaigns.\n\nWithout her work, our season—in which every single performance is sold out—would not have nearly the same success.\n\nOriginal, unique, standout: What Alexandra Clarke has created with her interviews, clips, and trailers for the various plays by “The Mad and Merry Men” has a distinct visual identity that sets us apart from the pool of English theater groups.",
+      author: "Artistic Director",
+      role: "The Mad and Merry Men",
+      company: "Prague",
     },
-    {
-      quote:
-        "Her collaborative process, attention to technical details, and editorial eye resulted in the most successful commercial film campaign in our brand's history.",
-      author: "Marcus Vance",
-      role: "VP of Brand Marketing",
-      company: "Aether Lifestyle Group",
-    },
-    {
-      quote:
-        "Alexandra doesn't just shoot films; she structures light and emotion. A master class in filmmaking and design direction.",
-      author: "Dr. Julian Croft",
-      role: "Festival Curator",
-      company: "London Independent Film Gala",
-    },
-  ];
-
-  const brands = [
-    "Vogue",
-    "Stella McCartney",
-    "BMW Group",
-    "ARRI Media",
-    "Sotheby's",
-    "BFI",
   ];
 
   const handlePrev = () => {
@@ -68,7 +45,8 @@ export default function TestimonialsPanel() {
         {/* Center Slideshow */}
         <div className="my-8 relative flex-1 flex flex-col justify-center max-w-4xl">
           <div className="relative z-10 transition-all duration-500">
-            <p className="font-editorial text-lg md:text-2xl lg:text-3xl leading-relaxed text-foreground tracking-wide">
+            <Quote className="h-8 w-8 text-accent mb-4" />
+            <p className="font-editorial text-lg md:text-2xl lg:text-3xl leading-relaxed text-foreground tracking-wide whitespace-pre-line">
               &ldquo;{testimonials[activeIndex].quote}&rdquo;
             </p>
             <div className="mt-6">
@@ -82,61 +60,26 @@ export default function TestimonialsPanel() {
           </div>
 
           {/* Slide Controls */}
-          <div className="flex gap-3 mt-8">
-            <button
-              data-cursor="pointer"
-              onClick={handlePrev}
-              className="flex h-8 w-8 items-center justify-center rounded-full border border-white/10 hover:border-accent text-foreground transition-colors duration-300"
-            >
-              <ChevronLeft className="h-4 w-4" />
-            </button>
-            <button
-              data-cursor="pointer"
-              onClick={handleNext}
-              className="flex h-8 w-8 items-center justify-center rounded-full border border-white/10 hover:border-accent text-foreground transition-colors duration-300"
-            >
-              <ChevronRight className="h-4 w-4" />
-            </button>
-          </div>
+          {testimonials.length > 1 && (
+            <div className="flex gap-3 mt-8">
+              <button
+                data-cursor="pointer"
+                onClick={handlePrev}
+                className="flex h-8 w-8 items-center justify-center rounded-full border border-white/10 hover:border-accent text-foreground transition-colors duration-300"
+              >
+                <ChevronLeft className="h-4 w-4" />
+              </button>
+              <button
+                data-cursor="pointer"
+                onClick={handleNext}
+                className="flex h-8 w-8 items-center justify-center rounded-full border border-white/10 hover:border-accent text-foreground transition-colors duration-300"
+              >
+                <ChevronRight className="h-4 w-4" />
+              </button>
+            </div>
+          )}
         </div>
 
-        {/* Bottom Metrics and Client Logo Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 border-t border-white/10 pt-8 items-center">
-          {/* Metric stats */}
-          <div className="grid grid-cols-2 gap-4">
-            <div className="p-4 bg-neutral-dark rounded border border-white/5">
-              <p className="font-sans text-xl md:text-2xl font-bold text-accent">98%</p>
-              <p className="font-sans text-[9px] text-neutral-grey uppercase tracking-widest mt-1">
-                Client Satisfaction
-              </p>
-            </div>
-            <div className="p-4 bg-neutral-dark rounded border border-white/5">
-              <p className="font-sans text-xl md:text-2xl font-bold text-accent">250M+</p>
-              <p className="font-sans text-[9px] text-neutral-grey uppercase tracking-widest mt-1">
-                Digital Video Impressions
-              </p>
-            </div>
-          </div>
-
-          {/* Agency Logo Grid */}
-          <div>
-            <p className="font-sans text-[9px] font-bold text-neutral-grey uppercase tracking-widest mb-3">
-              Collaborators & Brands
-            </p>
-            <div className="grid grid-cols-3 gap-2">
-              {brands.map((brand, idx) => (
-                <div
-                  key={idx}
-                  className="flex items-center justify-center py-2 px-3 rounded bg-neutral-dark/50 border border-white/5"
-                >
-                  <span className="font-editorial text-xs font-bold text-neutral-grey tracking-widest text-center hover:text-accent transition-colors duration-300">
-                    {brand}
-                  </span>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
       </div>
 
       {/* Social Icons (bottom left - persistent and non-scrolling!) */}
