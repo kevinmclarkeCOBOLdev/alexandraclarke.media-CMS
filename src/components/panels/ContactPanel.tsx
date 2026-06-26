@@ -76,8 +76,11 @@ export default function ContactPanel() {
           className="object-cover"
           priority
         />
-        {/* Black overlay with opacity of 80% */}
-        <div className="absolute inset-0 bg-black/80" />
+        {/* Black overlay with gradient from 100% opacity on left to 66% on right */}
+        <div 
+          className="absolute inset-0"
+          style={{ background: 'linear-gradient(to right, rgba(0, 0, 0, 1) 0%, rgba(0, 0, 0, 0.66) 100%)' }}
+        />
       </div>
 
       {/* Scrollable Content Container (added padding bottom pb-28 md:pb-36 lg:pb-40 for clearance) */}
