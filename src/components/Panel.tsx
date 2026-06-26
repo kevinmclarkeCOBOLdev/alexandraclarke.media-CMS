@@ -22,6 +22,7 @@ export default function Panel({
   const panelRef = useRef<HTMLDivElement>(null);
   const contentRef = useRef<HTMLDivElement>(null);
   const titleRef = useRef<HTMLDivElement>(null);
+  const isInitialRender = useRef(true);
 
   useEffect(() => {
     const panel = panelRef.current;
@@ -31,27 +32,28 @@ export default function Panel({
 
     // Detect screen width
     const isDesktop = window.innerWidth >= 1024;
+    const isHomeInitialLoad = id === "home" && isInitialRender.current;
 
     if (isDesktop) {
       if (isActive) {
         // Animate panel width to active state
         gsap.to(panel, {
           width: "76%",
-          duration: 1.0,
+          duration: isHomeInitialLoad ? 0 : 1.0,
           ease: "power4.out",
         });
         // Fade in content
         gsap.to(content, {
           opacity: 1,
           pointerEvents: "auto",
-          duration: 0.8,
-          delay: 0.15,
+          duration: isHomeInitialLoad ? 0 : 0.8,
+          delay: isHomeInitialLoad ? 0 : 0.15,
           ease: "power2.out",
         });
         // Fade out collapsed title
         gsap.to(titleEl, {
           opacity: 0,
-          duration: 0.3,
+          duration: isHomeInitialLoad ? 0 : 0.3,
           ease: "power2.out",
         });
       } else {
@@ -82,19 +84,19 @@ export default function Panel({
         gsap.to(panel, {
           height: "calc(100vh - 240px)",
           minHeight: "450px",
-          duration: 0.8,
+          duration: isHomeInitialLoad ? 0 : 0.8,
           ease: "power4.out",
         });
         gsap.to(content, {
           opacity: 1,
           pointerEvents: "auto",
-          duration: 0.6,
-          delay: 0.1,
+          duration: isHomeInitialLoad ? 0 : 0.6,
+          delay: isHomeInitialLoad ? 0 : 0.1,
           ease: "power2.out",
         });
         gsap.to(titleEl, {
           opacity: 0,
-          duration: 0.2,
+          duration: isHomeInitialLoad ? 0 : 0.2,
         });
       } else {
         gsap.to(panel, {
@@ -115,7 +117,9 @@ export default function Panel({
         });
       }
     }
-  }, [isActive]);
+
+    isInitialRender.current = false;
+  }, [isActive, id]);
 
   return (
     <div
@@ -172,7 +176,9 @@ export default function Panel({
       {/* Expanded Panel Content */}
       <div
         ref={contentRef}
-        className="absolute inset-0 h-full w-full opacity-0 pointer-events-none overflow-hidden"
+        className={`absolute inset-0 h-full w-full overflow-hidden ${
+          id === "home" && isActive ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"
+        }`}
       >
         {children}
       </div>

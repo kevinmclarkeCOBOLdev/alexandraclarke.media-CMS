@@ -18,9 +18,21 @@ const contactSchema = z.object({
 
 type ContactFormValues = z.infer<typeof contactSchema>;
 
+interface Bubble {
+  id: number;
+  iconIndex: number;
+  left: string;
+  delay: string;
+  duration: string;
+  driftX: string;
+  rotation: string;
+  size: number;
+}
+
 export default function ContactPanel() {
   const [localTime, setLocalTime] = useState("");
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const [bubbles, setBubbles] = useState<Bubble[]>([]);
 
   const {
     register,
@@ -57,12 +69,134 @@ export default function ContactPanel() {
     return () => clearInterval(interval);
   }, []);
 
+  useEffect(() => {
+    const iconCount = 6;
+    const items: Bubble[] = Array.from({ length: 15 }, (_, i) => {
+      const leftVal = 50 + Math.random() * 40; // between 50% and 90%
+      const delayVal = Math.random() * 15; // 0s to 15s delay
+      const durationVal = 12 + Math.random() * 18; // 12s to 30s duration
+      const driftVal = -60 + Math.random() * 120; // -60px to 60px drift
+      const rotationVal = -90 + Math.random() * 180; // -90deg to 90deg
+      const sizeVal = 48 + Math.random() * 40; // 48px to 88px size (2x larger)
+      return {
+        id: i,
+        iconIndex: Math.floor(Math.random() * iconCount),
+        left: `${leftVal}%`,
+        delay: `${delayVal}s`,
+        duration: `${durationVal}s`,
+        driftX: `${driftVal}px`,
+        rotation: `${rotationVal}deg`,
+        size: sizeVal,
+      };
+    });
+    setBubbles(items);
+  }, []);
+
+  const renderIcon = (index: number) => {
+    switch (index) {
+      case 0:
+        return (
+          <svg viewBox="0 0 24 24" fill="none" stroke="#FBAB3C" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="w-full h-full">
+            <circle cx="12" cy="12" r="9" />
+            <circle cx="12" cy="12" r="2" />
+            <circle cx="12" cy="6.5" r="1.5" />
+            <circle cx="12" cy="17.5" r="1.5" />
+            <circle cx="6.5" cy="12" r="1.5" />
+            <circle cx="17.5" cy="12" r="1.5" />
+            <path d="M18.5 18.5 C 19.5 19.5, 20.5 20, 22 20 L 23 20" />
+          </svg>
+        );
+      case 1:
+        return (
+          <svg viewBox="0 0 24 24" fill="none" stroke="#FBAB3C" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="w-full h-full">
+            <rect x="3" y="4" width="18" height="12" rx="2" />
+            <polygon points="10,7 15,10 10,13" />
+            <path d="M12 16 L12 19 M8 19 L16 19" />
+          </svg>
+        );
+      case 2:
+        return (
+          <svg viewBox="0 0 24 24" fill="none" stroke="#FBAB3C" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="w-full h-full">
+            <rect x="3" y="5" width="18" height="14" rx="1.5" />
+            <line x1="3" y1="8" x2="21" y2="8" />
+            <line x1="3" y1="16" x2="21" y2="16" />
+            <line x1="6" y1="5" x2="6" y2="8" />
+            <line x1="9" y1="5" x2="9" y2="8" />
+            <line x1="12" y1="5" x2="12" y2="8" />
+            <line x1="15" y1="5" x2="15" y2="8" />
+            <line x1="18" y1="5" x2="18" y2="8" />
+            <line x1="6" y1="16" x2="6" y2="19" />
+            <line x1="9" y1="16" x2="9" y2="19" />
+            <line x1="12" y1="16" x2="12" y2="19" />
+            <line x1="15" y1="16" x2="15" y2="19" />
+            <line x1="18" y1="16" x2="18" y2="19" />
+          </svg>
+        );
+      case 3:
+        return (
+          <svg viewBox="0 0 24 24" fill="none" stroke="#FBAB3C" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="w-full h-full">
+            <rect x="3" y="10" width="12" height="9" rx="2" />
+            <polygon points="15,12.5 21,9 21,18 15,14.5" />
+            <circle cx="11" cy="6.5" r="2.5" />
+            <circle cx="6" cy="7.5" r="1.5" />
+          </svg>
+        );
+      case 4:
+        return (
+          <svg viewBox="0 0 24 24" fill="none" stroke="#FBAB3C" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="w-full h-full">
+            <path d="M3 13h18v7H3z" />
+            <line x1="15" y1="13" x2="15" y2="20" />
+            <path d="M3 9.5h18v3.5H3z" />
+            <line x1="6" y1="9.5" x2="9" y2="13" />
+            <line x1="11" y1="9.5" x2="14" y2="13" />
+            <line x1="16" y1="9.5" x2="19" y2="13" />
+            <path d="M3 9 L18 4.5 L20 7.5 L5 12 Z" />
+            <line x1="6" y1="8" x2="9" y2="10.5" />
+            <line x1="11" y1="6.5" x2="14" y2="9" />
+            <line x1="16" y1="5" x2="19" y2="7.5" />
+          </svg>
+        );
+      case 5:
+        return (
+          <svg viewBox="0 0 24 24" fill="none" stroke="#FBAB3C" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="w-full h-full">
+            <circle cx="12" cy="12" r="9" />
+            <polygon points="10,8.5 16,12 10,15.5" />
+          </svg>
+        );
+      default:
+        return null;
+    }
+  };
+
   const onSubmit = async (data: ContactFormValues) => {
-    // Simulate API request
-    await new Promise((resolve) => setTimeout(resolve, 1500));
-    console.log("Contact form submitted successfully:", data);
-    setIsSubmitted(true);
-    reset();
+    try {
+      const response = await fetch("https://formspree.io/f/xaqgoopp", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Accept": "application/json",
+        },
+        body: JSON.stringify({
+          name: data.name,
+          businessName: data.businessName,
+          email: data.email,
+          phone: data.phone,
+          message: data.message,
+        }),
+      });
+
+      if (response.ok) {
+        setIsSubmitted(true);
+        reset();
+      } else {
+        const errorData = await response.json();
+        console.error("Formspree submission error:", errorData);
+        alert("There was a problem submitting your enquiry. Please check the fields and try again.");
+      }
+    } catch (error) {
+      console.error("Network error submitting to Formspree:", error);
+      alert("Network error. Please check your connection and try again.");
+    }
   };
 
   return (
@@ -79,8 +213,52 @@ export default function ContactPanel() {
         {/* Black overlay with gradient from 100% opacity on left to 66% on right */}
         <div 
           className="absolute inset-0"
-          style={{ background: 'linear-gradient(to right, rgba(0, 0, 0, 1) 0%, rgba(0, 0, 0, 0.66) 100%)' }}
+          style={{ background: 'linear-gradient(to right, rgba(0, 0, 0, 1) 0%, rgba(0, 0, 0, 1) 50%, rgba(0, 0, 0, 0.66) 100%)' }}
         />
+      </div>
+
+      {/* Floating Film-Related Icons (Bubble Animation on the right half) */}
+      <div className="absolute inset-0 z-0 overflow-hidden pointer-events-none">
+        <style dangerouslySetInnerHTML={{ __html: `
+          @keyframes floatUp {
+            0% {
+              transform: translateY(100px) translateX(0) scale(0.6) rotate(0deg);
+              opacity: 0;
+            }
+            10% {
+              opacity: 0.7;
+            }
+            90% {
+              opacity: 0.7;
+            }
+            100% {
+              transform: translateY(-130vh) translateX(var(--drift-x)) scale(1.1) rotate(var(--rotation));
+              opacity: 0;
+            }
+          }
+          .floating-bubble {
+            opacity: 0;
+            animation: floatUp linear infinite both;
+          }
+        ` }} />
+        {bubbles.map((bubble) => (
+          <div
+            key={bubble.id}
+            className="floating-bubble absolute top-full"
+            style={{
+              left: bubble.left,
+              width: `${bubble.size}px`,
+              height: `${bubble.size}px`,
+              animationDelay: bubble.delay,
+              animationDuration: bubble.duration,
+              filter: "drop-shadow(0 0 8px rgba(251, 171, 60, 0.6))",
+              "--drift-x": bubble.driftX,
+              "--rotation": bubble.rotation,
+            } as React.CSSProperties}
+          >
+            {renderIcon(bubble.iconIndex)}
+          </div>
+        ))}
       </div>
 
       {/* Scrollable Content Container (added padding bottom pb-28 md:pb-36 lg:pb-40 for clearance) */}
