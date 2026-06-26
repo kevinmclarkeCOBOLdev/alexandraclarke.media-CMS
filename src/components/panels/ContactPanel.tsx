@@ -4,6 +4,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { useEffect, useState } from "react";
+import Image from "next/image";
 import { MapPin, Mail, CheckCircle } from "lucide-react";
 
 // Form validation schema
@@ -66,9 +67,23 @@ export default function ContactPanel() {
 
   return (
     <div className="relative w-full h-full overflow-hidden">
+      {/* Background Image Container */}
+      <div className="absolute inset-0 z-0 pointer-events-none">
+        <Image
+          src="/contact-panel-bg.webp"
+          alt=""
+          fill
+          className="object-cover"
+          priority
+        />
+        {/* Black overlay with opacity of 66% */}
+        <div className="absolute inset-0 bg-black/66" />
+      </div>
+
       {/* Scrollable Content Container (added padding bottom pb-28 md:pb-36 lg:pb-40 for clearance) */}
-      <div className="relative z-10 flex h-full w-full flex-col overflow-y-auto no-scrollbar p-6 pb-28 md:p-12 md:pb-36 lg:p-16 lg:pb-40">
-        <div className="w-full max-w-2xl flex flex-col gap-8">
+      <div className="relative z-10 flex h-full w-full flex-col lg:flex-row overflow-y-auto no-scrollbar p-6 pb-28 md:p-12 md:pb-36 lg:p-16 lg:pb-40 gap-8 lg:gap-12 justify-between items-start">
+        {/* Left Column: Info & Form */}
+        <div className="w-full lg:w-7/12 max-w-2xl flex flex-col gap-8">
           <div>
             <div className="border-b border-white/10 pb-6 mb-6">
               <h3 className="font-editorial text-5xl md:text-6xl font-bold mt-1 stroked-title">
@@ -234,6 +249,21 @@ export default function ContactPanel() {
               </div>
             </form>
           )}
+        </div>
+
+        {/* Right Column: Cine Camera Image Content (aligned bottom right) */}
+        <div className="w-full lg:w-5/12 flex lg:self-end lg:mt-auto justify-end">
+          <div className="w-full max-w-[400px] relative min-h-[300px] md:min-h-[400px] overflow-hidden border border-white/10 shadow-2xl" style={{ borderRadius: '0 50px 0 50px' }}>
+            <Image
+              src="/cinecamera.jpg"
+              alt="Cine Camera"
+              fill
+              sizes="(max-width: 1024px) 100vw, 400px"
+              className="object-cover"
+              style={{ borderRadius: '0 50px 0 50px' }}
+              priority
+            />
+          </div>
         </div>
       </div>
 
