@@ -35,7 +35,7 @@ export default function AboutPanel() {
   ];
 
   return (
-    <div className="relative flex h-full w-full flex-col lg:flex-row overflow-y-auto no-scrollbar p-6 md:p-12 lg:p-16 gap-8 lg:gap-12">
+    <div className="relative w-full h-full overflow-hidden">
       {/* Background Image Container */}
       <div className="absolute inset-0 z-0 pointer-events-none">
         <Image
@@ -59,145 +59,194 @@ export default function AboutPanel() {
         <div className="absolute inset-0 bg-black/75" />
       </div>
 
-      {/* Left Column: Portrait & CV Download */}
-      <div className="relative z-10 w-full lg:w-[calc(41.67%-150px)] lg:min-w-[250px] flex flex-col gap-6">
-        <div className="relative aspect-square w-full max-w-[400px] overflow-hidden rounded-tl-[50px] rounded-br-[50px] rounded-tr-none rounded-bl-none border border-[#FBAB3C]/20 bg-neutral-dark shadow-2xl">
-          <Image
-            src="/alex-intro-image-ylo-bg.webp"
-            alt="Alexandra Clarke"
-            fill
-            className="object-cover object-top"
-            sizes="(max-width: 1024px) 100vw, 400px"
-            priority
-          />
+      {/* Scrollable Content Container (added padding bottom pb-28 md:pb-36 lg:pb-40 for clearance) */}
+      <div className="relative z-10 w-full h-full flex flex-col lg:flex-row overflow-y-auto no-scrollbar p-6 pb-28 md:p-12 md:pb-36 lg:p-16 lg:pb-40 gap-8 lg:gap-12">
+        {/* Left Column: Portrait & CV Download */}
+        <div className="relative z-10 w-full lg:w-[calc(41.67%-150px)] lg:min-w-[250px] flex flex-col gap-6">
+          <div className="relative aspect-square w-full max-w-[400px] overflow-hidden rounded-tl-[50px] rounded-br-[50px] rounded-tr-none rounded-bl-none border border-[#FBAB3C]/20 bg-neutral-dark shadow-2xl">
+            <Image
+              src="/alex-intro-image-ylo-bg.webp"
+              alt="Alexandra Clarke"
+              fill
+              className="object-cover object-top"
+              sizes="(max-width: 1024px) 100vw, 400px"
+              priority
+            />
+          </div>
+          <div className="mt-2 flex flex-col items-start gap-3">
+            <h4 className="font-sans text-[14px] font-bold text-[#FBAB3C] uppercase tracking-wider">
+              Download my CV
+            </h4>
+            <a
+              href="/Alexandra-Clarke-CV-English-v1.pdf"
+              target="_blank"
+              rel="noopener noreferrer"
+              data-cursor="pointer"
+              className="group flex items-center gap-3 p-3 rounded bg-neutral-dark border border-white/5 hover:border-[#FBAB3C] transition-all duration-300 w-full max-w-[200px]"
+            >
+              <div className="relative h-10 w-10 shrink-0">
+                <Image
+                  src="/pdf.png"
+                  alt="PDF Icon"
+                  fill
+                  className="object-contain filter brightness-90 group-hover:brightness-100 transition-all duration-300"
+                />
+              </div>
+              <span className="font-sans text-[12px] font-bold text-white group-hover:text-[#FBAB3C] transition-colors uppercase tracking-wider">
+                Open CV (PDF)
+              </span>
+            </a>
+          </div>
         </div>
-        <div className="mt-2 flex flex-col items-start gap-3">
-          <h4 className="font-sans text-[14px] font-bold text-[#FBAB3C] uppercase tracking-wider">
-            Download my CV
-          </h4>
-          <a
-            href="/Alexandra-Clarke-CV-English-v1.pdf"
-            target="_blank"
-            rel="noopener noreferrer"
-            data-cursor="pointer"
-            className="group flex items-center gap-3 p-3 rounded bg-neutral-dark border border-white/5 hover:border-[#FBAB3C] transition-all duration-300 w-full max-w-[200px]"
-          >
-            <div className="relative h-10 w-10 shrink-0">
-              <Image
-                src="/pdf.png"
-                alt="PDF Icon"
-                fill
-                className="object-contain filter brightness-90 group-hover:brightness-100 transition-all duration-300"
-              />
+
+        {/* Right Column: Bio, Timeline & Info (Scrollable Content) */}
+        <div className="relative z-10 flex-1 flex flex-col gap-10 pl-[75px]">
+          {/* Biography */}
+          <div>
+            <h3 className="font-editorial text-5xl md:text-6xl font-bold mt-1 stroked-title uppercase">
+              Biography
+            </h3>
+            <p className="font-sans text-[14px] text-white mt-4 leading-relaxed tracking-wide">
+              A dynamic filmmaker with over 7 years of filmmaking experience, adept at creating a wide range of video content (from 3D animation to interviews &amp; social media content). Possessing strong problem-solving skills and a naturally outgoing personality, I communicate effectively with a diverse clientele for projects.
+            </p>
+            <p>&nbsp;</p>
+            <p className="font-sans text-[14px] text-white mt-3 leading-relaxed tracking-wide">
+              I am committed to maintaining high standards of quality and efficiency in all of my projects.
+            </p>
+          </div>
+
+          {/* Education */}
+          <div>
+            <h3 className="font-sans text-[20px] font-bold tracking-widest text-[#FBAB3C] uppercase">
+              Education
+            </h3>
+            <div className="mt-4 flex flex-col gap-4 border-l border-[#FBAB3C]/20 pl-4">
+              {education.map((e, idx) => (
+                <div key={idx} className="relative flex flex-col gap-1">
+                  <h4 className="font-sans text-[14px] font-bold text-[#FBAB3C] tracking-wide">
+                    {e.institution}
+                  </h4>
+                  <div className="flex flex-col md:flex-row md:items-center justify-between gap-1 text-[14px] text-white">
+                    <span>{e.degree}</span>
+                    <span className="font-sans font-bold text-[#FBAB3C] md:ml-4 whitespace-nowrap">
+                      {e.period}
+                    </span>
+                  </div>
+                </div>
+              ))}
             </div>
-            <span className="font-sans text-[12px] font-bold text-white group-hover:text-[#FBAB3C] transition-colors uppercase tracking-wider">
-              Open CV (PDF)
-            </span>
-          </a>
+          </div>
+
+          {/* Work Experience */}
+          <div>
+            <h3 className="font-sans text-[20px] font-bold tracking-widest text-[#FBAB3C] uppercase">
+              Work Experience
+            </h3>
+            <div className="mt-4 flex flex-col gap-4 border-l border-[#FBAB3C]/20 pl-4">
+              {experience.map((exp, idx) => (
+                <div key={idx} className="relative flex flex-col gap-1">
+                  <h4 className="font-sans text-[14px] font-bold text-[#FBAB3C] tracking-wide">
+                    {exp.company}
+                  </h4>
+                  <div className="flex flex-col md:flex-row md:items-center justify-between gap-1 text-[14px] text-white">
+                    <span>{exp.role}</span>
+                    <span className="font-sans font-bold text-[#FBAB3C] md:ml-4 whitespace-nowrap">
+                      {exp.period}
+                    </span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Skills */}
+          <div>
+            <h3 className="font-sans text-[20px] font-bold tracking-widest text-[#FBAB3C] uppercase">
+              Skills &amp; Software
+            </h3>
+            <div className="mt-4 flex flex-col gap-3 border-l border-[#FBAB3C]/20 pl-4">
+              <div>
+                <h4 className="font-sans text-[14px] font-bold text-[#FBAB3C] tracking-wide uppercase">
+                  Filmmaking &amp; Creative
+                </h4>
+                <p className="font-sans text-[14px] text-white mt-1 leading-relaxed">
+                  Filmmaking (directing, editing, script writing, acting) &bull; 3D Modelling + 3D Animation &bull; Problem solving &bull; Teamwork &bull; Time management &bull; Effective communication
+                </p>
+              </div>
+              <div className="mt-2">
+                <h4 className="font-sans text-[14px] font-bold text-[#FBAB3C] tracking-wide uppercase">
+                  Software &amp; Tools
+                </h4>
+                <p className="font-sans text-[14px] text-white mt-1 leading-relaxed">
+                  DaVinci Resolve (film editing) &bull; Blender (3D modelling) &bull; Photoshop (photo editing)
+                </p>
+              </div>
+            </div>
+          </div>
+
+          {/* Languages */}
+          <div>
+            <h3 className="font-sans text-[20px] font-bold tracking-widest text-[#FBAB3C] uppercase">
+              Languages
+            </h3>
+            <div className="mt-4 flex flex-col gap-2 border-l border-[#FBAB3C]/20 pl-4">
+              <div className="flex items-center justify-between text-[14px]">
+                <span className="font-sans font-bold text-white tracking-wide">ENGLISH</span>
+                <span className="font-sans font-bold text-[#FBAB3C]">NATIVE SPEAKER</span>
+              </div>
+              <div className="flex items-center justify-between text-[14px]">
+                <span className="font-sans font-bold text-white tracking-wide">CZECH</span>
+                <span className="font-sans font-bold text-[#FBAB3C]">FLUENT</span>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
 
-      {/* Right Column: Bio, Timeline & Info (Scrollable Content) */}
-      <div className="relative z-10 flex-1 flex flex-col gap-10 pl-[75px]">
-        {/* Biography */}
-        <div>
-          <h3 className="font-editorial text-5xl md:text-6xl font-bold mt-1 stroked-title uppercase">
-            Biography
-          </h3>
-          <p className="font-sans text-[14px] text-white mt-4 leading-relaxed tracking-wide">
-            A dynamic filmmaker with over 7 years of filmmaking experience, adept at creating a wide range of video content (from 3D animation to interviews &amp; social media content). Possessing strong problem-solving skills and a naturally outgoing personality, I communicate effectively with a diverse clientele for projects.
-          </p>
-          <p>&nbsp;</p>
-          <p className="font-sans text-[14px] text-white mt-3 leading-relaxed tracking-wide">
-            I am committed to maintaining high standards of quality and efficiency in all of my projects.
-          </p>
-        </div>
+      {/* Social Icons (bottom left - persistent and non-scrolling!) */}
+      <div className="absolute bottom-6 left-6 md:bottom-12 md:left-12 lg:bottom-16 lg:left-16 z-20 flex flex-col gap-3">
+        {/* Instagram */}
+        <a
+          href="https://www.instagram.com/alexandra.lexi.clarke/"
+          target="_blank"
+          rel="noopener noreferrer"
+          data-cursor="pointer"
+          className="group flex h-12 w-12 items-center justify-center rounded-full bg-[#1F1F1F] hover:bg-[#2F2F2F] text-[#FBAB3C] transition-all duration-300 hover:scale-110 shadow-lg border border-white/5"
+        >
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5">
+            <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
+            <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path>
+            <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line>
+          </svg>
+        </a>
 
-        {/* Education */}
-        <div>
-          <h3 className="font-sans text-[20px] font-bold tracking-widest text-[#FBAB3C] uppercase">
-            Education
-          </h3>
-          <div className="mt-4 flex flex-col gap-4 border-l border-[#FBAB3C]/20 pl-4">
-            {education.map((e, idx) => (
-              <div key={idx} className="relative flex flex-col gap-1">
-                <h4 className="font-sans text-[14px] font-bold text-[#FBAB3C] tracking-wide">
-                  {e.institution}
-                </h4>
-                <div className="flex flex-col md:flex-row md:items-center justify-between gap-1 text-[14px] text-white">
-                  <span>{e.degree}</span>
-                  <span className="font-sans font-bold text-[#FBAB3C] md:ml-4 whitespace-nowrap">
-                    {e.period}
-                  </span>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
+        {/* YouTube */}
+        <a
+          href="https://www.youtube.com/channel/UCrj_CL9J9GvSdUxoOE0Jzgg"
+          target="_blank"
+          rel="noopener noreferrer"
+          data-cursor="pointer"
+          className="group flex h-12 w-12 items-center justify-center rounded-full bg-[#1F1F1F] hover:bg-[#2F2F2F] text-[#FBAB3C] transition-all duration-300 hover:scale-110 shadow-lg border border-white/5"
+        >
+          <svg viewBox="0 0 24 24" fill="currentColor" style={{ width: "22px", height: "22px" }}>
+            <text x="50%" y="35%" textAnchor="middle" fontSize="6.5" fontWeight="900" fontFamily="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" fill="#FBAB3C">You</text>
+            <rect x="2" y="11" width="20" height="9" rx="1.5" fill="#FBAB3C"/>
+            <text x="50%" y="17.5%" textAnchor="middle" fontSize="6" fontWeight="900" fontFamily="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" className="fill-[#1F1F1F] group-hover:fill-[#2F2F2F] transition-colors duration-300" transform="translate(0, 10)">Tube</text>
+          </svg>
+        </a>
 
-        {/* Work Experience */}
-        <div>
-          <h3 className="font-sans text-[20px] font-bold tracking-widest text-[#FBAB3C] uppercase">
-            Work Experience
-          </h3>
-          <div className="mt-4 flex flex-col gap-4 border-l border-[#FBAB3C]/20 pl-4">
-            {experience.map((exp, idx) => (
-              <div key={idx} className="relative flex flex-col gap-1">
-                <h4 className="font-sans text-[14px] font-bold text-[#FBAB3C] tracking-wide">
-                  {exp.company}
-                </h4>
-                <div className="flex flex-col md:flex-row md:items-center justify-between gap-1 text-[14px] text-white">
-                  <span>{exp.role}</span>
-                  <span className="font-sans font-bold text-[#FBAB3C] md:ml-4 whitespace-nowrap">
-                    {exp.period}
-                  </span>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        {/* Skills */}
-        <div>
-          <h3 className="font-sans text-[20px] font-bold tracking-widest text-[#FBAB3C] uppercase">
-            Skills &amp; Software
-          </h3>
-          <div className="mt-4 flex flex-col gap-3 border-l border-[#FBAB3C]/20 pl-4">
-            <div>
-              <h4 className="font-sans text-[14px] font-bold text-[#FBAB3C] tracking-wide uppercase">
-                Filmmaking &amp; Creative
-              </h4>
-              <p className="font-sans text-[14px] text-white mt-1 leading-relaxed">
-                Filmmaking (directing, editing, script writing, acting) &bull; 3D Modelling + 3D Animation &bull; Problem solving &bull; Teamwork &bull; Time management &bull; Effective communication
-              </p>
-            </div>
-            <div className="mt-2">
-              <h4 className="font-sans text-[14px] font-bold text-[#FBAB3C] tracking-wide uppercase">
-                Software &amp; Tools
-              </h4>
-              <p className="font-sans text-[14px] text-white mt-1 leading-relaxed">
-                DaVinci Resolve (film editing) &bull; Blender (3D modelling) &bull; Photoshop (photo editing)
-              </p>
-            </div>
-          </div>
-        </div>
-
-        {/* Languages */}
-        <div>
-          <h3 className="font-sans text-[20px] font-bold tracking-widest text-[#FBAB3C] uppercase">
-            Languages
-          </h3>
-          <div className="mt-4 flex flex-col gap-2 border-l border-[#FBAB3C]/20 pl-4">
-            <div className="flex items-center justify-between text-[14px]">
-              <span className="font-sans font-bold text-white tracking-wide">ENGLISH</span>
-              <span className="font-sans font-bold text-[#FBAB3C]">NATIVE SPEAKER</span>
-            </div>
-            <div className="flex items-center justify-between text-[14px]">
-              <span className="font-sans font-bold text-white tracking-wide">CZECH</span>
-              <span className="font-sans font-bold text-[#FBAB3C]">FLUENT</span>
-            </div>
-          </div>
-        </div>
+        {/* TikTok */}
+        <a
+          href="https://www.tiktok.com/@its.keeby.and.kirby"
+          target="_blank"
+          rel="noopener noreferrer"
+          data-cursor="pointer"
+          className="group flex h-12 w-12 items-center justify-center rounded-full bg-[#1F1F1F] hover:bg-[#2F2F2F] text-[#FBAB3C] transition-all duration-300 hover:scale-110 shadow-lg border border-white/5"
+        >
+          <svg viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5">
+            <path d="M12.525.02c1.31-.02 2.61-.01 3.91-.02.08 1.53.63 3.02 1.62 4.2 1.23 1.34 2.95 2.1 4.75 2.23-.01 1.29.01 2.58-.02 3.87-1.42-.02-2.81-.49-3.95-1.34-1.02-.79-1.75-1.92-2.09-3.17-.03.77-.02 1.54-.02 2.31v10.15c-.07 1.83-.81 3.61-2.17 4.79-1.57 1.4-3.83 2.06-5.96 1.74-2.31-.32-4.42-1.91-5.18-4.17-.89-2.58-.1-5.59 1.95-7.44 1.47-1.35 3.52-1.96 5.51-1.63.02 1.32.01 2.65.02 3.97-1.12-.22-2.33.09-3.13.88-.84.8-.97 2.1-.33 3.07.64.99 1.96 1.41 3.05 1.01 1.02-.34 1.74-1.37 1.76-2.45.02-4.23.01-8.47.01-12.7z"/>
+          </svg>
+        </a>
       </div>
     </div>
   );
