@@ -35,7 +35,7 @@ export default function Panel({
 
     // Detect screen width
     const isDesktop = window.innerWidth >= 1024;
-    const isHomeInitialLoad = id === "home" && isInitialRender.current;
+
 
     if (isInitialRender.current) {
       if (!isActive) {
@@ -69,47 +69,49 @@ export default function Panel({
       }
     }
 
+    const isInitial = isInitialRender.current;
+
     if (isDesktop) {
       if (isActive) {
         // Animate panel width to active state
         gsap.to(panel, {
           width: "76%",
-          duration: isHomeInitialLoad ? 0 : 1.0,
+          duration: isInitial ? 0 : 1.0,
           ease: "power4.out",
         });
         // Fade in content
         gsap.to(content, {
           opacity: 1,
           pointerEvents: "auto",
-          duration: isHomeInitialLoad ? 0 : 0.8,
-          delay: isHomeInitialLoad ? 0 : 0.15,
+          duration: isInitial ? 0 : 0.8,
+          delay: isInitial ? 0 : 0.15,
           ease: "power2.out",
         });
         // Fade out collapsed title
         gsap.to(titleEl, {
           opacity: 0,
-          duration: isHomeInitialLoad ? 0 : 0.3,
+          duration: isInitial ? 0 : 0.3,
           ease: "power2.out",
         });
       } else {
         // Animate panel width to inactive state
         gsap.to(panel, {
           width: "6%",
-          duration: 1.0,
+          duration: isInitial ? 0 : 1.0,
           ease: "power4.out",
         });
         // Fade out content
         gsap.to(content, {
           opacity: 0,
           pointerEvents: "none",
-          duration: 0.4,
+          duration: isInitial ? 0 : 0.4,
           ease: "power2.out",
         });
         // Fade in collapsed title
         gsap.to(titleEl, {
           opacity: 1,
-          duration: 0.6,
-          delay: 0.1,
+          duration: isInitial ? 0 : 0.6,
+          delay: isInitial ? 0 : 0.1,
           ease: "power2.out",
         });
       }
@@ -119,36 +121,36 @@ export default function Panel({
         gsap.to(panel, {
           height: "calc(100vh - 240px)",
           minHeight: "450px",
-          duration: isHomeInitialLoad ? 0 : 0.8,
+          duration: isInitial ? 0 : 0.8,
           ease: "power4.out",
         });
         gsap.to(content, {
           opacity: 1,
           pointerEvents: "auto",
-          duration: isHomeInitialLoad ? 0 : 0.6,
-          delay: isHomeInitialLoad ? 0 : 0.1,
+          duration: isInitial ? 0 : 0.6,
+          delay: isInitial ? 0 : 0.1,
           ease: "power2.out",
         });
         gsap.to(titleEl, {
           opacity: 0,
-          duration: isHomeInitialLoad ? 0 : 0.2,
+          duration: isInitial ? 0 : 0.2,
         });
       } else {
         gsap.to(panel, {
           height: "60px",
           minHeight: "60px",
-          duration: 0.8,
+          duration: isInitial ? 0 : 0.8,
           ease: "power4.out",
         });
         gsap.to(content, {
           opacity: 0,
           pointerEvents: "none",
-          duration: 0.3,
+          duration: isInitial ? 0 : 0.3,
           ease: "power2.out",
         });
         gsap.to(titleEl, {
           opacity: 1,
-          duration: 0.5,
+          duration: isInitial ? 0 : 0.5,
         });
       }
     }
@@ -160,8 +162,8 @@ export default function Panel({
     <div
       id={id}
       ref={panelRef}
-      className={`relative overflow-hidden ${
-        isActive && !hasEntered ? "" : "border-b lg:border-b-0 lg:border-r"
+      className={`relative overflow-hidden border-b lg:border-b-0 ${
+        isActive ? "" : "lg:border-r"
       } border-white/10 bg-background transition-colors duration-300 ${
         isActive ? "z-10" : "z-0"
       } ${

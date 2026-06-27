@@ -137,7 +137,7 @@ export default function HomePanel() {
             className={`absolute top-1/2 left-1/2 w-[177.78vh] min-w-full h-[56.25vw] min-h-full -translate-x-1/2 -translate-y-1/2 pointer-events-auto transition-opacity duration-1000 ${
               isVideoEnded ? "opacity-0" : "opacity-100"
             }`}
-            src="https://www.youtube.com/embed/BoUrWXaQUQQ?autoplay=1&mute=1&controls=1&rel=0&playsinline=1&enablejsapi=1&cc_load_policy=0&iv_load_policy=3"
+            src="https://www.youtube.com/embed/BoUrWXaQUQQ?autoplay=1&mute=1&controls=0&rel=0&playsinline=1&enablejsapi=1&cc_load_policy=3&iv_load_policy=3"
             frameBorder="0"
             allow="autoplay; encrypted-media"
             title="Background Showreel"
@@ -300,7 +300,7 @@ export default function HomePanel() {
             {/* Video Iframe (Unmuted showreel playback) */}
             <iframe
               className="w-full h-full"
-              src="https://www.youtube.com/embed/BoUrWXaQUQQ?autoplay=1&controls=1&rel=0&playsinline=1&cc_load_policy=0&iv_load_policy=3"
+              src="https://www.youtube.com/embed/BoUrWXaQUQQ?autoplay=1&controls=1&rel=0&playsinline=1&cc_load_policy=3&iv_load_policy=3"
               frameBorder="0"
               allow="autoplay; encrypted-media"
               allowFullScreen
