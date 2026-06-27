@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useEffect } from "react";
+import { useRef, useEffect, useState } from "react";
 import Image from "next/image";
 import gsap from "gsap";
 
@@ -25,6 +25,7 @@ export default function Panel({
   const contentRef = useRef<HTMLDivElement>(null);
   const titleRef = useRef<HTMLDivElement>(null);
   const isInitialRender = useRef(true);
+  const [hasEntered, setHasEntered] = useState(false);
 
   useEffect(() => {
     const panel = panelRef.current;
@@ -47,6 +48,7 @@ export default function Panel({
               duration: 1.2,
               delay: (index - 1) * 0.15 + 0.3,
               ease: "power4.out",
+              onComplete: () => setHasEntered(true),
             }
           );
         } else {
@@ -58,9 +60,12 @@ export default function Panel({
               duration: 1.0,
               delay: (index - 1) * 0.12 + 0.2,
               ease: "power4.out",
+              onComplete: () => setHasEntered(true),
             }
           );
         }
+      } else {
+        setHasEntered(true);
       }
     }
 
@@ -155,13 +160,18 @@ export default function Panel({
     <div
       id={id}
       ref={panelRef}
-      style={isInitialRender.current && !isActive ? { opacity: 0 } : undefined}
-      className={`relative overflow-hidden border-b lg:border-b-0 lg:border-r border-white/10 bg-background transition-colors duration-300 ${
+      className={`relative overflow-hidden ${
+        isActive && !hasEntered ? "" : "border-b lg:border-b-0 lg:border-r"
+      } border-white/10 bg-background transition-colors duration-300 ${
         isActive ? "z-10" : "z-0"
       } ${
         isActive
           ? "w-full h-[calc(100vh-240px)] min-h-[450px] lg:w-[76%] lg:h-full"
           : "w-full h-[60px] min-h-[60px] lg:w-[6%] lg:h-full"
+      } ${
+        !isActive && !hasEntered
+          ? "opacity-0 translate-y-full lg:translate-y-0 lg:translate-x-full"
+          : ""
       }`}
     >
       {/* Background Image Preview (fades out when active) */}

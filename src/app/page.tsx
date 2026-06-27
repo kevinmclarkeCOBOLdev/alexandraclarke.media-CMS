@@ -18,8 +18,13 @@ const PANELS = [
 
 export default function Page() {
   const [activePanel, setActivePanel] = useState("home");
+  const [isClient, setIsClient] = useState(false);
   const lastScrollTime = useRef(0);
   const touchStart = useRef({ x: 0, y: 0 });
+
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
 
   // Update hash state
   const handlePanelChange = useCallback((id: string) => {
@@ -150,24 +155,29 @@ export default function Page() {
     >
       {/* Panels Container */}
       <main className="flex flex-col lg:flex-row h-full w-full">
-        {PANELS.map((panel, idx) => (
-          <Panel
-            key={panel.id}
-            id={panel.id}
-            title={panel.title}
-            isActive={activePanel === panel.id}
-            onClick={() => handlePanelChange(panel.id)}
-            index={idx}
-          >
-            {panel.id === "home" && (
-              <HomePanel />
-            )}
-            {panel.id === "about" && <AboutPanel />}
-            {panel.id === "portfolio" && <PortfolioPanel />}
-            {panel.id === "testimonials" && <TestimonialsPanel />}
-            {panel.id === "contact" && <ContactPanel />}
-          </Panel>
-        ))}
+        {PANELS.map((panel, idx) => {
+          // Defer rendering of inactive panels until client mount to avoid layout pulses
+          if (panel.id !== "home" && !isClient) return null;
+
+          return (
+            <Panel
+              key={panel.id}
+              id={panel.id}
+              title={panel.title}
+              isActive={activePanel === panel.id}
+              onClick={() => handlePanelChange(panel.id)}
+              index={idx}
+            >
+              {panel.id === "home" && (
+                <HomePanel />
+              )}
+              {panel.id === "about" && <AboutPanel />}
+              {panel.id === "portfolio" && <PortfolioPanel />}
+              {panel.id === "testimonials" && <TestimonialsPanel />}
+              {panel.id === "contact" && <ContactPanel />}
+            </Panel>
+          );
+        })}
       </main>
     </div>
   );
