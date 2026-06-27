@@ -10,6 +10,7 @@ interface PanelProps {
   isActive: boolean;
   onClick: () => void;
   children: React.ReactNode;
+  index: number;
 }
 
 export default function Panel({
@@ -18,6 +19,7 @@ export default function Panel({
   isActive,
   onClick,
   children,
+  index,
 }: PanelProps) {
   const panelRef = useRef<HTMLDivElement>(null);
   const contentRef = useRef<HTMLDivElement>(null);
@@ -33,6 +35,34 @@ export default function Panel({
     // Detect screen width
     const isDesktop = window.innerWidth >= 1024;
     const isHomeInitialLoad = id === "home" && isInitialRender.current;
+
+    if (isInitialRender.current) {
+      if (!isActive) {
+        if (isDesktop) {
+          gsap.fromTo(panel,
+            { x: "100vw", opacity: 0 },
+            {
+              x: 0,
+              opacity: 1,
+              duration: 1.2,
+              delay: (index - 1) * 0.15 + 0.3,
+              ease: "power4.out",
+            }
+          );
+        } else {
+          gsap.fromTo(panel,
+            { y: "100vh", opacity: 0 },
+            {
+              y: 0,
+              opacity: 1,
+              duration: 1.0,
+              delay: (index - 1) * 0.12 + 0.2,
+              ease: "power4.out",
+            }
+          );
+        }
+      }
+    }
 
     if (isDesktop) {
       if (isActive) {
@@ -119,12 +149,13 @@ export default function Panel({
     }
 
     isInitialRender.current = false;
-  }, [isActive, id]);
+  }, [isActive, id, index]);
 
   return (
     <div
       id={id}
       ref={panelRef}
+      style={isInitialRender.current && !isActive ? { opacity: 0 } : undefined}
       className={`relative overflow-hidden border-b lg:border-b-0 lg:border-r border-white/10 bg-background transition-colors duration-300 ${
         isActive ? "z-10" : "z-0"
       } ${

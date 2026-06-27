@@ -150,13 +150,14 @@ export default function Page() {
     >
       {/* Panels Container */}
       <main className="flex flex-col lg:flex-row h-full w-full">
-        {PANELS.map((panel) => (
+        {PANELS.map((panel, idx) => (
           <Panel
             key={panel.id}
             id={panel.id}
             title={panel.title}
             isActive={activePanel === panel.id}
             onClick={() => handlePanelChange(panel.id)}
+            index={idx}
           >
             {panel.id === "home" && (
               <HomePanel />

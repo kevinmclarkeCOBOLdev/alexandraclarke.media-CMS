@@ -15,6 +15,7 @@ export default function HomePanel() {
   const [shouldPlayVideo, setShouldPlayVideo] = useState(false);
   const [isVideoPlaying, setIsVideoPlaying] = useState(false);
   const [shouldShrinkTags, setShouldShrinkTags] = useState(false);
+  const [showFallback, setShowFallback] = useState(false);
 
   useEffect(() => {
     if (typeof window !== "undefined") {
@@ -29,8 +30,11 @@ export default function HomePanel() {
   }, []);
 
   useEffect(() => {
+    setShouldPlayVideo(true);
+  }, []);
+
+  useEffect(() => {
     if (isPageLoaded) {
-      setShouldPlayVideo(true);
       const timer = setTimeout(() => {
         setShouldStartTagAnimation(true);
       }, 2000);
@@ -43,6 +47,15 @@ export default function HomePanel() {
       setShouldShrinkTags(true);
     }
   }, [isVideoPlaying]);
+
+  useEffect(() => {
+    if (shouldPlayVideo && !isVideoPlaying) {
+      const timer = setTimeout(() => {
+        setShowFallback(true);
+      }, 5000);
+      return () => clearTimeout(timer);
+    }
+  }, [shouldPlayVideo, isVideoPlaying]);
 
   useEffect(() => {
     if (!shouldPlayVideo) return;
@@ -142,7 +155,7 @@ export default function HomePanel() {
           fill
           priority
           className={`object-cover transition-opacity duration-1000 ${
-            isVideoPlaying && !isVideoEnded ? "opacity-0 pointer-events-none" : "opacity-100"
+            isVideoEnded || showFallback ? "opacity-100" : "opacity-0 pointer-events-none"
           }`}
           sizes="100vw"
         />
