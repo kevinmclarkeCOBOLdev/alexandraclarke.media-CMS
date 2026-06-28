@@ -423,7 +423,7 @@ export default function ContactPanel() {
                   type="submit"
                   disabled={isSubmitting}
                   data-cursor="pointer"
-                  className="w-1/2 2xl:w-full h-[53px] 2xl:h-auto 2xl:py-3.5 bg-[#FBAB3C] hover:bg-[#FBAB3C]/95 text-[#202020] font-sans text-sm font-semibold tracking-wide rounded-[50px] 2xl:rounded cursor-pointer transition-colors duration-300 flex items-center justify-center gap-2"
+                  className="w-1/2 h-[53px] bg-[#FBAB3C] hover:bg-[#FBAB3C]/95 text-[#202020] font-sans text-sm font-semibold tracking-wide rounded-[50px] cursor-pointer transition-colors duration-300 flex items-center justify-center gap-2"
                 >
                   {isSubmitting ? "Sending..." : "Send Enquiry"}
                 </button>

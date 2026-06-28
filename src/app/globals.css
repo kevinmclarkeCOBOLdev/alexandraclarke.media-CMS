@@ -185,4 +185,35 @@ html, body {
   pointer-events: none;
 }
 
+/* Mobile Landscape Rotation Lock Overlay */
+.orientation-lock-overlay {
+  display: none;
+}
 
+@media (max-height: 500px) and (orientation: landscape) {
+  .orientation-lock-overlay {
+    display: flex;
+    position: fixed;
+    inset: 0;
+    z-index: 99999;
+    background-color: #0A0A0A;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+    text-align: center;
+  }
+}
+
+@keyframes rotatePhone {
+  0%, 100% {
+    transform: rotate(0deg);
+  }
+  50% {
+    transform: rotate(-90deg);
+  }
+}
+
+.animate-rotate-phone {
+  animation: rotatePhone 2.5s ease-in-out infinite;
+}
