@@ -211,7 +211,7 @@ export default function HomePanel() {
             </span>
           </h2>
           <div
-            className="flex flex-col font-sans font-medium text-[#FBAB3C] tracking-wide items-start leading-[1.1] text-[27px] md:text-[30px] gap-1 mt-3"
+            className="flex flex-col font-sans font-medium text-[#FBAB3C] tracking-wide items-start leading-[1.1] text-[18px] md:text-[30px] gap-1 mt-3"
           >
             <span className={`block opacity-0 ${shouldStartTagAnimation ? "animate-slide-in-left" : ""}`} style={{ animationDelay: "270ms" }}>
               filmmaker,
@@ -275,8 +275,8 @@ export default function HomePanel() {
         </a>
       </div>
 
-      {/* Play Showreel Button (Centered, level with TikTok icon) */}
-      <div className="absolute bottom-6 left-1/2 -translate-x-1/2 md:bottom-12 lg:bottom-16 z-10">
+      {/* Play Showreel Button (Centered, level with YouTube icon bottom on mobile) */}
+      <div className="absolute bottom-[84px] md:bottom-12 lg:bottom-16 left-1/2 -translate-x-1/2 z-10">
         {/* Pulsing ring background */}
         <div className="absolute inset-0 rounded-[50px] bg-[#FBAB3C] button-glow-pulse pointer-events-none" />
         
