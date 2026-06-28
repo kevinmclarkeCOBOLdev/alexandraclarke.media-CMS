@@ -301,7 +301,7 @@ export default function HomePanel() {
           data-cursor="pointer"
           className="font-sans text-[10px] md:text-xs tracking-[1.5px] uppercase text-[#FBAB3C]/60 hover:text-[#FBAB3C] transition-all duration-300 font-medium"
         >
-          Powered by Atypikal Studio
+          © 2026 | Powered by Atypikal Studio
         </a>
       </div>
 
