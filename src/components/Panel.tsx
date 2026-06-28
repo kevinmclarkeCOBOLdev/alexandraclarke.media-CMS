@@ -26,7 +26,7 @@ export default function Panel({
   const titleRef = useRef<HTMLDivElement>(null);
   const isInitialRender = useRef(true);
   const [hasEntered, setHasEntered] = useState(false);
-  const [isDesktop, setIsDesktop] = useState(false);
+  const [isDesktop, setIsDesktop] = useState<boolean | null>(null);
 
   useEffect(() => {
     // Set initial layout state on client mount
@@ -41,6 +41,8 @@ export default function Panel({
   }, []);
 
   useEffect(() => {
+    if (isDesktop === null) return;
+
     const panel = panelRef.current;
     const content = contentRef.current;
     const titleEl = titleRef.current;
