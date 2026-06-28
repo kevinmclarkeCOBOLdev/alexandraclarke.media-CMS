@@ -26,16 +26,25 @@ export default function Panel({
   const titleRef = useRef<HTMLDivElement>(null);
   const isInitialRender = useRef(true);
   const [hasEntered, setHasEntered] = useState(false);
+  const [isDesktop, setIsDesktop] = useState(false);
+
+  useEffect(() => {
+    // Set initial layout state on client mount
+    setIsDesktop(window.innerWidth >= 1024);
+
+    const handleResize = () => {
+      setIsDesktop(window.innerWidth >= 1024);
+    };
+
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
 
   useEffect(() => {
     const panel = panelRef.current;
     const content = contentRef.current;
     const titleEl = titleRef.current;
     if (!panel || !content || !titleEl) return;
-
-    // Detect screen width
-    const isDesktop = window.innerWidth >= 1024;
-
 
     if (isInitialRender.current) {
       if (!isActive) {
@@ -76,6 +85,7 @@ export default function Panel({
         // Animate panel width to active state
         gsap.to(panel, {
           width: "76%",
+          clearProps: "height,minHeight,y",
           borderRadius: "0px",
           duration: isInitial ? 0 : 1.0,
           ease: "power4.out",
@@ -98,6 +108,7 @@ export default function Panel({
         // Animate panel width to inactive state
         gsap.to(panel, {
           width: "6%",
+          clearProps: "height,minHeight,y",
           borderRadius: "0px",
           duration: isInitial ? 0 : 1.0,
           ease: "power4.out",
@@ -123,6 +134,7 @@ export default function Panel({
         gsap.to(panel, {
           height: "calc(100vh - 285px)",
           minHeight: "450px",
+          clearProps: "width,x",
           borderRadius: "0px",
           duration: isInitial ? 0 : 0.8,
           ease: "power4.out",
@@ -142,6 +154,7 @@ export default function Panel({
         gsap.to(panel, {
           height: "60px",
           minHeight: "60px",
+          clearProps: "width,x",
           borderRadius: "50px",
           duration: isInitial ? 0 : 0.8,
           ease: "power4.out",
@@ -160,7 +173,7 @@ export default function Panel({
     }
 
     isInitialRender.current = false;
-  }, [isActive, id, index]);
+  }, [isActive, id, index, isDesktop]);
 
   return (
     <div
