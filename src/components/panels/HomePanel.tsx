@@ -227,7 +227,7 @@ export default function HomePanel() {
       {/* Top Header */}
       <div className="relative z-10 flex justify-between items-start mt-[50px]">
         <div>
-          <h2 className="font-editorial text-7xl md:text-9xl lg:text-[10rem] font-bold tracking-tight stroked-title">
+          <h2 className="font-editorial text-[64.8px] md:text-9xl lg:text-[10rem] font-bold tracking-tight stroked-title">
             ALEXANDRA CLARKE{" "}
             <span
               className="inline-block font-editorial text-[#FBAB3C]"
@@ -260,16 +260,16 @@ export default function HomePanel() {
       </div>
 
       {/* Social Icons (bottom left) */}
-      <div className="absolute bottom-6 left-6 md:bottom-12 md:left-12 lg:bottom-16 lg:left-16 z-10 flex flex-col gap-3">
+      <div className="absolute bottom-6 left-6 md:bottom-12 md:left-12 lg:bottom-16 lg:left-16 z-10 flex flex-col gap-2 md:gap-3">
         {/* Instagram */}
         <a
           href="https://www.instagram.com/alexandra.lexi.clarke/"
           target="_blank"
           rel="noopener noreferrer"
           data-cursor="pointer"
-          className="group flex h-12 w-12 items-center justify-center rounded-full bg-[#1F1F1F] hover:bg-[#2F2F2F] text-[#FBAB3C] transition-all duration-300 hover:scale-110 shadow-lg border border-white/5"
+          className="group flex h-9 w-9 md:h-12 md:w-12 items-center justify-center rounded-full bg-[#1F1F1F] hover:bg-[#2F2F2F] text-[#FBAB3C] transition-all duration-300 hover:scale-110 shadow-lg border border-white/5"
         >
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-[15px] h-[15px] md:w-5 md:h-5">
             <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
             <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path>
             <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line>
@@ -282,9 +282,9 @@ export default function HomePanel() {
           target="_blank"
           rel="noopener noreferrer"
           data-cursor="pointer"
-          className="group flex h-12 w-12 items-center justify-center rounded-full bg-[#1F1F1F] hover:bg-[#2F2F2F] text-[#FBAB3C] transition-all duration-300 hover:scale-110 shadow-lg border border-white/5"
+          className="group flex h-9 w-9 md:h-12 md:w-12 items-center justify-center rounded-full bg-[#1F1F1F] hover:bg-[#2F2F2F] text-[#FBAB3C] transition-all duration-300 hover:scale-110 shadow-lg border border-white/5"
         >
-          <svg viewBox="0 0 24 24" fill="currentColor" style={{ width: "22px", height: "22px" }}>
+          <svg viewBox="0 0 24 24" fill="currentColor" className="w-[16.5px] h-[16.5px] md:w-[22px] md:h-[22px]">
             <text x="50%" y="35%" textAnchor="middle" fontSize="6.5" fontWeight="900" fontFamily="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" fill="#FBAB3C">You</text>
             <rect x="2" y="11" width="20" height="9" rx="1.5" fill="#FBAB3C"/>
             <text x="50%" y="17.5%" textAnchor="middle" fontSize="6" fontWeight="900" fontFamily="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" className="fill-[#1F1F1F] group-hover:fill-[#2F2F2F] transition-colors duration-300" transform="translate(0, 10)">Tube</text>
@@ -297,9 +297,9 @@ export default function HomePanel() {
           target="_blank"
           rel="noopener noreferrer"
           data-cursor="pointer"
-          className="group flex h-12 w-12 items-center justify-center rounded-full bg-[#1F1F1F] hover:bg-[#2F2F2F] text-[#FBAB3C] transition-all duration-300 hover:scale-110 shadow-lg border border-white/5"
+          className="group flex h-9 w-9 md:h-12 md:w-12 items-center justify-center rounded-full bg-[#1F1F1F] hover:bg-[#2F2F2F] text-[#FBAB3C] transition-all duration-300 hover:scale-110 shadow-lg border border-white/5"
         >
-          <svg viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5">
+          <svg viewBox="0 0 24 24" fill="currentColor" className="w-[15px] h-[15px] md:w-5 md:h-5">
             <path d="M12.525.02c1.31-.02 2.61-.01 3.91-.02.08 1.53.63 3.02 1.62 4.2 1.23 1.34 2.95 2.1 4.75 2.23-.01 1.29.01 2.58-.02 3.87-1.42-.02-2.81-.49-3.95-1.34-1.02-.79-1.75-1.92-2.09-3.17-.03.77-.02 1.54-.02 2.31v10.15c-.07 1.83-.81 3.61-2.17 4.79-1.57 1.4-3.83 2.06-5.96 1.74-2.31-.32-4.42-1.91-5.18-4.17-.89-2.58-.1-5.59 1.95-7.44 1.47-1.35 3.52-1.96 5.51-1.63.02 1.32.01 2.65.02 3.97-1.12-.22-2.33.09-3.13.88-.84.8-.97 2.1-.33 3.07.64.99 1.96 1.41 3.05 1.01 1.02-.34 1.74-1.37 1.76-2.45.02-4.23.01-8.47.01-12.7z"/>
           </svg>
         </a>
