@@ -76,6 +76,7 @@ export default function Panel({
         // Animate panel width to active state
         gsap.to(panel, {
           width: "76%",
+          borderRadius: "0px",
           duration: isInitial ? 0 : 1.0,
           ease: "power4.out",
         });
@@ -97,6 +98,7 @@ export default function Panel({
         // Animate panel width to inactive state
         gsap.to(panel, {
           width: "6%",
+          borderRadius: "0px",
           duration: isInitial ? 0 : 1.0,
           ease: "power4.out",
         });
@@ -119,8 +121,9 @@ export default function Panel({
       // Mobile/Tablet Vertical Accordion
       if (isActive) {
         gsap.to(panel, {
-          height: "calc(100vh - 240px)",
+          height: "calc(100vh - 280px)",
           minHeight: "450px",
+          borderRadius: "0px",
           duration: isInitial ? 0 : 0.8,
           ease: "power4.out",
         });
@@ -139,6 +142,7 @@ export default function Panel({
         gsap.to(panel, {
           height: "60px",
           minHeight: "60px",
+          borderRadius: "50px",
           duration: isInitial ? 0 : 0.8,
           ease: "power4.out",
         });
@@ -162,14 +166,14 @@ export default function Panel({
     <div
       id={id}
       ref={panelRef}
-      className={`relative overflow-hidden border-b lg:border-b-0 ${
+      className={`relative overflow-hidden border-b-0 lg:border-b ${
         isActive ? "" : "lg:border-r"
       } border-white/10 bg-background transition-colors duration-300 ${
         isActive ? "z-10" : "z-0"
       } ${
         isActive
-          ? "w-full h-[calc(100vh-240px)] min-h-[450px] lg:w-[76%] lg:h-full"
-          : "w-full h-[60px] min-h-[60px] lg:w-[6%] lg:h-full"
+          ? "w-full h-[calc(100vh-280px)] min-h-[450px] lg:w-[76%] lg:h-full"
+          : "w-full h-[60px] min-h-[60px] rounded-[50px] bg-[#FBAB3C] lg:rounded-none lg:bg-background lg:w-[6%] lg:h-full"
       } ${
         !isActive && !hasEntered
           ? "opacity-0 translate-y-full lg:translate-y-0 lg:translate-x-full"
@@ -178,9 +182,13 @@ export default function Panel({
     >
       {/* Background Image Preview (fades out when active) */}
       <div
-        className={`absolute inset-0 bg-neutral-dark transition-opacity duration-700 pointer-events-none ${
+        className={`absolute transition-all duration-700 pointer-events-none ${
           isActive ? "opacity-0" : "opacity-100"
-        }`}
+        } ${
+          isActive
+            ? "inset-0 rounded-none"
+            : "inset-[2px] rounded-[50px] overflow-hidden lg:inset-0 lg:rounded-none"
+        } bg-neutral-dark`}
       >
         <Image
           src="/textured-overlay.jpg"
