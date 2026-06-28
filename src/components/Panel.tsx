@@ -121,7 +121,7 @@ export default function Panel({
       // Mobile/Tablet Vertical Accordion
       if (isActive) {
         gsap.to(panel, {
-          height: "calc(100vh - 280px)",
+          height: "calc(100vh - 285px)",
           minHeight: "450px",
           borderRadius: "0px",
           duration: isInitial ? 0 : 0.8,
@@ -170,7 +170,7 @@ export default function Panel({
         isActive ? "z-10" : "z-0"
       } ${
         isActive
-          ? "w-full h-[calc(100vh-280px)] min-h-[450px] border-none lg:border-none lg:w-[76%] lg:h-full"
+          ? "w-full h-[calc(100vh-285px)] min-h-[450px] border-none lg:border-none lg:w-[76%] lg:h-full"
           : "w-full h-[60px] min-h-[60px] rounded-[50px] bg-[#FBAB3C] border-[3px] border-[#FBAB3C] lg:border-none lg:border-r lg:border-white/10 lg:rounded-none lg:bg-background lg:w-[6%] lg:h-full"
       } ${
         !isActive && !hasEntered

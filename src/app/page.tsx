@@ -149,7 +149,7 @@ export default function Page() {
       className="flex flex-col h-screen w-screen overflow-hidden bg-background text-foreground"
     >
       {/* Panels Container */}
-      <main className="flex flex-col lg:flex-row h-full w-full gap-[10px] lg:gap-0 pb-[10px] lg:pb-0">
+      <main className="flex flex-col lg:flex-row h-full w-full gap-[10px] lg:gap-0 pb-[15px] lg:pb-0">
         {PANELS.map((panel, idx) => (
           <Panel
             key={panel.id}
