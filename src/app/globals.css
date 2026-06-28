@@ -12,7 +12,7 @@
 }
 
 
-@theme inline {
+@theme {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-accent: var(--accent);
@@ -107,7 +107,7 @@ html, body {
 }
 .custom-scrollbar {
   scrollbar-width: thin;
-  scrollbar-color: #FBAB3C rgba(255, 255, 255, 0.05);
+  scrollbar-color: #FBAB3C transparent;
 }
 
 @keyframes button-glow-pulse {
