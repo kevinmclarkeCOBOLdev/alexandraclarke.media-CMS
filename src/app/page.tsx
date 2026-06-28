@@ -166,7 +166,7 @@ export default function Page() {
           </Panel>
         ))}
       </main>
-      {/* Mobile Landscape Rotation Block Overlay */}
+      {/* Mobile Landscape & Tablet Portrait Rotation Block Overlay */}
       <div className="orientation-lock-overlay">
         <svg className="w-16 h-16 text-[#FBAB3C] animate-rotate-phone mb-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
           <rect x="5" y="2" width="14" height="20" rx="2" ry="2" />
@@ -175,8 +175,11 @@ export default function Page() {
         <h3 className="font-editorial text-2xl font-bold tracking-widest text-[#FBAB3C] uppercase mb-2">
           Please Rotate Your Device
         </h3>
-        <p className="font-sans text-xs text-neutral-grey max-w-xs leading-relaxed">
+        <p className="mobile-text font-sans text-xs text-neutral-grey max-w-xs leading-relaxed">
           This portfolio is optimized for portrait mode on mobile viewports. Please turn your device upright.
+        </p>
+        <p className="tablet-text font-sans text-xs text-neutral-grey max-w-xs leading-relaxed">
+          This portfolio is optimized for landscape mode on tablet viewports. Please turn your device horizontally.
         </p>
       </div>
     </div>

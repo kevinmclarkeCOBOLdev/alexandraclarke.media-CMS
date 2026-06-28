@@ -185,11 +185,20 @@ html, body {
   pointer-events: none;
 }
 
-/* Mobile Landscape Rotation Lock Overlay */
+/* Mobile Landscape & Tablet Portrait Rotation Lock Overlay */
 .orientation-lock-overlay {
   display: none;
 }
 
+.orientation-lock-overlay .mobile-text {
+  display: none;
+}
+
+.orientation-lock-overlay .tablet-text {
+  display: none;
+}
+
+/* 1. Mobile Phone in Landscape Mode */
 @media (max-height: 500px) and (orientation: landscape) {
   .orientation-lock-overlay {
     display: flex;
@@ -203,17 +212,50 @@ html, body {
     padding: 24px;
     text-align: center;
   }
+  .orientation-lock-overlay .mobile-text {
+    display: block;
+  }
+  .orientation-lock-overlay .animate-rotate-phone {
+    animation: rotatePhoneMobile 2.5s ease-in-out infinite;
+  }
 }
 
-@keyframes rotatePhone {
+/* 2. Tablet in Portrait Mode */
+@media (min-width: 500px) and (max-width: 1024px) and (orientation: portrait) {
+  .orientation-lock-overlay {
+    display: flex;
+    position: fixed;
+    inset: 0;
+    z-index: 99999;
+    background-color: #0A0A0A;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+    text-align: center;
+  }
+  .orientation-lock-overlay .tablet-text {
+    display: block;
+  }
+  .orientation-lock-overlay .animate-rotate-phone {
+    animation: rotatePhoneTablet 2.5s ease-in-out infinite;
+  }
+}
+
+@keyframes rotatePhoneMobile {
+  0%, 100% {
+    transform: rotate(-90deg);
+  }
+  50% {
+    transform: rotate(0deg);
+  }
+}
+
+@keyframes rotatePhoneTablet {
   0%, 100% {
     transform: rotate(0deg);
   }
   50% {
-    transform: rotate(-90deg);
+    transform: rotate(90deg);
   }
-}
-
-.animate-rotate-phone {
-  animation: rotatePhone 2.5s ease-in-out infinite;
 }
