@@ -266,7 +266,7 @@ export default function ContactPanel() {
         <div className="w-full max-w-2xl flex flex-col gap-8">
           <div>
             <div className="border-b border-white/10 pb-6 mb-6">
-              <h3 className="font-editorial text-5xl md:text-6xl font-bold mt-1 stroked-title">
+              <h3 className="font-editorial text-[24px] md:text-6xl font-bold mt-1 stroked-title">
                 CONTACT LEXI
               </h3>
             </div>
@@ -297,7 +297,7 @@ export default function ContactPanel() {
             </div>
 
             {/* Location */}
-            <div className="flex items-center gap-3 p-4 bg-neutral-dark rounded border border-white/5">
+            <div className="hidden md:flex items-center gap-3 p-4 bg-neutral-dark rounded border border-white/5">
               <div className="flex h-10 w-10 items-center justify-center rounded bg-[#FBAB3C]/10 text-[#FBAB3C]">
                 <MapPin className="h-5 w-5" />
               </div>
