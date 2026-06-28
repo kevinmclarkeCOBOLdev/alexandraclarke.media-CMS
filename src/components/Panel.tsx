@@ -168,12 +168,12 @@ export default function Panel({
       ref={panelRef}
       className={`relative overflow-hidden border-b-0 lg:border-b ${
         isActive ? "" : "lg:border-r"
-      } border-white/10 bg-background transition-colors duration-300 ${
+      } lg:border-white/10 bg-background transition-colors duration-300 ${
         isActive ? "z-10" : "z-0"
       } ${
         isActive
           ? "w-full h-[calc(100vh-280px)] min-h-[450px] lg:w-[76%] lg:h-full"
-          : "w-full h-[60px] min-h-[60px] rounded-[50px] bg-[#FBAB3C] lg:rounded-none lg:bg-background lg:w-[6%] lg:h-full"
+          : "w-full h-[60px] min-h-[60px] rounded-[50px] bg-[#FBAB3C] border-[3px] border-[#FBAB3C] lg:rounded-none lg:bg-background lg:w-[6%] lg:h-full lg:border-none"
       } ${
         !isActive && !hasEntered
           ? "opacity-0 translate-y-full lg:translate-y-0 lg:translate-x-full"
@@ -187,7 +187,7 @@ export default function Panel({
         } ${
           isActive
             ? "inset-0 rounded-none"
-            : "inset-[2px] rounded-[50px] overflow-hidden lg:inset-0 lg:rounded-none"
+            : "inset-y-0 left-[50px] right-[50px] lg:inset-0 lg:rounded-none"
         } bg-neutral-dark`}
       >
         <Image
