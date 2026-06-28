@@ -1,11 +1,7 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import Image from "next/image";
-
-interface YTPlayer {
-  destroy: () => void;
-}
 
 export default function HomePanel() {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -15,6 +11,25 @@ export default function HomePanel() {
   const [shouldPlayVideo, setShouldPlayVideo] = useState(false);
   const [isVideoPlaying, setIsVideoPlaying] = useState(false);
   const [showFallback, setShowFallback] = useState(false);
+  const [hasPlayed, setHasPlayed] = useState(false);
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const playerRef = useRef<any>(null);
+
+  const togglePlayPause = () => {
+    if (!playerRef.current) return;
+    try {
+      const state = playerRef.current.getPlayerState();
+      // @ts-expect-error window.YT is not typed
+      if (state === window.YT.PlayerState.PLAYING) {
+        playerRef.current.pauseVideo();
+      } else {
+        playerRef.current.playVideo();
+      }
+    } catch (err) {
+      console.error("Error toggling play/pause:", err);
+    }
+  };
 
   useEffect(() => {
     if (typeof window !== "undefined") {
@@ -44,25 +59,24 @@ export default function HomePanel() {
 
 
   useEffect(() => {
-    if (shouldPlayVideo && !isVideoPlaying) {
+    if (shouldPlayVideo && !isVideoPlaying && !hasPlayed) {
       const timer = setTimeout(() => {
         setShowFallback(true);
       }, 5000);
       return () => clearTimeout(timer);
     }
-  }, [shouldPlayVideo, isVideoPlaying]);
+  }, [shouldPlayVideo, isVideoPlaying, hasPlayed]);
 
   useEffect(() => {
     if (!shouldPlayVideo) return;
 
-    let player: YTPlayer | null = null;
     let isDestroyed = false;
 
     const initializePlayer = () => {
       if (isDestroyed) return;
       try {
         // @ts-expect-error window.YT is not typed
-        player = new window.YT.Player("bg-video-iframe", {
+        playerRef.current = new window.YT.Player("bg-video-iframe", {
           events: {
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
             onReady: (event: any) => {
@@ -88,10 +102,12 @@ export default function HomePanel() {
               // @ts-expect-error window.YT is not typed
               if (event.data === window.YT.PlayerState.ENDED) {
                 setIsVideoEnded(true);
+                setIsVideoPlaying(false);
               }
               // @ts-expect-error window.YT is not typed
               if (event.data === window.YT.PlayerState.PLAYING) {
                 setIsVideoPlaying(true);
+                setHasPlayed(true);
                 try {
                   event.target.unloadModule("captions");
                   event.target.unloadModule("cc");
@@ -103,6 +119,10 @@ export default function HomePanel() {
                 } catch {
                   // Ignore
                 }
+              }
+              // @ts-expect-error window.YT is not typed
+              if (event.data === window.YT.PlayerState.PAUSED) {
+                setIsVideoPlaying(false);
               }
             },
           },
@@ -141,9 +161,10 @@ export default function HomePanel() {
 
     return () => {
       isDestroyed = true;
-      if (player && typeof player.destroy === "function") {
+      if (playerRef.current && typeof playerRef.current.destroy === "function") {
         try {
-          player.destroy();
+          playerRef.current.destroy();
+          playerRef.current = null;
         } catch {
           // ignore destroy errors
         }
@@ -158,7 +179,7 @@ export default function HomePanel() {
         {shouldPlayVideo && (
           <iframe
             id="bg-video-iframe"
-            className={`absolute top-1/2 left-1/2 w-[177.78vh] min-w-full h-[56.25vw] min-h-full -translate-x-1/2 -translate-y-1/2 pointer-events-auto transition-opacity duration-1000 ${
+            className={`absolute top-1/2 left-1/2 w-[177.78vh] min-w-full h-[56.25vw] min-h-full -translate-x-1/2 -translate-y-1/2 pointer-events-none transition-opacity duration-1000 ${
               isVideoEnded ? "opacity-0" : "opacity-100"
             }`}
             src="https://www.youtube.com/embed/BoUrWXaQUQQ?autoplay=1&mute=1&controls=0&rel=0&playsinline=1&enablejsapi=1&cc_load_policy=3&iv_load_policy=3"
@@ -192,6 +213,15 @@ export default function HomePanel() {
         />
         {/* Dark overlay to ensure text readability */}
         <div className="absolute inset-0 bg-black/20 pointer-events-none z-[2]" />
+
+        {/* Hotspot overlay for play/pause toggling */}
+        {!isVideoEnded && (
+          <div 
+            onClick={togglePlayPause}
+            className="absolute inset-0 z-[3] cursor-pointer pointer-events-auto"
+            aria-label="Toggle background video play/pause"
+          />
+        )}
       </div>
 
       {/* Top Header */}
