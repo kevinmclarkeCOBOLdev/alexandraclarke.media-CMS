@@ -218,7 +218,7 @@ export default function ContactPanel() {
       </div>
 
       {/* Floating Film-Related Icons (Bubble Animation on the right half) */}
-      <div className="absolute inset-0 z-0 overflow-hidden pointer-events-none">
+      <div className="hidden md:block absolute inset-0 z-0 overflow-hidden pointer-events-none">
         <style dangerouslySetInnerHTML={{ __html: `
           @keyframes floatUp {
             0% {
@@ -312,7 +312,7 @@ export default function ContactPanel() {
             </div>
 
             {/* Time Zone details (Clock) */}
-            <div className="p-4 bg-neutral-dark rounded border border-white/5 flex flex-col justify-center">
+            <div className="hidden md:flex p-4 bg-neutral-dark rounded border border-white/5 flex-col justify-center">
               <p className="font-sans text-[9px] text-neutral-grey uppercase tracking-widest">
                 Local Studio Time (Prague)
               </p>
@@ -433,7 +433,7 @@ export default function ContactPanel() {
       </div>
 
       {/* Social Icons (bottom left - persistent and non-scrolling!) */}
-      <div className="absolute bottom-6 left-6 md:bottom-12 md:left-12 lg:bottom-16 lg:left-16 z-20 flex flex-col gap-3">
+      <div className="hidden md:flex absolute bottom-6 left-6 md:bottom-12 md:left-12 lg:bottom-16 lg:left-16 z-20 flex-col gap-3">
         {/* Instagram */}
         <a
           href="https://www.instagram.com/alexandra.lexi.clarke/"

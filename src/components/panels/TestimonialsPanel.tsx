@@ -47,21 +47,36 @@ export default function TestimonialsPanel() {
         <div className="absolute inset-0 bg-black/75" />
       </div>
       {/* Scrollable Content Container (added padding bottom pb-28 md:pb-36 lg:pb-40 for clearance) */}
-      <div className="relative z-10 flex h-full w-full flex-col justify-between overflow-y-auto no-scrollbar p-6 pb-28 md:p-12 md:pb-36 lg:p-16 lg:pb-40">
+      <div className="relative z-10 flex h-full w-full flex-col justify-start md:justify-between overflow-y-auto no-scrollbar p-6 pb-28 md:p-12 md:pb-36 lg:p-16 lg:pb-40">
         {/* Giant Quote Mark (66% of screen height, treated as normal page content) */}
-        <div className="absolute -right-16 top-1/2 -translate-y-1/2 pointer-events-none select-none z-10">
+        <div className="hidden md:block absolute -right-16 top-1/2 -translate-y-1/2 pointer-events-none select-none z-10">
           <Quote className="h-[66vh] w-auto transform rotate-180" style={{ color: "#FBAB3C" }} />
         </div>
 
         {/* Top Header */}
-        <div className="border-b border-white/10 pb-6">
-          <h3 className="font-editorial text-5xl md:text-6xl font-bold mt-1 stroked-title">
+        <div className="border-b-0 md:border-b border-white/10 pb-0 md:pb-6">
+          <h3 className="font-editorial text-[24px] md:text-6xl font-bold mt-1 stroked-title">
             TESTIMONIALS
           </h3>
         </div>
 
+        {/* Mobile Testimonial Quote */}
+        <div className="block md:hidden mt-[10px]">
+          <p className="font-sans text-[12px] leading-relaxed text-foreground tracking-wide whitespace-pre-line">
+            &ldquo;{testimonials[activeIndex].quote}&rdquo;
+          </p>
+          <div className="mt-[5px]">
+            <h4 className="font-sans text-[11px] font-bold text-foreground">
+              {testimonials[activeIndex].author}
+            </h4>
+            <p className="font-sans text-[9px] font-semibold uppercase tracking-widest mt-0.5" style={{ color: "#FBAB3C" }}>
+              {testimonials[activeIndex].role} &bull; {testimonials[activeIndex].company}
+            </p>
+          </div>
+        </div>
+
         {/* Center Slideshow */}
-        <div className="my-8 relative flex-1 flex flex-col justify-center max-w-4xl">
+        <div className="hidden md:flex my-8 relative flex-1 flex-col justify-center max-w-4xl">
           <div className="relative z-10 transition-all duration-500 -top-[110px]">
             <Quote className="h-8 w-8 mb-4" style={{ color: "#FBAB3C" }} />
             <p className="font-sans text-[16px] leading-relaxed text-foreground tracking-wide whitespace-pre-line">
@@ -102,7 +117,7 @@ export default function TestimonialsPanel() {
       </div>
 
       {/* Social Icons (bottom left - persistent and non-scrolling!) */}
-      <div className="absolute bottom-6 left-6 md:bottom-12 md:left-12 lg:bottom-16 lg:left-16 z-20 flex flex-col gap-3">
+      <div className="hidden md:flex absolute bottom-6 left-6 md:bottom-12 md:left-12 lg:bottom-16 lg:left-16 z-20 flex-col gap-3">
         {/* Instagram */}
         <a
           href="https://www.instagram.com/alexandra.lexi.clarke/"
