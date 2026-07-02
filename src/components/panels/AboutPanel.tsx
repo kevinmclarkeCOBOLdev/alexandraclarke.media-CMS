@@ -85,7 +85,7 @@ export default function AboutPanel() {
               Download my CV
             </h4>
             <a
-              href="/Alexandra-Clarke-CV-English-v1.pdf"
+              href="/Alexandra-Clarke-CV-English-v2.pdf"
               target="_blank"
               rel="noopener noreferrer"
               data-cursor="pointer"
