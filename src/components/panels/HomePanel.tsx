@@ -12,6 +12,26 @@ export default function HomePanel() {
   const [isVideoPlaying, setIsVideoPlaying] = useState(false);
   const [showFallback, setShowFallback] = useState(false);
   const [hasPlayed, setHasPlayed] = useState(false);
+  const [bgVideoId, setBgVideoId] = useState("BoUrWXaQUQQ");
+  const [showreelVideoId, setShowreelVideoId] = useState("BoUrWXaQUQQ");
+  const [copyrightYear, setCopyrightYear] = useState("2026");
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const savedVideoId = localStorage.getItem("home_bg_video_id");
+      if (savedVideoId) {
+        setBgVideoId(savedVideoId);
+      }
+      const savedShowreelId = localStorage.getItem("home_showreel_video_id");
+      if (savedShowreelId) {
+        setShowreelVideoId(savedShowreelId);
+      }
+      const savedYear = localStorage.getItem("copyright_year");
+      if (savedYear) {
+        setCopyrightYear(savedYear);
+      }
+    }
+  }, []);
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const playerRef = useRef<any>(null);
@@ -170,19 +190,19 @@ export default function HomePanel() {
         }
       }
     };
-  }, [shouldPlayVideo]);
+  }, [shouldPlayVideo, bgVideoId]);
 
   return (
     <div className="relative flex h-full w-full flex-col justify-between p-6 md:p-12 lg:p-16 overflow-hidden">
       {/* Background Video Player */}
       <div className="absolute inset-0 overflow-hidden z-0 bg-black pointer-events-auto">
-        {shouldPlayVideo && (
+         {shouldPlayVideo && (
           <iframe
             id="bg-video-iframe"
             className={`absolute top-1/2 left-1/2 w-[177.78vh] min-w-full h-[56.25vw] min-h-full -translate-x-1/2 -translate-y-1/2 pointer-events-none transition-opacity duration-1000 ${
               isVideoEnded ? "opacity-0" : "opacity-100"
             }`}
-            src="https://www.youtube.com/embed/BoUrWXaQUQQ?autoplay=1&mute=1&controls=0&rel=0&playsinline=1&enablejsapi=1&cc_load_policy=3&iv_load_policy=3"
+            src={`https://www.youtube.com/embed/${bgVideoId}?autoplay=1&mute=1&controls=0&rel=0&playsinline=1&enablejsapi=1&cc_load_policy=3&iv_load_policy=3`}
             frameBorder="0"
             allow="autoplay; encrypted-media"
             title="Background Showreel"
@@ -331,7 +351,7 @@ export default function HomePanel() {
           data-cursor="pointer"
           className="font-sans text-[10px] md:text-xs tracking-[1.5px] uppercase text-[#FBAB3C]/60 hover:text-[#FBAB3C] transition-all duration-300 font-medium"
         >
-          © 2026 | Powered by Atypikal Studio
+          © {copyrightYear} | Powered by Atypikal Studio
         </a>
       </div>
 
@@ -354,7 +374,7 @@ export default function HomePanel() {
             {/* Video Iframe (Unmuted showreel playback) */}
             <iframe
               className="w-full h-full"
-              src="https://www.youtube.com/embed/BoUrWXaQUQQ?autoplay=1&controls=1&rel=0&playsinline=1&cc_load_policy=3&iv_load_policy=3"
+              src={`https://www.youtube.com/embed/${showreelVideoId}?autoplay=1&controls=1&rel=0&playsinline=1&cc_load_policy=3&iv_load_policy=3`}
               frameBorder="0"
               allow="autoplay; encrypted-media"
               allowFullScreen

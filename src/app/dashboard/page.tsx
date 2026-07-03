@@ -7,6 +7,44 @@ import { LogOut, ArrowRight } from "lucide-react";
 export default function DashboardPage() {
   const router = useRouter();
   const [isMounted, setIsMounted] = useState(false);
+  const [isEditHomeOpen, setIsEditHomeOpen] = useState(false);
+  const [videoUrlInput, setVideoUrlInput] = useState("");
+  const [showreelUrlInput, setShowreelUrlInput] = useState("");
+  const [yearInput, setYearInput] = useState("");
+
+  useEffect(() => {
+    if (isEditHomeOpen && typeof window !== "undefined") {
+      const savedUrl = localStorage.getItem("home_bg_video_url") || "https://www.youtube.com/watch?v=BoUrWXaQUQQ";
+      const savedShowreelUrl = localStorage.getItem("home_showreel_video_url") || "https://www.youtube.com/watch?v=BoUrWXaQUQQ";
+      const savedYear = localStorage.getItem("copyright_year") || "2026";
+      setVideoUrlInput(savedUrl);
+      setShowreelUrlInput(savedShowreelUrl);
+      setYearInput(savedYear);
+    }
+  }, [isEditHomeOpen]);
+
+  const extractYouTubeId = (url: string): string => {
+    if (!url) return "BoUrWXaQUQQ";
+    if (url.length === 11 && !url.includes("/") && !url.includes(".")) {
+      return url;
+    }
+    const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
+    const match = url.match(regExp);
+    return (match && match[2].length === 11) ? match[2] : "BoUrWXaQUQQ";
+  };
+
+  const handleSave = () => {
+    if (typeof window !== "undefined") {
+      const videoId = extractYouTubeId(videoUrlInput);
+      const showreelId = extractYouTubeId(showreelUrlInput);
+      localStorage.setItem("home_bg_video_url", videoUrlInput);
+      localStorage.setItem("home_bg_video_id", videoId);
+      localStorage.setItem("home_showreel_video_url", showreelUrlInput);
+      localStorage.setItem("home_showreel_video_id", showreelId);
+      localStorage.setItem("copyright_year", yearInput);
+    }
+    setIsEditHomeOpen(false);
+  };
 
   useEffect(() => {
     setIsMounted(true);
@@ -97,6 +135,12 @@ export default function DashboardPage() {
               <a
                 key={panel}
                 href="#"
+                onClick={(e) => {
+                  e.preventDefault();
+                  if (panel === "Home") {
+                    setIsEditHomeOpen(true);
+                  }
+                }}
                 className="group relative flex items-center justify-between w-full h-[50px] bg-[#0A0A0A] border border-[#FBAB3C]/15 rounded-lg px-6 font-sans text-sm font-semibold uppercase tracking-[1.5px] text-neutral-grey hover:text-[#FBAB3C] hover:border-[#FBAB3C]/40 transition-all duration-300"
               >
                 <span>Edit {panel} Panel</span>
@@ -119,6 +163,106 @@ export default function DashboardPage() {
           </span>
         </button>
       </div>
+      {/* Edit Home Panel Modal */}
+      {isEditHomeOpen && (
+        <div className="fixed inset-0 bg-black/85 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <div 
+            className="w-full max-w-[500px] bg-[#151515] border border-[#FBAB3C]/20 rounded-2xl shadow-[0_20px_50px_rgba(0,0,0,0.8)] relative"
+            style={{ padding: "10px" }}
+          >
+            <h3 
+              className="font-editorial text-2xl md:text-3xl font-bold tracking-wider text-[#FBAB3C] uppercase text-center"
+              style={{ marginBottom: "10px" }}
+            >
+              EDIT HOME PANEL
+            </h3>
+            
+            <div>
+              {/* Field 1 */}
+              <div>
+                <label 
+                  className="font-sans text-[11px] font-bold text-neutral-grey uppercase tracking-widest text-left"
+                  style={{ marginBottom: "10px", display: "block" }}
+                >
+                  Change the background video with another YouTube video
+                </label>
+                <input
+                  type="text"
+                  value={videoUrlInput}
+                  onChange={(e) => setVideoUrlInput(e.target.value)}
+                  className="w-full bg-[#1A1A1A] border border-white/10 rounded px-4 py-3 text-sm text-foreground placeholder-neutral-500 focus:outline-none focus:border-[#FBAB3C] transition-colors"
+                  placeholder="https://www.youtube.com/watch?v=..."
+                />
+              </div>
+
+              {/* Spacer 10px */}
+              <div style={{ height: "10px" }} />
+
+              {/* Field 2 */}
+              <div>
+                <label 
+                  className="font-sans text-[11px] font-bold text-neutral-grey uppercase tracking-widest text-left"
+                  style={{ marginBottom: "10px", display: "block" }}
+                >
+                  Change the showreel video with another YouTube video
+                </label>
+                <input
+                  type="text"
+                  value={showreelUrlInput}
+                  onChange={(e) => setShowreelUrlInput(e.target.value)}
+                  className="w-full bg-[#1A1A1A] border border-white/10 rounded px-4 py-3 text-sm text-foreground placeholder-neutral-500 focus:outline-none focus:border-[#FBAB3C] transition-colors"
+                  placeholder="https://www.youtube.com/watch?v=..."
+                />
+              </div>
+
+              {/* Spacer 10px */}
+              <div style={{ height: "10px" }} />
+
+              {/* Field 3 */}
+              <div>
+                <label 
+                  className="font-sans text-[11px] font-bold text-neutral-grey uppercase tracking-widest text-left"
+                  style={{ marginBottom: "10px", display: "block" }}
+                >
+                  Year
+                </label>
+                <input
+                  type="text"
+                  value={yearInput}
+                  onChange={(e) => setYearInput(e.target.value)}
+                  className="w-full bg-[#1A1A1A] border border-white/10 rounded px-4 py-3 text-sm text-foreground placeholder-neutral-500 focus:outline-none focus:border-[#FBAB3C] transition-colors"
+                  placeholder="2026"
+                />
+              </div>
+            </div>
+
+            {/* Spacer 10px */}
+            <div style={{ height: "10px" }} />
+
+            <div 
+              className="flex justify-end"
+              style={{ gap: "10px" }}
+            >
+              <button
+                type="button"
+                onClick={() => setIsEditHomeOpen(false)}
+                className="border border-white/10 rounded-[50px] font-sans text-xs md:text-sm font-semibold uppercase tracking-wider text-white hover:border-[#FBAB3C] transition-colors cursor-pointer"
+                style={{ padding: "10px" }}
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={handleSave}
+                className="bg-[#FBAB3C] hover:bg-[#E59A2B] text-black rounded-[50px] font-sans text-xs md:text-sm font-semibold uppercase tracking-wider transition-colors cursor-pointer"
+                style={{ padding: "10px" }}
+              >
+                Save Changes
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
