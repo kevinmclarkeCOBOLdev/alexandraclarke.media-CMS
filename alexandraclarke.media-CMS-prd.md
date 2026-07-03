@@ -1,4 +1,4 @@
-# alexandraclarke.media
+# alexandraclarke.media-CMS
 ## Product Requirements Document (PRD)
 
 Version: 1.0
@@ -9,7 +9,7 @@ Project Type: Personal Creative Portfolio Website
 
 # 1. Executive Summary
 
-alexandraclarke.media is a premium personal creative portfolio website designed to showcase cinematic storytelling, photography, filmmaking, and creative direction through an immersive interactive experience.
+alexandraclarke.media-CMS is a premium personal creative portfolio website designed to showcase cinematic storytelling, photography, filmmaking, and creative direction through an immersive interactive experience.
 
 The website's core interaction model consists of five horizontally arranged panels that dynamically expand and collapse. Each panel represents a primary website section and functions as an independent destination within a unified experience.
 
@@ -441,4 +441,4 @@ Secondary KPIs:
 
 # Final Vision
 
-alexandraclarke.media should feel like a premium digital exhibition that combines cinematic storytelling, editorial design, immersive motion, and world-class interaction design into a memorable personal portfolio experience.
+alexandraclarke.media-CMS should feel like a premium digital exhibition that combines cinematic storytelling, editorial design, immersive motion, and world-class interaction design into a memorable personal portfolio experience.

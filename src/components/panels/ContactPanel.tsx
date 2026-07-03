@@ -211,7 +211,7 @@ export default function ContactPanel() {
           priority
         />
         {/* Black overlay with gradient from 100% opacity on left to 66% on right */}
-        <div 
+        <div
           className="absolute inset-0"
           style={{ background: 'linear-gradient(to right, rgba(0, 0, 0, 1) 0%, rgba(0, 0, 0, 1) 50%, rgba(0, 0, 0, 0.66) 100%)' }}
         />
@@ -219,7 +219,8 @@ export default function ContactPanel() {
 
       {/* Floating Film-Related Icons (Bubble Animation on the right half) */}
       <div className="hidden md:block absolute inset-0 z-0 overflow-hidden pointer-events-none">
-        <style dangerouslySetInnerHTML={{ __html: `
+        <style dangerouslySetInnerHTML={{
+          __html: `
           @keyframes floatUp {
             0% {
               transform: translateY(100px) translateX(0) scale(0.6) rotate(0deg);
