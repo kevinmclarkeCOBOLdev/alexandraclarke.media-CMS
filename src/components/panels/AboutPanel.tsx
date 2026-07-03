@@ -1,8 +1,46 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import Image from "next/image";
 
 export default function AboutPanel() {
+  const [biography, setBiography] = useState(
+    "A dynamic filmmaker with over 7 years of filmmaking experience, adept at creating a wide range of video content (from 3D animation to interviews & social media content). Possessing strong problem-solving skills and a naturally outgoing personality, I communicate effectively with a diverse clientele for projects.\n\nI am committed to maintaining high standards of quality and efficiency in all of my projects."
+  );
+
+  const [experience, setExperience] = useState([
+    {
+      company: "The Mad & Merry Men Theatre Company, Prague",
+      period: "2024 – 2026",
+      role: "Social Media Manager & Photographer",
+    },
+    {
+      company: "Sad Man’s Tongue Restaurant, Prague",
+      period: "2023 – 2024",
+      role: "Host & Waitress",
+    },
+  ]);
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const savedBio = localStorage.getItem("about_biography");
+      if (savedBio) {
+        setBiography(savedBio);
+      }
+      const savedExp = localStorage.getItem("about_experience");
+      if (savedExp) {
+        try {
+          const parsed = JSON.parse(savedExp);
+          if (Array.isArray(parsed)) {
+            setExperience(parsed);
+          }
+        } catch (e) {
+          console.error("Error parsing experience from localStorage", e);
+        }
+      }
+    }
+  }, []);
+
   const education = [
     {
       institution: "TEESSIDE UNIVERSITY in Prague",
@@ -21,18 +59,7 @@ export default function AboutPanel() {
     },
   ];
 
-  const experience = [
-    {
-      company: "The Mad & Merry Men Theatre Company, Prague",
-      period: "2024 – 2026",
-      role: "Social Media Manager & Photographer",
-    },
-    {
-      company: "Sad Man’s Tongue Restaurant, Prague",
-      period: "2023 – 2024",
-      role: "Host & Waitress",
-    },
-  ];
+
 
   return (
     <div className="relative w-full h-full overflow-hidden">
@@ -113,12 +140,11 @@ export default function AboutPanel() {
             <h3 className="hidden md:block font-editorial text-5xl md:text-6xl font-bold mt-1 stroked-title uppercase">
               Biography
             </h3>
-            <p className="font-sans text-[14px] text-white mt-4 leading-relaxed tracking-wide">
-              A dynamic filmmaker with over 7 years of filmmaking experience, adept at creating a wide range of video content (from 3D animation to interviews &amp; social media content). Possessing strong problem-solving skills and a naturally outgoing personality, I communicate effectively with a diverse clientele for projects.
-            </p>
-            <p>&nbsp;</p>
-            <p className="font-sans text-[14px] text-white mt-3 leading-relaxed tracking-wide">
-              I am committed to maintaining high standards of quality and efficiency in all of my projects.
+            <p 
+              className="font-sans text-[14px] text-white mt-4 leading-relaxed tracking-wide"
+              style={{ whiteSpace: "pre-line" }}
+            >
+              {biography}
             </p>
           </div>
 

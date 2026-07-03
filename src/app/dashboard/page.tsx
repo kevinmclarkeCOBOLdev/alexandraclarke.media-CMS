@@ -8,9 +8,12 @@ export default function DashboardPage() {
   const router = useRouter();
   const [isMounted, setIsMounted] = useState(false);
   const [isEditHomeOpen, setIsEditHomeOpen] = useState(false);
+  const [isEditAboutOpen, setIsEditAboutOpen] = useState(false);
   const [videoUrlInput, setVideoUrlInput] = useState("");
   const [showreelUrlInput, setShowreelUrlInput] = useState("");
   const [yearInput, setYearInput] = useState("");
+  const [biographyInput, setBiographyInput] = useState("");
+  const [experienceInput, setExperienceInput] = useState("");
 
   useEffect(() => {
     if (isEditHomeOpen && typeof window !== "undefined") {
@@ -22,6 +25,31 @@ export default function DashboardPage() {
       setYearInput(savedYear);
     }
   }, [isEditHomeOpen]);
+
+  useEffect(() => {
+    if (isEditAboutOpen && typeof window !== "undefined") {
+      const savedBio = localStorage.getItem("about_biography") || 
+        "A dynamic filmmaker with over 7 years of filmmaking experience, adept at creating a wide range of video content (from 3D animation to interviews & social media content). Possessing strong problem-solving skills and a naturally outgoing personality, I communicate effectively with a diverse clientele for projects.\n\nI am committed to maintaining high standards of quality and efficiency in all of my projects.";
+      setBiographyInput(savedBio);
+
+      const savedExp = localStorage.getItem("about_experience");
+      if (savedExp) {
+        try {
+          const parsed = JSON.parse(savedExp);
+          if (Array.isArray(parsed)) {
+            const formatted = parsed.map((exp: { company?: string; period?: string; role?: string }) => `${exp.company || ""} | ${exp.period || ""} | ${exp.role || ""}`).join("\n");
+            setExperienceInput(formatted);
+          } else {
+            setExperienceInput("The Mad & Merry Men Theatre Company, Prague | 2024 – 2026 | Social Media Manager & Photographer\nSad Man’s Tongue Restaurant, Prague | 2023 – 2024 | Host & Waitress");
+          }
+        } catch {
+          setExperienceInput("The Mad & Merry Men Theatre Company, Prague | 2024 – 2026 | Social Media Manager & Photographer\nSad Man’s Tongue Restaurant, Prague | 2023 – 2024 | Host & Waitress");
+        }
+      } else {
+        setExperienceInput("The Mad & Merry Men Theatre Company, Prague | 2024 – 2026 | Social Media Manager & Photographer\nSad Man’s Tongue Restaurant, Prague | 2023 – 2024 | Host & Waitress");
+      }
+    }
+  }, [isEditAboutOpen]);
 
   const extractYouTubeId = (url: string): string => {
     if (!url) return "BoUrWXaQUQQ";
@@ -44,6 +72,24 @@ export default function DashboardPage() {
       localStorage.setItem("copyright_year", yearInput);
     }
     setIsEditHomeOpen(false);
+  };
+
+  const handleSaveAbout = () => {
+    if (typeof window !== "undefined") {
+      localStorage.setItem("about_biography", biographyInput);
+
+      const lines = experienceInput.split("\n").filter(line => line.trim());
+      const parsedExp = lines.map(line => {
+        const parts = line.split("|");
+        return {
+          company: (parts[0] || "").trim(),
+          period: (parts[1] || "").trim(),
+          role: (parts[2] || "").trim()
+        };
+      });
+      localStorage.setItem("about_experience", JSON.stringify(parsedExp));
+    }
+    setIsEditAboutOpen(false);
   };
 
   useEffect(() => {
@@ -139,6 +185,8 @@ export default function DashboardPage() {
                   e.preventDefault();
                   if (panel === "Home") {
                     setIsEditHomeOpen(true);
+                  } else if (panel === "About") {
+                    setIsEditAboutOpen(true);
                   }
                 }}
                 className="group relative flex items-center justify-center w-full h-[50px] bg-[#0A0A0A] border border-[#FBAB3C]/15 rounded-lg px-6 font-sans text-sm font-semibold uppercase tracking-[1.5px] text-neutral-grey hover:text-[#FBAB3C] hover:border-[#FBAB3C]/40 transition-all duration-300"
@@ -254,6 +302,89 @@ export default function DashboardPage() {
               <button
                 type="button"
                 onClick={handleSave}
+                className="bg-[#FBAB3C] hover:bg-[#E59A2B] text-black rounded-[50px] font-sans text-xs md:text-sm font-semibold uppercase tracking-wider transition-colors cursor-pointer"
+                style={{ padding: "10px" }}
+              >
+                Save Changes
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+      {/* Edit About Panel Modal */}
+      {isEditAboutOpen && (
+        <div className="fixed inset-0 bg-black/85 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <div 
+            className="w-full max-w-[500px] bg-[#151515] border border-[#FBAB3C]/20 rounded-2xl shadow-[0_20px_50px_rgba(0,0,0,0.8)] relative"
+            style={{ padding: "10px" }}
+          >
+            <h3 
+              className="font-editorial text-2xl md:text-3xl font-bold tracking-wider text-[#FBAB3C] uppercase text-center"
+              style={{ marginBottom: "10px" }}
+            >
+              EDIT ABOUT PANEL
+            </h3>
+            
+            <div>
+              {/* Biography Text Area */}
+              <div>
+                <label 
+                  className="font-sans text-[11px] font-bold text-neutral-grey uppercase tracking-widest text-left"
+                  style={{ marginBottom: "10px", display: "block" }}
+                >
+                  Biography
+                </label>
+                <textarea
+                  value={biographyInput}
+                  onChange={(e) => setBiographyInput(e.target.value)}
+                  rows={6}
+                  className="w-full bg-[#1A1A1A] border border-white/10 rounded px-4 py-3 text-sm text-foreground placeholder-neutral-500 focus:outline-none focus:border-[#FBAB3C] transition-colors resize-y font-sans"
+                  placeholder="Biography text..."
+                />
+              </div>
+
+              {/* Spacer 10px */}
+              <div style={{ height: "10px" }} />
+
+              {/* Edit Work Experience Text Area */}
+              <div>
+                <label 
+                  className="font-sans text-[11px] font-bold text-neutral-grey uppercase tracking-widest text-left"
+                  style={{ marginBottom: "10px", display: "block" }}
+                >
+                  Edit Work Experience
+                </label>
+                <textarea
+                  value={experienceInput}
+                  onChange={(e) => setExperienceInput(e.target.value)}
+                  rows={6}
+                  className="w-full bg-[#1A1A1A] border border-white/10 rounded px-4 py-3 text-sm text-foreground placeholder-neutral-500 focus:outline-none focus:border-[#FBAB3C] transition-colors resize-y font-sans"
+                  placeholder="Company Name | Period | Role"
+                />
+                <span className="block font-sans text-[9px] text-neutral-grey/60 mt-1 text-left uppercase tracking-wider">
+                  Format: Company Name | Period | Role (one entry per line)
+                </span>
+              </div>
+            </div>
+
+            {/* Spacer 10px */}
+            <div style={{ height: "10px" }} />
+
+            <div 
+              className="flex justify-end"
+              style={{ gap: "10px" }}
+            >
+              <button
+                type="button"
+                onClick={() => setIsEditAboutOpen(false)}
+                className="border border-white/10 rounded-[50px] font-sans text-xs md:text-sm font-semibold uppercase tracking-wider text-white hover:border-[#FBAB3C] transition-colors cursor-pointer"
+                style={{ padding: "10px" }}
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={handleSaveAbout}
                 className="bg-[#FBAB3C] hover:bg-[#E59A2B] text-black rounded-[50px] font-sans text-xs md:text-sm font-semibold uppercase tracking-wider transition-colors cursor-pointer"
                 style={{ padding: "10px" }}
               >
