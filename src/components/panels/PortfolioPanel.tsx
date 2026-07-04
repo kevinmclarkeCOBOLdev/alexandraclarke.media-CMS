@@ -14,7 +14,7 @@ export interface PortfolioItem {
   embedHtml?: string;
 }
 
-const PORTFOLIO_ITEMS: PortfolioItem[] = [
+export const PORTFOLIO_ITEMS: PortfolioItem[] = [
   {
     id: 1,
     title: "JUST ANOTHER ASEXUAL FILM",

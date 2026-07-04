@@ -3,7 +3,8 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { LogOut, ArrowRight } from "lucide-react";
-import { PortfolioItem } from "@/components/panels/PortfolioPanel";
+import Image from "next/image";
+import { PortfolioItem, PORTFOLIO_ITEMS } from "@/components/panels/PortfolioPanel";
 
 export default function DashboardPage() {
   const router = useRouter();
@@ -24,6 +25,10 @@ export default function DashboardPage() {
   const [cvUrlInput, setCvUrlInput] = useState("");
   const [isUploading, setIsUploading] = useState(false);
   const [uploadError, setUploadError] = useState("");
+  const [portfolioItems, setPortfolioItems] = useState<PortfolioItem[]>([]);
+  const [isDeletePortfolioOpen, setIsDeletePortfolioOpen] = useState(false);
+  const [isConfirmDeleteOpen, setIsConfirmDeleteOpen] = useState(false);
+  const [deletingItem, setDeletingItem] = useState<PortfolioItem | null>(null);
 
   useEffect(() => {
     if (isEditHomeOpen && typeof window !== "undefined") {
@@ -89,6 +94,13 @@ export default function DashboardPage() {
     return (match && match[2].length === 11) ? match[2] : "BoUrWXaQUQQ";
   };
 
+  const getThumbnailUrl = (item: PortfolioItem) => {
+    if (item.videoUrl) {
+      return `https://img.youtube.com/vi/${item.videoUrl}/hqdefault.jpg`;
+    }
+    return item.image || "/placeholder-thumbnail.webp";
+  };
+
   const handleSave = () => {
     if (typeof window !== "undefined") {
       const videoId = extractYouTubeId(videoUrlInput);
@@ -140,41 +152,15 @@ export default function DashboardPage() {
     if (typeof window !== "undefined") {
       const savedItems = localStorage.getItem("portfolio_items");
       let itemsList: PortfolioItem[] = [];
-      const defaultItems: PortfolioItem[] = [
-        {
-          id: 1,
-          title: "JUST ANOTHER ASEXUAL FILM",
-          category: "short films",
-          image: "/portfolio/just-another-asexual-film-thumb.webp",
-          year: "17:58",
-          videoUrl: "oJklZVMczpg",
-        },
-        {
-          id: 2,
-          title: "CABBAGE - THE TRAILER",
-          category: "3d animations",
-          image: "/portfolio/cabbage-thumb.webp",
-          year: "0:47",
-          videoUrl: "WPLEGkbvzPg",
-        },
-        {
-          id: 3,
-          title: "THE CASUAL LIVES OF YOUR EVERYDAY TRANSGENDERS - A SHORT TRANS DOCUMENTARY",
-          category: "short films",
-          image: "/portfolio/casual-lives-trans-documentary-thumb.webp",
-          year: "11:42",
-          videoUrl: "V_BiZEc6YSo",
-        },
-      ];
 
       if (savedItems) {
         try {
           itemsList = JSON.parse(savedItems);
         } catch {
-          itemsList = defaultItems;
+          itemsList = [...PORTFOLIO_ITEMS];
         }
       } else {
-        itemsList = defaultItems;
+        itemsList = [...PORTFOLIO_ITEMS];
       }
 
       const videoId = extractYouTubeId(newItemYoutubeUrl);
@@ -191,11 +177,24 @@ export default function DashboardPage() {
 
       itemsList.push(newItem);
       localStorage.setItem("portfolio_items", JSON.stringify(itemsList));
+      setPortfolioItems(itemsList);
 
       setNewItemTitle("");
       setNewItemYoutubeUrl("");
       setNewItemCategory("short films");
       setIsAddItemOpen(false);
+    }
+  };
+
+  const handleDeleteConfirm = () => {
+    if (deletingItem) {
+      const updated = portfolioItems.filter((item) => item.id !== deletingItem.id);
+      setPortfolioItems(updated);
+      if (typeof window !== "undefined") {
+        localStorage.setItem("portfolio_items", JSON.stringify(updated));
+      }
+      setIsConfirmDeleteOpen(false);
+      setDeletingItem(null);
     }
   };
 
@@ -241,6 +240,18 @@ export default function DashboardPage() {
       const session = localStorage.getItem("lexi_cms_session");
       if (!session) {
         router.push("/lexilogin");
+      }
+
+      const savedItems = localStorage.getItem("portfolio_items");
+      if (savedItems) {
+        try {
+          setPortfolioItems(JSON.parse(savedItems));
+        } catch {
+          setPortfolioItems(PORTFOLIO_ITEMS);
+        }
+      } else {
+        setPortfolioItems(PORTFOLIO_ITEMS);
+        localStorage.setItem("portfolio_items", JSON.stringify(PORTFOLIO_ITEMS));
       }
     }
   }, [router]);
@@ -636,8 +647,11 @@ export default function DashboardPage() {
               
               <button
                 type="button"
-                disabled
-                className="w-full h-[50px] bg-[#0A0A0A]/40 border border-white/5 rounded-lg font-sans text-sm font-semibold uppercase tracking-wider text-white/20 cursor-not-allowed"
+                onClick={() => {
+                  setIsEditPortfolioOpen(false);
+                  setIsDeletePortfolioOpen(true);
+                }}
+                className="w-full h-[50px] bg-[#0A0A0A] hover:bg-[#1A1A1A] border border-[#FBAB3C]/20 hover:border-[#FBAB3C]/40 rounded-lg font-sans text-sm font-semibold uppercase tracking-wider text-[#FBAB3C] transition-all duration-300 cursor-pointer"
               >
                 DELETE ITEM
               </button>
@@ -754,6 +768,129 @@ export default function DashboardPage() {
                 style={{ padding: "10px 20px" }}
               >
                 Save Item
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Delete Portfolio Item Panel */}
+      {isDeletePortfolioOpen && (
+        <div className="fixed inset-0 bg-black/85 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <div 
+            className="w-full max-w-[600px] bg-[#151515] border border-[#FBAB3C]/20 rounded-2xl shadow-[0_20px_50px_rgba(0,0,0,0.8)] relative flex flex-col"
+            style={{ padding: "20px", maxHeight: "80vh" }}
+          >
+            <h3 
+              className="font-editorial text-2xl md:text-3xl font-bold tracking-wider text-[#FBAB3C] uppercase text-center"
+              style={{ marginBottom: "20px" }}
+            >
+              DELETE PORTFOLIO ITEM
+            </h3>
+            
+            {/* Rows list, scrollable if there are many items */}
+            <div className="flex-1 overflow-y-auto pr-1 flex flex-col gap-3" style={{ maxHeight: "50vh" }}>
+              {portfolioItems.length === 0 ? (
+                <div className="text-center py-8 text-neutral-500 font-sans text-sm">
+                  No portfolio items found.
+                </div>
+              ) : (
+                portfolioItems.map((item) => (
+                  <div 
+                    key={item.id} 
+                    className="flex items-center justify-between gap-4 p-3 bg-[#0A0A0A] border border-white/5 rounded-lg hover:border-[#FBAB3C]/10 transition-colors"
+                  >
+                    <div className="flex items-center gap-4 min-w-0 flex-1">
+                      <div className="relative w-16 h-10 md:w-20 md:h-12 flex-shrink-0 bg-neutral-900 rounded overflow-hidden border border-white/10">
+                        <Image 
+                          src={getThumbnailUrl(item)} 
+                          alt={item.title} 
+                          fill
+                          className="object-cover"
+                          sizes="(max-width: 768px) 64px, 80px"
+                        />
+                      </div>
+                      <div className="min-w-0 flex-1 text-left">
+                        <span className="font-sans text-xs md:text-sm text-white font-medium block truncate">
+                          {item.title}
+                        </span>
+                        <span className="font-sans text-[10px] text-neutral-grey uppercase tracking-wider block mt-0.5">
+                          {item.category}
+                        </span>
+                      </div>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setDeletingItem(item);
+                        setIsConfirmDeleteOpen(true);
+                      }}
+                      className="px-4 py-2 border border-red-500/20 hover:border-red-500 hover:bg-red-500/10 text-red-500 hover:text-white rounded-[50px] font-sans text-[11px] font-bold uppercase tracking-wider transition-all duration-300 cursor-pointer whitespace-nowrap"
+                    >
+                      Delete
+                    </button>
+                  </div>
+                ))
+              )}
+            </div>
+
+            {/* Spacer */}
+            <div style={{ height: "20px" }} />
+
+            <div className="flex justify-end">
+              <button
+                type="button"
+                onClick={() => {
+                  setIsDeletePortfolioOpen(false);
+                  setIsEditPortfolioOpen(true);
+                }}
+                className="border border-white/10 rounded-[50px] font-sans text-xs md:text-sm font-semibold uppercase tracking-wider text-white hover:border-[#FBAB3C] transition-colors cursor-pointer"
+                style={{ padding: "10px 20px" }}
+              >
+                Back to Edit
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Delete Confirmation Modal */}
+      {isConfirmDeleteOpen && deletingItem && (
+        <div className="fixed inset-0 bg-black/90 backdrop-blur-sm z-[70] flex items-center justify-center p-4">
+          <div 
+            className="w-full max-w-[450px] bg-[#151515] border border-[#FBAB3C]/20 rounded-2xl shadow-[0_25px_60px_rgba(0,0,0,0.95)] relative text-center"
+            style={{ padding: "25px" }}
+          >
+            <h4 
+              className="font-sans text-sm font-bold tracking-widest text-[#FBAB3C] uppercase"
+              style={{ marginBottom: "15px" }}
+            >
+              CONFIRM DELETION
+            </h4>
+            
+            <p className="font-sans text-sm text-white/90 leading-relaxed mb-6">
+              Are You Sure You Want To Delete {deletingItem.title}
+            </p>
+
+            <div className="flex justify-center gap-4">
+              <button
+                type="button"
+                onClick={() => {
+                  setIsConfirmDeleteOpen(false);
+                  setIsDeletePortfolioOpen(false);
+                  setIsEditPortfolioOpen(true);
+                  setDeletingItem(null);
+                }}
+                className="w-[100px] py-2.5 border border-white/10 rounded-[50px] font-sans text-xs md:text-sm font-semibold uppercase tracking-wider text-white hover:border-[#FBAB3C] transition-colors cursor-pointer"
+              >
+                No
+              </button>
+              <button
+                type="button"
+                onClick={handleDeleteConfirm}
+                className="w-[100px] py-2.5 bg-red-600 hover:bg-red-700 text-white rounded-[50px] font-sans text-xs md:text-sm font-semibold uppercase tracking-wider transition-colors cursor-pointer"
+              >
+                Yes
               </button>
             </div>
           </div>
