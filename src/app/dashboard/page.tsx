@@ -14,6 +14,7 @@ export default function DashboardPage() {
   const [yearInput, setYearInput] = useState("");
   const [biographyInput, setBiographyInput] = useState("");
   const [experienceInput, setExperienceInput] = useState("");
+  const [skillsInput, setSkillsInput] = useState("");
 
   useEffect(() => {
     if (isEditHomeOpen && typeof window !== "undefined") {
@@ -47,6 +48,22 @@ export default function DashboardPage() {
         }
       } else {
         setExperienceInput("The Mad & Merry Men Theatre Company, Prague | 2024 – 2026 | Social Media Manager & Photographer\nSad Man’s Tongue Restaurant, Prague | 2023 – 2024 | Host & Waitress");
+      }
+      const savedSkills = localStorage.getItem("about_skills");
+      if (savedSkills) {
+        try {
+          const parsed = JSON.parse(savedSkills);
+          if (Array.isArray(parsed)) {
+            const formatted = parsed.map((skill: { category?: string; items?: string }) => `${skill.category || ""} | ${skill.items || ""}`).join("\n");
+            setSkillsInput(formatted);
+          } else {
+            setSkillsInput("Filmmaking & Creative | Filmmaking (directing, editing, script writing, acting) • 3D Modelling + 3D Animation • Problem solving • Teamwork • Time management • Effective communication\nSoftware & Tools | DaVinci Resolve (film editing) • Blender (3D modelling) • Photoshop (photo editing)");
+          }
+        } catch {
+          setSkillsInput("Filmmaking & Creative | Filmmaking (directing, editing, script writing, acting) • 3D Modelling + 3D Animation • Problem solving • Teamwork • Time management • Effective communication\nSoftware & Tools | DaVinci Resolve (film editing) • Blender (3D modelling) • Photoshop (photo editing)");
+        }
+      } else {
+        setSkillsInput("Filmmaking & Creative | Filmmaking (directing, editing, script writing, acting) • 3D Modelling + 3D Animation • Problem solving • Teamwork • Time management • Effective communication\nSoftware & Tools | DaVinci Resolve (film editing) • Blender (3D modelling) • Photoshop (photo editing)");
       }
     }
   }, [isEditAboutOpen]);
@@ -88,6 +105,16 @@ export default function DashboardPage() {
         };
       });
       localStorage.setItem("about_experience", JSON.stringify(parsedExp));
+
+      const skillLines = skillsInput.split("\n").filter(line => line.trim());
+      const parsedSkills = skillLines.map(line => {
+        const parts = line.split("|");
+        return {
+          category: (parts[0] || "").trim(),
+          items: (parts[1] || "").trim()
+        };
+      });
+      localStorage.setItem("about_skills", JSON.stringify(parsedSkills));
     }
     setIsEditAboutOpen(false);
   };
@@ -352,7 +379,7 @@ export default function DashboardPage() {
                   className="font-sans text-[11px] font-bold text-neutral-grey uppercase tracking-widest text-left"
                   style={{ marginBottom: "10px", display: "block" }}
                 >
-                  Edit Work Experience
+                  Work Experience
                 </label>
                 <textarea
                   value={experienceInput}
@@ -363,6 +390,29 @@ export default function DashboardPage() {
                 />
                 <span className="block font-sans text-[9px] text-neutral-grey/60 mt-1 text-left uppercase tracking-wider">
                   Format: Company Name | Period | Role (one entry per line)
+                </span>
+              </div>
+
+              {/* Spacer 10px */}
+              <div style={{ height: "10px" }} />
+
+              {/* Edit Skills & Software Text Area */}
+              <div>
+                <label 
+                  className="font-sans text-[11px] font-bold text-neutral-grey uppercase tracking-widest text-left"
+                  style={{ marginBottom: "10px", display: "block" }}
+                >
+                  Skills &amp; Software
+                </label>
+                <textarea
+                  value={skillsInput}
+                  onChange={(e) => setSkillsInput(e.target.value)}
+                  rows={6}
+                  className="w-full bg-[#1A1A1A] border border-white/10 rounded px-4 py-3 text-sm text-foreground placeholder-neutral-500 focus:outline-none focus:border-[#FBAB3C] transition-colors resize-y font-sans"
+                  placeholder="Category Name | Skills & Tools"
+                />
+                <span className="block font-sans text-[9px] text-neutral-grey/60 mt-1 text-left uppercase tracking-wider">
+                  Format: Category Name | Skills &amp; Tools (one entry per line)
                 </span>
               </div>
             </div>

@@ -21,6 +21,17 @@ export default function AboutPanel() {
     },
   ]);
 
+  const [skills, setSkills] = useState([
+    {
+      category: "Filmmaking & Creative",
+      items: "Filmmaking (directing, editing, script writing, acting) • 3D Modelling + 3D Animation • Problem solving • Teamwork • Time management • Effective communication",
+    },
+    {
+      category: "Software & Tools",
+      items: "DaVinci Resolve (film editing) • Blender (3D modelling) • Photoshop (photo editing)",
+    },
+  ]);
+
   useEffect(() => {
     if (typeof window !== "undefined") {
       const savedBio = localStorage.getItem("about_biography");
@@ -36,6 +47,17 @@ export default function AboutPanel() {
           }
         } catch (e) {
           console.error("Error parsing experience from localStorage", e);
+        }
+      }
+      const savedSkills = localStorage.getItem("about_skills");
+      if (savedSkills) {
+        try {
+          const parsed = JSON.parse(savedSkills);
+          if (Array.isArray(parsed)) {
+            setSkills(parsed);
+          }
+        } catch (e) {
+          console.error("Error parsing skills from localStorage", e);
         }
       }
     }
@@ -198,22 +220,16 @@ export default function AboutPanel() {
               Skills &amp; Software
             </h3>
             <div className="mt-4 flex flex-col gap-3 border-l border-[#FBAB3C]/20 pl-4">
-              <div>
-                <h4 className="font-sans text-[14px] font-bold text-[#FBAB3C] tracking-wide uppercase">
-                  Filmmaking &amp; Creative
-                </h4>
-                <p className="font-sans text-[14px] text-white mt-1 leading-relaxed">
-                  Filmmaking (directing, editing, script writing, acting) &bull; 3D Modelling + 3D Animation &bull; Problem solving &bull; Teamwork &bull; Time management &bull; Effective communication
-                </p>
-              </div>
-              <div className="mt-2">
-                <h4 className="font-sans text-[14px] font-bold text-[#FBAB3C] tracking-wide uppercase">
-                  Software &amp; Tools
-                </h4>
-                <p className="font-sans text-[14px] text-white mt-1 leading-relaxed">
-                  DaVinci Resolve (film editing) &bull; Blender (3D modelling) &bull; Photoshop (photo editing)
-                </p>
-              </div>
+              {skills.map((skill, idx) => (
+                <div key={idx} className={idx > 0 ? "mt-2" : ""}>
+                  <h4 className="font-sans text-[14px] font-bold text-[#FBAB3C] tracking-wide uppercase">
+                    {skill.category}
+                  </h4>
+                  <p className="font-sans text-[14px] text-white mt-1 leading-relaxed">
+                    {skill.items}
+                  </p>
+                </div>
+              ))}
             </div>
           </div>
 
