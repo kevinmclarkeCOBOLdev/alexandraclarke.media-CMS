@@ -277,14 +277,20 @@ export default function PortfolioPanel() {
                     aria-label={`Go to slide ${index + 1}`}
                   >
                     {item.embedHtml && imageErrors[getInstagramShortcode(item.embedHtml) || ""] ? (
-                      <div className="absolute inset-0 w-full h-full flex flex-col items-center justify-center bg-black border border-[#FBAB3C]/20 rounded-lg">
-                        {/* Instagram Icon */}
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5 text-[#FBAB3C] mb-0.5">
-                          <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
-                          <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path>
-                          <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line>
-                        </svg>
-                        <span className="text-[8px] font-bold uppercase tracking-wider text-[#FBAB3C]/80">REEL PREVIEW</span>
+                      <div className="absolute inset-0 w-full h-full pointer-events-none bg-black overflow-hidden">
+                        <iframe
+                          src={`https://www.instagram.com/reel/${getInstagramShortcode(item.embedHtml)}/embed`}
+                          style={{
+                            position: "absolute",
+                            top: "-55%",
+                            left: 0,
+                            width: "100%",
+                            height: "165%",
+                            border: "none",
+                          }}
+                          scrolling="no"
+                          allowTransparency={true}
+                        />
                       </div>
                     ) : (
                       <Image
