@@ -32,6 +32,8 @@ export default function AboutPanel() {
     },
   ]);
 
+  const [cvUrl, setCvUrl] = useState("/Alexandra-Clarke-CV-English-v2.pdf");
+
   useEffect(() => {
     if (typeof window !== "undefined") {
       const savedBio = localStorage.getItem("about_biography");
@@ -59,6 +61,10 @@ export default function AboutPanel() {
         } catch (e) {
           console.error("Error parsing skills from localStorage", e);
         }
+      }
+      const savedCvUrl = localStorage.getItem("about_cv_url");
+      if (savedCvUrl) {
+        setCvUrl(savedCvUrl);
       }
     }
   }, []);
@@ -134,7 +140,7 @@ export default function AboutPanel() {
               Download my CV
             </h4>
             <a
-              href="/Alexandra-Clarke-CV-English-v2.pdf"
+              href={cvUrl}
               target="_blank"
               rel="noopener noreferrer"
               data-cursor="pointer"

@@ -15,6 +15,9 @@ export default function DashboardPage() {
   const [biographyInput, setBiographyInput] = useState("");
   const [experienceInput, setExperienceInput] = useState("");
   const [skillsInput, setSkillsInput] = useState("");
+  const [cvUrlInput, setCvUrlInput] = useState("");
+  const [isUploading, setIsUploading] = useState(false);
+  const [uploadError, setUploadError] = useState("");
 
   useEffect(() => {
     if (isEditHomeOpen && typeof window !== "undefined") {
@@ -65,6 +68,8 @@ export default function DashboardPage() {
       } else {
         setSkillsInput("Filmmaking & Creative | Filmmaking (directing, editing, script writing, acting) • 3D Modelling + 3D Animation • Problem solving • Teamwork • Time management • Effective communication\nSoftware & Tools | DaVinci Resolve (film editing) • Blender (3D modelling) • Photoshop (photo editing)");
       }
+      const savedCvUrl = localStorage.getItem("about_cv_url") || "/Alexandra-Clarke-CV-English-v2.pdf";
+      setCvUrlInput(savedCvUrl);
     }
   }, [isEditAboutOpen]);
 
@@ -115,8 +120,44 @@ export default function DashboardPage() {
         };
       });
       localStorage.setItem("about_skills", JSON.stringify(parsedSkills));
+      localStorage.setItem("about_cv_url", cvUrlInput);
     }
     setIsEditAboutOpen(false);
+  };
+
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setIsUploading(true);
+    setUploadError("");
+
+    const formData = new FormData();
+    formData.append("file", file);
+
+    try {
+      const response = await fetch("/api/upload-cv", {
+        method: "POST",
+        body: formData,
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to upload CV file");
+      }
+
+      const data = await response.json();
+      if (data.success && data.url) {
+        setCvUrlInput(data.url);
+      } else {
+        throw new Error(data.error || "Upload failed");
+      }
+    } catch (err) {
+      console.error(err);
+      const errorMessage = err instanceof Error ? err.message : "Something went wrong during file upload";
+      setUploadError(errorMessage);
+    } finally {
+      setIsUploading(false);
+    }
   };
 
   useEffect(() => {
@@ -414,6 +455,38 @@ export default function DashboardPage() {
                 <span className="block font-sans text-[9px] text-neutral-grey/60 mt-1 text-left uppercase tracking-wider">
                   Format: Category Name | Skills &amp; Tools (one entry per line)
                 </span>
+              </div>
+
+              {/* Spacer 10px */}
+              <div style={{ height: "10px" }} />
+
+              {/* CV File Upload Field */}
+              <div>
+                <label 
+                  className="font-sans text-[11px] font-bold text-neutral-grey uppercase tracking-widest text-left"
+                  style={{ marginBottom: "10px", display: "block" }}
+                >
+                  Upload New CV (PDF)
+                </label>
+                <div className="flex items-center gap-3">
+                  <label className="flex items-center justify-center border border-[#FBAB3C]/20 hover:border-[#FBAB3C] bg-[#1A1A1A] hover:bg-[#252525] text-[#FBAB3C] rounded px-4 py-2.5 text-xs font-semibold uppercase tracking-wider transition-colors cursor-pointer whitespace-nowrap">
+                    Choose File
+                    <input
+                      type="file"
+                      accept=".pdf"
+                      onChange={handleFileChange}
+                      className="hidden"
+                    />
+                  </label>
+                  <span className="font-sans text-xs text-neutral-grey truncate max-w-[250px]">
+                    {isUploading ? "Uploading..." : cvUrlInput.replace(/^\//, "")}
+                  </span>
+                </div>
+                {uploadError && (
+                  <span className="block font-sans text-[10px] text-red-500 mt-1 text-left">
+                    {uploadError}
+                  </span>
+                )}
               </div>
             </div>
 
