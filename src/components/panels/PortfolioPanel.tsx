@@ -1,10 +1,10 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Image from "next/image";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 
-interface PortfolioItem {
+export interface PortfolioItem {
   id: number;
   title: string;
   category: "short films" | "3d animations" | "marketing";
@@ -48,6 +48,23 @@ export default function PortfolioPanel() {
   const [modalVideoId, setModalVideoId] = useState<string>("");
   const [modalEmbedHtml, setModalEmbedHtml] = useState<string>("");
   const [imageErrors, setImageErrors] = useState<Record<string, boolean>>({});
+  const [portfolioItems, setPortfolioItems] = useState<PortfolioItem[]>([]);
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const savedItems = localStorage.getItem("portfolio_items");
+      if (savedItems) {
+        try {
+          setPortfolioItems(JSON.parse(savedItems));
+        } catch {
+          setPortfolioItems(PORTFOLIO_ITEMS);
+        }
+      } else {
+        setPortfolioItems(PORTFOLIO_ITEMS);
+        localStorage.setItem("portfolio_items", JSON.stringify(PORTFOLIO_ITEMS));
+      }
+    }
+  }, []);
 
   const getInstagramShortcode = (embedHtml?: string) => {
     if (!embedHtml) return null;
@@ -89,8 +106,8 @@ export default function PortfolioPanel() {
   ];
 
   const filteredItems = selectedCategory === "all"
-    ? PORTFOLIO_ITEMS
-    : PORTFOLIO_ITEMS.filter((item) => item.category === selectedCategory);
+    ? portfolioItems
+    : portfolioItems.filter((item) => item.category === selectedCategory);
 
   const handleCategoryChange = (cat: string) => {
     setSelectedCategory(cat);

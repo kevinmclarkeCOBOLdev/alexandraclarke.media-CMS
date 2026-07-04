@@ -3,12 +3,18 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { LogOut, ArrowRight } from "lucide-react";
+import { PortfolioItem } from "@/components/panels/PortfolioPanel";
 
 export default function DashboardPage() {
   const router = useRouter();
   const [isMounted, setIsMounted] = useState(false);
   const [isEditHomeOpen, setIsEditHomeOpen] = useState(false);
   const [isEditAboutOpen, setIsEditAboutOpen] = useState(false);
+  const [isEditPortfolioOpen, setIsEditPortfolioOpen] = useState(false);
+  const [isAddItemOpen, setIsAddItemOpen] = useState(false);
+  const [newItemTitle, setNewItemTitle] = useState("");
+  const [newItemYoutubeUrl, setNewItemYoutubeUrl] = useState("");
+  const [newItemCategory, setNewItemCategory] = useState<"short films" | "3d animations" | "marketing">("short films");
   const [videoUrlInput, setVideoUrlInput] = useState("");
   const [showreelUrlInput, setShowreelUrlInput] = useState("");
   const [yearInput, setYearInput] = useState("");
@@ -123,6 +129,74 @@ export default function DashboardPage() {
       localStorage.setItem("about_cv_url", cvUrlInput);
     }
     setIsEditAboutOpen(false);
+  };
+
+  const handleSavePortfolioItem = () => {
+    if (!newItemTitle.trim() || !newItemYoutubeUrl.trim()) {
+      alert("Please fill in all fields.");
+      return;
+    }
+
+    if (typeof window !== "undefined") {
+      const savedItems = localStorage.getItem("portfolio_items");
+      let itemsList: PortfolioItem[] = [];
+      const defaultItems: PortfolioItem[] = [
+        {
+          id: 1,
+          title: "JUST ANOTHER ASEXUAL FILM",
+          category: "short films",
+          image: "/portfolio/just-another-asexual-film-thumb.webp",
+          year: "17:58",
+          videoUrl: "oJklZVMczpg",
+        },
+        {
+          id: 2,
+          title: "CABBAGE - THE TRAILER",
+          category: "3d animations",
+          image: "/portfolio/cabbage-thumb.webp",
+          year: "0:47",
+          videoUrl: "WPLEGkbvzPg",
+        },
+        {
+          id: 3,
+          title: "THE CASUAL LIVES OF YOUR EVERYDAY TRANSGENDERS - A SHORT TRANS DOCUMENTARY",
+          category: "short films",
+          image: "/portfolio/casual-lives-trans-documentary-thumb.webp",
+          year: "11:42",
+          videoUrl: "V_BiZEc6YSo",
+        },
+      ];
+
+      if (savedItems) {
+        try {
+          itemsList = JSON.parse(savedItems);
+        } catch {
+          itemsList = defaultItems;
+        }
+      } else {
+        itemsList = defaultItems;
+      }
+
+      const videoId = extractYouTubeId(newItemYoutubeUrl);
+      const maxId = itemsList.reduce((max, item) => (item.id > max ? item.id : max), 0);
+      
+      const newItem = {
+        id: maxId + 1,
+        title: newItemTitle.trim(),
+        category: newItemCategory,
+        image: `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`,
+        year: "",
+        videoUrl: videoId,
+      };
+
+      itemsList.push(newItem);
+      localStorage.setItem("portfolio_items", JSON.stringify(itemsList));
+
+      setNewItemTitle("");
+      setNewItemYoutubeUrl("");
+      setNewItemCategory("short films");
+      setIsAddItemOpen(false);
+    }
   };
 
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -255,6 +329,8 @@ export default function DashboardPage() {
                     setIsEditHomeOpen(true);
                   } else if (panel === "About") {
                     setIsEditAboutOpen(true);
+                  } else if (panel === "Portfolio") {
+                    setIsEditPortfolioOpen(true);
                   }
                 }}
                 className="group relative flex items-center justify-center w-full h-[50px] bg-[#0A0A0A] border border-[#FBAB3C]/15 rounded-lg px-6 font-sans text-sm font-semibold uppercase tracking-[1.5px] text-neutral-grey hover:text-[#FBAB3C] hover:border-[#FBAB3C]/40 transition-all duration-300"
@@ -522,6 +598,162 @@ export default function DashboardPage() {
                 style={{ padding: "10px" }}
               >
                 Save Changes
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+      {/* Edit Portfolio Panel Modal */}
+      {isEditPortfolioOpen && (
+        <div className="fixed inset-0 bg-black/85 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <div 
+            className="w-full max-w-[500px] bg-[#151515] border border-[#FBAB3C]/20 rounded-2xl shadow-[0_20px_50px_rgba(0,0,0,0.8)] relative"
+            style={{ padding: "20px" }}
+          >
+            <h3 
+              className="font-editorial text-2xl md:text-3xl font-bold tracking-wider text-[#FBAB3C] uppercase text-center"
+              style={{ marginBottom: "20px" }}
+            >
+              EDIT PORTFOLIO
+            </h3>
+            
+            <div className="flex flex-col gap-4" style={{ marginBottom: "20px" }}>
+              <button
+                type="button"
+                onClick={() => setIsAddItemOpen(true)}
+                className="w-full h-[50px] bg-[#0A0A0A] hover:bg-[#1A1A1A] border border-[#FBAB3C]/20 hover:border-[#FBAB3C]/40 rounded-lg font-sans text-sm font-semibold uppercase tracking-wider text-[#FBAB3C] transition-all duration-300 cursor-pointer"
+              >
+                ADD ITEM
+              </button>
+              
+              <button
+                type="button"
+                disabled
+                className="w-full h-[50px] bg-[#0A0A0A]/40 border border-white/5 rounded-lg font-sans text-sm font-semibold uppercase tracking-wider text-white/20 cursor-not-allowed"
+              >
+                UPDATE ITEM
+              </button>
+              
+              <button
+                type="button"
+                disabled
+                className="w-full h-[50px] bg-[#0A0A0A]/40 border border-white/5 rounded-lg font-sans text-sm font-semibold uppercase tracking-wider text-white/20 cursor-not-allowed"
+              >
+                DELETE ITEM
+              </button>
+            </div>
+
+            <div className="flex justify-end">
+              <button
+                type="button"
+                onClick={() => setIsEditPortfolioOpen(false)}
+                className="border border-white/10 rounded-[50px] font-sans text-xs md:text-sm font-semibold uppercase tracking-wider text-white hover:border-[#FBAB3C] transition-colors cursor-pointer"
+                style={{ padding: "10px 20px" }}
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Add Portfolio Item Tertiary Modal */}
+      {isAddItemOpen && (
+        <div className="fixed inset-0 bg-black/90 backdrop-blur-sm z-[60] flex items-center justify-center p-4">
+          <div 
+            className="w-full max-w-[500px] bg-[#151515] border border-[#FBAB3C]/20 rounded-2xl shadow-[0_20px_50px_rgba(0,0,0,0.9)] relative"
+            style={{ padding: "20px" }}
+          >
+            <h3 
+              className="font-editorial text-2xl md:text-3xl font-bold tracking-wider text-[#FBAB3C] uppercase text-center"
+              style={{ marginBottom: "20px" }}
+            >
+              ADD PORTFOLIO ITEM
+            </h3>
+            
+            <div className="flex flex-col gap-4">
+              {/* Field 1: Title */}
+              <div>
+                <label 
+                  className="font-sans text-[11px] font-bold text-neutral-grey uppercase tracking-widest text-left"
+                  style={{ marginBottom: "8px", display: "block" }}
+                >
+                  Item Title
+                </label>
+                <input
+                  type="text"
+                  value={newItemTitle}
+                  onChange={(e) => setNewItemTitle(e.target.value)}
+                  className="w-full bg-[#1A1A1A] border border-white/10 rounded px-4 py-3 text-sm text-foreground placeholder-neutral-500 focus:outline-none focus:border-[#FBAB3C] transition-colors"
+                  placeholder="Enter item title..."
+                />
+              </div>
+
+              {/* Field 2: YouTube URL */}
+              <div>
+                <label 
+                  className="font-sans text-[11px] font-bold text-neutral-grey uppercase tracking-widest text-left"
+                  style={{ marginBottom: "8px", display: "block" }}
+                >
+                  YouTube URL
+                </label>
+                <input
+                  type="text"
+                  value={newItemYoutubeUrl}
+                  onChange={(e) => setNewItemYoutubeUrl(e.target.value)}
+                  className="w-full bg-[#1A1A1A] border border-white/10 rounded px-4 py-3 text-sm text-foreground placeholder-neutral-500 focus:outline-none focus:border-[#FBAB3C] transition-colors"
+                  placeholder="https://www.youtube.com/watch?v=..."
+                />
+              </div>
+
+              {/* Field 3: Category Dropdown */}
+              <div>
+                <label 
+                  className="font-sans text-[11px] font-bold text-neutral-grey uppercase tracking-widest text-left"
+                  style={{ marginBottom: "8px", display: "block" }}
+                >
+                  Category
+                </label>
+                <select
+                  value={newItemCategory}
+                  onChange={(e) => setNewItemCategory(e.target.value as "short films" | "3d animations" | "marketing")}
+                  className="w-full bg-[#1A1A1A] border border-white/10 rounded px-4 py-3 text-sm text-foreground focus:outline-none focus:border-[#FBAB3C] transition-colors cursor-pointer"
+                >
+                  <option value="short films">SHORT FILM</option>
+                  <option value="3d animations">3D ANIMATION</option>
+                  <option value="marketing">MARKETING</option>
+                </select>
+              </div>
+            </div>
+
+            {/* Spacer */}
+            <div style={{ height: "20px" }} />
+
+            <div 
+              className="flex justify-end"
+              style={{ gap: "10px" }}
+            >
+              <button
+                type="button"
+                onClick={() => {
+                  setIsAddItemOpen(false);
+                  // Reset fields
+                  setNewItemTitle("");
+                  setNewItemYoutubeUrl("");
+                  setNewItemCategory("short films");
+                }}
+                className="border border-white/10 rounded-[50px] font-sans text-xs md:text-sm font-semibold uppercase tracking-wider text-white hover:border-[#FBAB3C] transition-colors cursor-pointer"
+                style={{ padding: "10px 20px" }}
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={handleSavePortfolioItem}
+                className="bg-[#FBAB3C] hover:bg-[#E59A2B] text-black rounded-[50px] font-sans text-xs md:text-sm font-semibold uppercase tracking-wider transition-colors cursor-pointer"
+                style={{ padding: "10px 20px" }}
+              >
+                Save Item
               </button>
             </div>
           </div>
