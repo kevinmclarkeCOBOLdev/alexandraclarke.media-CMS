@@ -234,17 +234,17 @@ export default function DashboardPage() {
       {/* Dashboard Card Container - Same styling/sizing as login card */}
       <div className="relative z-10 w-full max-w-[660px] my-6 flex flex-col items-center">
         <div 
-          className="w-full bg-[#151515]/65 backdrop-blur-md border border-[#FBAB3C]/15 rounded-2xl shadow-[0_20px_50px_rgba(0,0,0,0.8)] transition-all duration-300 min-h-[270px] text-center"
+          className="w-full bg-[#151515]/65 backdrop-blur-md border border-[#FBAB3C]/15 rounded-2xl shadow-[0_20px_50px_rgba(0,0,0,0.8)] transition-all duration-300 min-h-[360px] text-center"
           style={{ padding: "15px" }}
         >
-          <div className="mb-6">
+          <div className="mb-6 flex flex-col items-center" style={{ marginBottom: "30px" }}>
             <h2 className="font-sans text-xl font-medium tracking-wider text-[#FBAB3C] uppercase mb-2">
               What do you want to do?
             </h2>
-            <div className="h-[1px] w-12 bg-[#FBAB3C]/30 mx-auto mt-3" />
+            <div className="h-[1px] w-24 bg-[#FBAB3C]/30" style={{ marginTop: "15px", marginLeft: "auto", marginRight: "auto" }} />
           </div>
 
-          <div className="flex flex-col gap-3 my-6">
+          <div className="flex flex-col gap-3 my-6" style={{ gap: "15px", marginTop: "30px", marginBottom: "30px" }}>
             {panels.map((panel) => (
               <a
                 key={panel}
@@ -263,6 +263,16 @@ export default function DashboardPage() {
                 <ArrowRight className="absolute right-6 w-4 h-4 text-neutral-grey/50 group-hover:text-[#FBAB3C] group-hover:translate-x-1 transition-all duration-300" />
               </a>
             ))}
+            <a
+              href="#"
+              onClick={(e) => {
+                e.preventDefault();
+              }}
+              className="group relative flex items-center justify-center w-full h-[50px] bg-[#0A0A0A] border border-[#FBAB3C]/15 rounded-lg px-6 font-sans text-sm font-semibold uppercase tracking-[1.5px] text-neutral-grey hover:text-[#FBAB3C] hover:border-[#FBAB3C]/40 transition-all duration-300"
+            >
+              <span>Edit Social Media Icons</span>
+              <ArrowRight className="absolute right-6 w-4 h-4 text-neutral-grey/50 group-hover:text-[#FBAB3C] group-hover:translate-x-1 transition-all duration-300" />
+            </a>
           </div>
         </div>
 
