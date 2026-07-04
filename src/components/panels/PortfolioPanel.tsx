@@ -7,7 +7,7 @@ import { ChevronLeft, ChevronRight } from "lucide-react";
 interface PortfolioItem {
   id: number;
   title: string;
-  category: "short films" | "3d animations" | "social media marketing";
+  category: "short films" | "3d animations" | "marketing";
   image: string;
   year: string;
   videoUrl?: string;
@@ -38,14 +38,6 @@ const PORTFOLIO_ITEMS: PortfolioItem[] = [
     image: "/portfolio/casual-lives-trans-documentary-thumb.webp",
     year: "11:42",
     videoUrl: "V_BiZEc6YSo",
-  },
-  {
-    id: 4,
-    title: "INTRODUCING THE ONE BEHIND THE MARKETING CAMPAIGN FOR THE SHERLOCK SERIES!",
-    category: "social media marketing",
-    image: "/portfolio/Insta-001-thumb.webp",
-    year: "",
-    embedHtml: `<div class="instagram-video-only" style="position: relative; width: 100%; max-width: 400px; height: 540px; overflow: hidden; border-radius: 8px; background-color: #000; box-shadow: 0 2px 8px rgba(0,0,0,0.15); transform: scale(1.5);"><iframe src="https://www.instagram.com/reel/DVjPZChDJYo/embed" style="position: absolute; top: -54px; left: 0; width: 100%; height: calc(100% + 105px); border: none;" scrolling="no" allowtransparency="true"></iframe></div>`,
   },
 ];
 
@@ -93,7 +85,7 @@ export default function PortfolioPanel() {
     "all",
     "short films",
     "3d animations",
-    "social media marketing",
+    "marketing",
   ];
 
   const filteredItems = selectedCategory === "all"
