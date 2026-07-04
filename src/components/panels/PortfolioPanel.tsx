@@ -55,6 +55,16 @@ export default function PortfolioPanel() {
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
   const [modalVideoId, setModalVideoId] = useState<string>("");
   const [modalEmbedHtml, setModalEmbedHtml] = useState<string>("");
+  const [imageErrors, setImageErrors] = useState<Record<string, boolean>>({});
+
+  const getThumbnailUrl = (item: PortfolioItem) => {
+    if (item.videoUrl) {
+      return imageErrors[item.videoUrl]
+        ? `https://img.youtube.com/vi/${item.videoUrl}/hqdefault.jpg`
+        : `https://img.youtube.com/vi/${item.videoUrl}/maxresdefault.jpg`;
+    }
+    return item.image;
+  };
 
   const categories = [
     "all",
@@ -124,11 +134,12 @@ export default function PortfolioPanel() {
                 key={cat}
                 data-cursor="pointer"
                 onClick={() => handleCategoryChange(cat)}
-                className={`px-3 py-1.5 font-sans text-[10px] font-bold uppercase tracking-wider transition-colors duration-300 border ${
+                className={`px-3 py-1.5 text-[10px] font-bold uppercase tracking-wider transition-colors duration-300 border ${
                   selectedCategory === cat
-                    ? "bg-accent text-background border-accent"
-                    : "bg-transparent text-foreground/75 border-white/10 hover:border-accent"
+                    ? "bg-[#FBAB3C] text-black border-[#FBAB3C]"
+                    : "bg-transparent text-foreground/75 border-white/10 hover:border-[#FBAB3C]"
                 }`}
+                style={{ fontFamily: "var(--font-poppins)" }}
               >
                 {cat}
               </button>
@@ -170,12 +181,20 @@ export default function PortfolioPanel() {
                       {/* Slide Image */}
                       <div className="absolute inset-0 w-full h-full">
                         <Image
-                          src={item.image}
+                          src={getThumbnailUrl(item)}
                           alt={item.title}
                           fill
                           className="object-cover"
                           sizes="(max-width: 768px) 85vw, 650px"
                           priority={isActive}
+                          onError={() => {
+                            if (item.videoUrl) {
+                              setImageErrors((prev) => ({
+                                ...prev,
+                                [item.videoUrl!]: true,
+                              }));
+                            }
+                          }}
                         />
                       </div>
                       
@@ -211,11 +230,11 @@ export default function PortfolioPanel() {
 
               {/* Active Item Details */}
               <div className="text-center mt-6 min-h-[70px]">
-                <span className="font-sans text-[11px] font-bold tracking-[2px] text-accent uppercase">
+                <span className="text-[11px] font-bold tracking-[2px] text-[#FBAB3C] uppercase" style={{ fontFamily: "var(--font-poppins)" }}>
                   {filteredItems[activeIndex]?.category}
                   {filteredItems[activeIndex]?.year ? ` • ${filteredItems[activeIndex].year}` : ""}
                 </span>
-                <h4 className="font-editorial text-2xl md:text-3xl font-bold text-foreground mt-1 uppercase tracking-wide">
+                <h4 className="font-editorial text-[18px] md:text-[22.5px] font-bold text-foreground mt-1 uppercase tracking-wide">
                   {filteredItems[activeIndex]?.title}
                 </h4>
               </div>
@@ -235,11 +254,19 @@ export default function PortfolioPanel() {
                     aria-label={`Go to slide ${index + 1}`}
                   >
                     <Image
-                      src={item.image}
+                      src={getThumbnailUrl(item)}
                       alt={item.title}
                       fill
                       className="object-cover"
                       sizes="160px"
+                      onError={() => {
+                        if (item.videoUrl) {
+                          setImageErrors((prev) => ({
+                            ...prev,
+                            [item.videoUrl!]: true,
+                          }));
+                        }
+                      }}
                     />
                   </button>
                 ))}
