@@ -57,13 +57,36 @@ export default function PortfolioPanel() {
   const [modalEmbedHtml, setModalEmbedHtml] = useState<string>("");
   const [imageErrors, setImageErrors] = useState<Record<string, boolean>>({});
 
+  const getInstagramShortcode = (embedHtml?: string) => {
+    if (!embedHtml) return null;
+    const match = embedHtml.match(/instagram\.com\/(?:reel|p)\/([a-zA-Z0-9_-]+)/);
+    return match ? match[1] : null;
+  };
+
   const getThumbnailUrl = (item: PortfolioItem) => {
     if (item.videoUrl) {
       return imageErrors[item.videoUrl]
         ? `https://img.youtube.com/vi/${item.videoUrl}/hqdefault.jpg`
         : `https://img.youtube.com/vi/${item.videoUrl}/maxresdefault.jpg`;
     }
+    const instagramShortcode = getInstagramShortcode(item.embedHtml);
+    if (instagramShortcode) {
+      return imageErrors[instagramShortcode]
+        ? item.image
+        : `https://www.instagram.com/p/${instagramShortcode}/media/?size=l`;
+    }
     return item.image;
+  };
+
+  const handleImageError = (item: PortfolioItem) => {
+    if (item.videoUrl) {
+      setImageErrors((prev) => ({ ...prev, [item.videoUrl!]: true }));
+    } else {
+      const instagramShortcode = getInstagramShortcode(item.embedHtml);
+      if (instagramShortcode) {
+        setImageErrors((prev) => ({ ...prev, [instagramShortcode]: true }));
+      }
+    }
   };
 
   const categories = [
@@ -187,14 +210,7 @@ export default function PortfolioPanel() {
                           className="object-cover"
                           sizes="(max-width: 768px) 85vw, 650px"
                           priority={isActive}
-                          onError={() => {
-                            if (item.videoUrl) {
-                              setImageErrors((prev) => ({
-                                ...prev,
-                                [item.videoUrl!]: true,
-                              }));
-                            }
-                          }}
+                          onError={() => handleImageError(item)}
                         />
                       </div>
                       
@@ -259,14 +275,7 @@ export default function PortfolioPanel() {
                       fill
                       className="object-cover"
                       sizes="160px"
-                      onError={() => {
-                        if (item.videoUrl) {
-                          setImageErrors((prev) => ({
-                            ...prev,
-                            [item.videoUrl!]: true,
-                          }));
-                        }
-                      }}
+                      onError={() => handleImageError(item)}
                     />
                   </button>
                 ))}
