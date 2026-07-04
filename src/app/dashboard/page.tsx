@@ -29,6 +29,11 @@ export default function DashboardPage() {
   const [isDeletePortfolioOpen, setIsDeletePortfolioOpen] = useState(false);
   const [isConfirmDeleteOpen, setIsConfirmDeleteOpen] = useState(false);
   const [deletingItem, setDeletingItem] = useState<PortfolioItem | null>(null);
+  const [isUpdatePortfolioOpen, setIsUpdatePortfolioOpen] = useState(false);
+  const [isUpdateItemOpen, setIsUpdateItemOpen] = useState(false);
+  const [updatingItem, setUpdatingItem] = useState<PortfolioItem | null>(null);
+  const [updateItemTitle, setUpdateItemTitle] = useState("");
+  const [updateItemCategory, setUpdateItemCategory] = useState<"short films" | "3d animations" | "marketing">("short films");
 
   useEffect(() => {
     if (isEditHomeOpen && typeof window !== "undefined") {
@@ -195,6 +200,34 @@ export default function DashboardPage() {
       }
       setIsConfirmDeleteOpen(false);
       setDeletingItem(null);
+    }
+  };
+
+  const handleApplyUpdate = () => {
+    if (!updateItemTitle.trim()) {
+      alert("Please enter a title.");
+      return;
+    }
+
+    if (updatingItem) {
+      const updated = portfolioItems.map((item) => {
+        if (item.id === updatingItem.id) {
+          return {
+            ...item,
+            title: updateItemTitle.trim(),
+            category: updateItemCategory,
+          };
+        }
+        return item;
+      });
+
+      setPortfolioItems(updated);
+      if (typeof window !== "undefined") {
+        localStorage.setItem("portfolio_items", JSON.stringify(updated));
+      }
+      setIsUpdateItemOpen(false);
+      setUpdatingItem(null);
+      setUpdateItemTitle("");
     }
   };
 
@@ -639,8 +672,11 @@ export default function DashboardPage() {
               
               <button
                 type="button"
-                disabled
-                className="w-full h-[50px] bg-[#0A0A0A]/40 border border-white/5 rounded-lg font-sans text-sm font-semibold uppercase tracking-wider text-white/20 cursor-not-allowed"
+                onClick={() => {
+                  setIsEditPortfolioOpen(false);
+                  setIsUpdatePortfolioOpen(true);
+                }}
+                className="w-full h-[50px] bg-[#0A0A0A] hover:bg-[#1A1A1A] border border-[#FBAB3C]/20 hover:border-[#FBAB3C]/40 rounded-lg font-sans text-sm font-semibold uppercase tracking-wider text-[#FBAB3C] transition-all duration-300 cursor-pointer"
               >
                 UPDATE ITEM
               </button>
@@ -891,6 +927,173 @@ export default function DashboardPage() {
                 className="w-[100px] py-2.5 bg-red-600 hover:bg-red-700 text-white rounded-[50px] font-sans text-xs md:text-sm font-semibold uppercase tracking-wider transition-colors cursor-pointer"
               >
                 Yes
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Update Portfolio Item Panel */}
+      {isUpdatePortfolioOpen && (
+        <div className="fixed inset-0 bg-black/85 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <div 
+            className="w-full max-w-[600px] bg-[#151515] border border-[#FBAB3C]/20 rounded-2xl shadow-[0_20px_50px_rgba(0,0,0,0.8)] relative flex flex-col"
+            style={{ padding: "20px", maxHeight: "80vh" }}
+          >
+            <h3 
+              className="font-editorial text-2xl md:text-3xl font-bold tracking-wider text-[#FBAB3C] uppercase text-center"
+              style={{ marginBottom: "20px" }}
+            >
+              UPDATE PORTFOLIO ITEM
+            </h3>
+            
+            {/* Rows list, scrollable if there are many items */}
+            <div className="flex-1 overflow-y-auto pr-1 flex flex-col gap-3" style={{ maxHeight: "50vh" }}>
+              {portfolioItems.length === 0 ? (
+                <div className="text-center py-8 text-neutral-500 font-sans text-sm">
+                  No portfolio items found.
+                </div>
+              ) : (
+                portfolioItems.map((item) => (
+                  <div 
+                    key={item.id} 
+                    className="flex items-center justify-between gap-4 p-3 bg-[#0A0A0A] border border-white/5 rounded-lg hover:border-[#FBAB3C]/10 transition-colors"
+                  >
+                    <div className="flex items-center gap-4 min-w-0 flex-1">
+                      <div className="relative w-16 h-10 md:w-20 md:h-12 flex-shrink-0 bg-neutral-900 rounded overflow-hidden border border-white/10">
+                        <Image 
+                          src={getThumbnailUrl(item)} 
+                          alt={item.title} 
+                          fill
+                          className="object-cover"
+                          sizes="(max-width: 768px) 64px, 80px"
+                        />
+                      </div>
+                      <div className="min-w-0 flex-1 text-left">
+                        <span className="font-sans text-xs md:text-sm text-white font-medium block truncate">
+                          {item.title}
+                        </span>
+                        <span className="font-sans text-[10px] text-neutral-grey uppercase tracking-wider block mt-0.5">
+                          {item.category}
+                        </span>
+                      </div>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setUpdatingItem(item);
+                        setUpdateItemTitle(item.title);
+                        setUpdateItemCategory(item.category);
+                        setIsUpdateItemOpen(true);
+                      }}
+                      className="px-4 py-2 border border-[#FBAB3C]/20 hover:border-[#FBAB3C] hover:bg-[#FBAB3C]/10 text-[#FBAB3C] rounded-[50px] font-sans text-[11px] font-bold uppercase tracking-wider transition-all duration-300 cursor-pointer whitespace-nowrap"
+                    >
+                      UPDATE
+                    </button>
+                  </div>
+                ))
+              )}
+            </div>
+
+            {/* Spacer */}
+            <div style={{ height: "20px" }} />
+
+            <div className="flex justify-end">
+              <button
+                type="button"
+                onClick={() => {
+                  setIsUpdatePortfolioOpen(false);
+                  setIsEditPortfolioOpen(true);
+                }}
+                className="border border-white/10 rounded-[50px] font-sans text-xs md:text-sm font-semibold uppercase tracking-wider text-white hover:border-[#FBAB3C] transition-colors cursor-pointer"
+                style={{ padding: "10px 20px" }}
+              >
+                Back to Edit
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Update Portfolio Item Details Tertiary Modal */}
+      {isUpdateItemOpen && updatingItem && (
+        <div className="fixed inset-0 bg-black/90 backdrop-blur-sm z-[60] flex items-center justify-center p-4">
+          <div 
+            className="w-full max-w-[500px] bg-[#151515] border border-[#FBAB3C]/20 rounded-2xl shadow-[0_20px_50px_rgba(0,0,0,0.9)] relative"
+            style={{ padding: "20px" }}
+          >
+            <h3 
+              className="font-editorial text-2xl md:text-3xl font-bold tracking-wider text-[#FBAB3C] uppercase text-center"
+              style={{ marginBottom: "20px" }}
+            >
+              UPDATE ITEM DETAILS
+            </h3>
+            
+            <div className="flex flex-col gap-4">
+              {/* Field 1: Title */}
+              <div>
+                <label 
+                  className="font-sans text-[11px] font-bold text-neutral-grey uppercase tracking-widest text-left"
+                  style={{ marginBottom: "8px", display: "block" }}
+                >
+                  Item Title
+                </label>
+                <input
+                  type="text"
+                  value={updateItemTitle}
+                  onChange={(e) => setUpdateItemTitle(e.target.value)}
+                  className="w-full bg-[#1A1A1A] border border-white/10 rounded px-4 py-3 text-sm text-foreground placeholder-neutral-500 focus:outline-none focus:border-[#FBAB3C] transition-colors"
+                  placeholder="Enter item title..."
+                />
+              </div>
+
+              {/* Field 2: Category Dropdown */}
+              <div>
+                <label 
+                  className="font-sans text-[11px] font-bold text-neutral-grey uppercase tracking-widest text-left"
+                  style={{ marginBottom: "8px", display: "block" }}
+                >
+                  Category
+                </label>
+                <select
+                  value={updateItemCategory}
+                  onChange={(e) => setUpdateItemCategory(e.target.value as "short films" | "3d animations" | "marketing")}
+                  className="w-full bg-[#1A1A1A] border border-white/10 rounded px-4 py-3 text-sm text-foreground focus:outline-none focus:border-[#FBAB3C] transition-colors cursor-pointer"
+                >
+                  <option value="short films">SHORT FILM</option>
+                  <option value="3d animations">3D ANIMATION</option>
+                  <option value="marketing">MARKETING</option>
+                </select>
+              </div>
+            </div>
+
+            {/* Spacer */}
+            <div style={{ height: "20px" }} />
+
+            <div 
+              className="flex justify-end"
+              style={{ gap: "10px" }}
+            >
+              <button
+                type="button"
+                onClick={() => {
+                  setIsUpdateItemOpen(false);
+                  setUpdatingItem(null);
+                  setUpdateItemTitle("");
+                  setUpdateItemCategory("short films");
+                }}
+                className="border border-white/10 rounded-[50px] font-sans text-xs md:text-sm font-semibold uppercase tracking-wider text-white hover:border-[#FBAB3C] transition-colors cursor-pointer"
+                style={{ padding: "10px 20px" }}
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={handleApplyUpdate}
+                className="bg-[#FBAB3C] hover:bg-[#E59A2B] text-black rounded-[50px] font-sans text-xs md:text-sm font-semibold uppercase tracking-wider transition-colors cursor-pointer"
+                style={{ padding: "10px 20px" }}
+              >
+                APPLY
               </button>
             </div>
           </div>
