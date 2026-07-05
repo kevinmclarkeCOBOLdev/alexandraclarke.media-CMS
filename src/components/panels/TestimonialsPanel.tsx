@@ -5,43 +5,60 @@ import Image from "next/image";
 import { Quote } from "lucide-react";
 import gsap from "gsap";
 
-interface Testimonial {
+export interface Testimonial {
+  id: number;
   quote: string;
   author: string;
-  role: string;
-  company: string;
+  title: string;
 }
+
+export const DEFAULT_TESTIMONIALS: Testimonial[] = [
+  {
+    id: 1,
+    quote:
+      "Alexandra Clarke’s work as a videographer has earned my theater group a first-rate reputation in Prague’s theater scene for our promotional materials—so much so that other groups ask us for help with their own campaigns.\n\nWithout her work, our season—in which every single performance is sold out—would not have nearly the same success.\n\nOriginal, unique, standout: What Alexandra Clarke has created with her interviews, clips, and trailers for the various plays by “The Mad and Merry Men” has a distinct visual identity that sets us apart from the pool of English theater groups.",
+    author: "Gordon L. Schmitz",
+    title: "Artistic Director • The Mad and Merry Men, Prague",
+  },
+  {
+    id: 2,
+    quote:
+      "Collaborating with Alexandra on our annual fashion showcase was an incredible experience. Her cinematography captured the textures, motion, and essence of our collection in a way that static photography never could. The final brand film exceeded all expectations and received high praise from critics and viewers alike.",
+    author: "Elena Rostova",
+    title: "Lead Fashion Designer • Rostova Haute Couture",
+  },
+  {
+    id: 3,
+    quote:
+      "Alexandra's documentary work brought our non-profit's mission to life with sensitivity and depth. She has a rare gift for making interview subjects feel entirely at ease, resulting in authentic, powerful moments that resonated deeply with our donors. The engagement on our campaign increased threefold after launching her series.",
+    author: "Marcus Vance",
+    title: "Executive Director • The Horizon Foundation",
+  },
+];
 
 export default function TestimonialsPanel() {
   const [activeIndex, setActiveIndex] = useState(0);
+  const [testimonials, setTestimonials] = useState<Testimonial[]>([]);
   const cardRef = useRef<HTMLDivElement>(null);
 
-  const testimonials: Testimonial[] = [
-    {
-      quote:
-        "Alexandra Clarke’s work as a videographer has earned my theater group a first-rate reputation in Prague’s theater scene for our promotional materials—so much so that other groups ask us for help with their own campaigns.\n\nWithout her work, our season—in which every single performance is sold out—would not have nearly the same success.\n\nOriginal, unique, standout: What Alexandra Clarke has created with her interviews, clips, and trailers for the various plays by “The Mad and Merry Men” has a distinct visual identity that sets us apart from the pool of English theater groups.",
-      author: "Gordon L. Schmitz",
-      role: "Artistic Director",
-      company: "The Mad and Merry Men, Prague",
-    },
-    {
-      quote:
-        "Collaborating with Alexandra on our annual fashion showcase was an incredible experience. Her cinematography captured the textures, motion, and essence of our collection in a way that static photography never could. The final brand film exceeded all expectations and received high praise from critics and viewers alike.",
-      author: "Elena Rostova",
-      role: "Lead Fashion Designer",
-      company: "Rostova Haute Couture",
-    },
-    {
-      quote:
-        "Alexandra's documentary work brought our non-profit's mission to life with sensitivity and depth. She has a rare gift for making interview subjects feel entirely at ease, resulting in authentic, powerful moments that resonated deeply with our donors. The engagement on our campaign increased threefold after launching her series.",
-      author: "Marcus Vance",
-      role: "Executive Director",
-      company: "The Horizon Foundation",
-    },
-  ];
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const saved = localStorage.getItem("testimonial_items");
+      if (saved) {
+        try {
+          setTestimonials(JSON.parse(saved));
+        } catch {
+          setTestimonials(DEFAULT_TESTIMONIALS);
+        }
+      } else {
+        setTestimonials(DEFAULT_TESTIMONIALS);
+        localStorage.setItem("testimonial_items", JSON.stringify(DEFAULT_TESTIMONIALS));
+      }
+    }
+  }, []);
 
   useEffect(() => {
-    if (cardRef.current) {
+    if (cardRef.current && testimonials.length > 0) {
       gsap.killTweensOf(cardRef.current);
       gsap.fromTo(
         cardRef.current,
@@ -49,10 +66,12 @@ export default function TestimonialsPanel() {
         { x: 0, opacity: 1, duration: 0.8, ease: "power3.out" }
       );
     }
-  }, [activeIndex]);
+  }, [activeIndex, testimonials]);
 
   const handleNext = () => {
-    setActiveIndex((prev) => (prev + 1) % testimonials.length);
+    if (testimonials.length > 0) {
+      setActiveIndex((prev) => (prev + 1) % testimonials.length);
+    }
   };
 
   return (
@@ -85,41 +104,51 @@ export default function TestimonialsPanel() {
 
         {/* Center Testimonial Area */}
         <div className="flex-grow flex flex-col justify-center items-center w-full max-w-4xl mx-auto relative z-10 my-auto py-4">
-          <div
-            ref={cardRef}
-            className="w-full border-t border-b border-[#FBAB3C] flex flex-col gap-[10px] bg-transparent"
-            style={{ paddingTop: "10px", paddingBottom: "10px" }}
-          >
-            {/* 1. Small quotes */}
-            <div className="flex items-center">
-              <Quote className="h-4 w-4 md:h-5 md:w-5 text-[#FBAB3C]" />
+          {testimonials.length > 0 ? (
+            <>
+              <div
+                ref={cardRef}
+                className="w-full border-t border-b border-[#FBAB3C] flex flex-col gap-[10px] bg-transparent"
+                style={{ paddingTop: "10px", paddingBottom: "10px" }}
+              >
+                {/* 1. Small quotes */}
+                <div className="flex items-center">
+                  <Quote className="h-4 w-4 md:h-5 md:w-5 text-[#FBAB3C]" />
+                </div>
+
+                {/* 2. Testimonial text */}
+                <p className="font-sans text-xs md:text-sm leading-relaxed text-white/95 whitespace-pre-line">
+                  {testimonials[activeIndex]?.quote}
+                </p>
+
+                {/* 3. Person's name */}
+                <h4 className="font-sans text-[11px] md:text-xs font-bold text-white uppercase tracking-wider">
+                  {testimonials[activeIndex]?.author}
+                </h4>
+
+                {/* 4. Title */}
+                <p className="font-sans text-[9px] md:text-[10px] font-semibold uppercase tracking-widest" style={{ color: "#FBAB3C" }}>
+                  {testimonials[activeIndex]?.title}
+                </p>
+              </div>
+
+              {/* Large '>' Next Button */}
+              {testimonials.length > 1 && (
+                <button
+                  onClick={handleNext}
+                  data-cursor="pointer"
+                  className="mt-8 text-6xl md:text-7xl font-sans font-extralight text-[#FBAB3C] hover:text-[#FBAB3C]/80 hover:scale-110 active:scale-95 transition-all duration-300 select-none cursor-pointer focus:outline-none"
+                  aria-label="Next Testimonial"
+                >
+                  &gt;
+                </button>
+              )}
+            </>
+          ) : (
+            <div className="text-center text-white/50 font-sans py-12">
+              No testimonials available.
             </div>
-
-            {/* 2. Testimonial text */}
-            <p className="font-sans text-xs md:text-sm leading-relaxed text-white/95 whitespace-pre-line">
-              {testimonials[activeIndex].quote}
-            </p>
-
-            {/* 3. Person's name */}
-            <h4 className="font-sans text-[11px] md:text-xs font-bold text-white uppercase tracking-wider">
-              {testimonials[activeIndex].author}
-            </h4>
-
-            {/* 4. Title */}
-            <p className="font-sans text-[9px] md:text-[10px] font-semibold uppercase tracking-widest" style={{ color: "#FBAB3C" }}>
-              {testimonials[activeIndex].role} &bull; {testimonials[activeIndex].company}
-            </p>
-          </div>
-
-          {/* Large '>' Next Button */}
-          <button
-            onClick={handleNext}
-            data-cursor="pointer"
-            className="mt-8 text-6xl md:text-7xl font-sans font-extralight text-[#FBAB3C] hover:text-[#FBAB3C]/80 hover:scale-110 active:scale-95 transition-all duration-300 select-none cursor-pointer focus:outline-none"
-            aria-label="Next Testimonial"
-          >
-            &gt;
-          </button>
+          )}
         </div>
       </div>
 

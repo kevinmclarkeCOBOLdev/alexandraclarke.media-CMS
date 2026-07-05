@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { LogOut, ArrowRight } from "lucide-react";
 import Image from "next/image";
 import { PortfolioItem, PORTFOLIO_ITEMS } from "@/components/panels/PortfolioPanel";
+import { Testimonial, DEFAULT_TESTIMONIALS } from "@/components/panels/TestimonialsPanel";
 
 export default function DashboardPage() {
   const router = useRouter();
@@ -34,6 +35,22 @@ export default function DashboardPage() {
   const [updatingItem, setUpdatingItem] = useState<PortfolioItem | null>(null);
   const [updateItemTitle, setUpdateItemTitle] = useState("");
   const [updateItemCategory, setUpdateItemCategory] = useState<"short films" | "3d animations" | "marketing">("short films");
+
+  // Testimonials CMS States
+  const [isEditTestimonialsOpen, setIsEditTestimonialsOpen] = useState(false);
+  const [isAddTestimonialOpen, setIsAddTestimonialOpen] = useState(false);
+  const [isUpdateTestimonialsListOpen, setIsUpdateTestimonialsListOpen] = useState(false);
+  const [isUpdateTestimonialDetailsOpen, setIsUpdateTestimonialDetailsOpen] = useState(false);
+  const [isDeleteTestimonialsListOpen, setIsDeleteTestimonialsListOpen] = useState(false);
+  const [isConfirmDeleteTestimonialOpen, setIsConfirmDeleteTestimonialOpen] = useState(false);
+
+  const [testimonials, setTestimonials] = useState<Testimonial[]>([]);
+  const [testimonialQuoteInput, setTestimonialQuoteInput] = useState("");
+  const [testimonialAuthorInput, setTestimonialAuthorInput] = useState("");
+  const [testimonialTitleInput, setTestimonialTitleInput] = useState("");
+  
+  const [deletingTestimonial, setDeletingTestimonial] = useState<Testimonial | null>(null);
+  const [updatingTestimonial, setUpdatingTestimonial] = useState<Testimonial | null>(null);
 
   useEffect(() => {
     if (isEditHomeOpen && typeof window !== "undefined") {
@@ -231,6 +248,78 @@ export default function DashboardPage() {
     }
   };
 
+  const handleSaveTestimonial = () => {
+    if (!testimonialQuoteInput.trim() || !testimonialAuthorInput.trim() || !testimonialTitleInput.trim()) {
+      alert("Please fill in all fields.");
+      return;
+    }
+
+    if (typeof window !== "undefined") {
+      const maxId = testimonials.reduce((max, item) => (item.id > max ? item.id : max), 0);
+      const newTestimonial: Testimonial = {
+        id: maxId + 1,
+        quote: testimonialQuoteInput.trim(),
+        author: testimonialAuthorInput.trim(),
+        title: testimonialTitleInput.trim(),
+      };
+
+      const updated = [...testimonials, newTestimonial];
+      setTestimonials(updated);
+      localStorage.setItem("testimonial_items", JSON.stringify(updated));
+
+      // Reset
+      setTestimonialQuoteInput("");
+      setTestimonialAuthorInput("");
+      setTestimonialTitleInput("");
+      setIsAddTestimonialOpen(false);
+    }
+  };
+
+  const handleApplyTestimonialUpdate = () => {
+    if (!testimonialQuoteInput.trim() || !testimonialAuthorInput.trim() || !testimonialTitleInput.trim()) {
+      alert("Please fill in all fields.");
+      return;
+    }
+
+    if (updatingTestimonial) {
+      const updated = testimonials.map((item) => {
+        if (item.id === updatingTestimonial.id) {
+          return {
+            ...item,
+            quote: testimonialQuoteInput.trim(),
+            author: testimonialAuthorInput.trim(),
+            title: testimonialTitleInput.trim(),
+          };
+        }
+        return item;
+      });
+
+      setTestimonials(updated);
+      if (typeof window !== "undefined") {
+        localStorage.setItem("testimonial_items", JSON.stringify(updated));
+      }
+
+      // Reset
+      setTestimonialQuoteInput("");
+      setTestimonialAuthorInput("");
+      setTestimonialTitleInput("");
+      setIsUpdateTestimonialDetailsOpen(false);
+      setUpdatingTestimonial(null);
+    }
+  };
+
+  const handleDeleteTestimonialConfirm = () => {
+    if (deletingTestimonial) {
+      const updated = testimonials.filter((item) => item.id !== deletingTestimonial.id);
+      setTestimonials(updated);
+      if (typeof window !== "undefined") {
+        localStorage.setItem("testimonial_items", JSON.stringify(updated));
+      }
+      setIsConfirmDeleteTestimonialOpen(false);
+      setDeletingTestimonial(null);
+    }
+  };
+
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -285,6 +374,18 @@ export default function DashboardPage() {
       } else {
         setPortfolioItems(PORTFOLIO_ITEMS);
         localStorage.setItem("portfolio_items", JSON.stringify(PORTFOLIO_ITEMS));
+      }
+
+      const savedTestimonials = localStorage.getItem("testimonial_items");
+      if (savedTestimonials) {
+        try {
+          setTestimonials(JSON.parse(savedTestimonials));
+        } catch {
+          setTestimonials(DEFAULT_TESTIMONIALS);
+        }
+      } else {
+        setTestimonials(DEFAULT_TESTIMONIALS);
+        localStorage.setItem("testimonial_items", JSON.stringify(DEFAULT_TESTIMONIALS));
       }
     }
   }, [router]);
@@ -375,6 +476,8 @@ export default function DashboardPage() {
                     setIsEditAboutOpen(true);
                   } else if (panel === "Portfolio") {
                     setIsEditPortfolioOpen(true);
+                  } else if (panel === "Testimonials") {
+                    setIsEditTestimonialsOpen(true);
                   }
                 }}
                 className="group relative flex items-center justify-center w-full h-[50px] bg-[#0A0A0A] border border-[#FBAB3C]/15 rounded-lg px-6 font-sans text-sm font-semibold uppercase tracking-[1.5px] text-neutral-grey hover:text-[#FBAB3C] hover:border-[#FBAB3C]/40 transition-all duration-300"
@@ -1090,6 +1193,445 @@ export default function DashboardPage() {
               <button
                 type="button"
                 onClick={handleApplyUpdate}
+                className="bg-[#FBAB3C] hover:bg-[#E59A2B] text-black rounded-[50px] font-sans text-xs md:text-sm font-semibold uppercase tracking-wider transition-colors cursor-pointer"
+                style={{ padding: "10px 20px" }}
+              >
+                APPLY
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Edit Testimonials Panel Modal */}
+      {isEditTestimonialsOpen && (
+        <div className="fixed inset-0 bg-black/85 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <div 
+            className="w-full max-w-[500px] bg-[#151515] border border-[#FBAB3C]/20 rounded-2xl shadow-[0_20px_50px_rgba(0,0,0,0.8)] relative"
+            style={{ padding: "20px" }}
+          >
+            <h3 
+              className="font-editorial text-2xl md:text-3xl font-bold tracking-wider text-[#FBAB3C] uppercase text-center"
+              style={{ marginBottom: "20px" }}
+            >
+              EDIT TESTIMONIALS
+            </h3>
+            
+            <div className="flex flex-col gap-4" style={{ marginBottom: "20px" }}>
+              <button
+                type="button"
+                onClick={() => setIsAddTestimonialOpen(true)}
+                className="w-full h-[50px] bg-[#0A0A0A] hover:bg-[#1A1A1A] border border-[#FBAB3C]/20 hover:border-[#FBAB3C]/40 rounded-lg font-sans text-sm font-semibold uppercase tracking-wider text-[#FBAB3C] transition-all duration-300 cursor-pointer"
+              >
+                ADD TESTIMONIAL
+              </button>
+              
+              <button
+                type="button"
+                onClick={() => {
+                  setIsEditTestimonialsOpen(false);
+                  setIsUpdateTestimonialsListOpen(true);
+                }}
+                className="w-full h-[50px] bg-[#0A0A0A] hover:bg-[#1A1A1A] border border-[#FBAB3C]/20 hover:border-[#FBAB3C]/40 rounded-lg font-sans text-sm font-semibold uppercase tracking-wider text-[#FBAB3C] transition-all duration-300 cursor-pointer"
+              >
+                UPDATE TESTIMONIAL
+              </button>
+              
+              <button
+                type="button"
+                onClick={() => {
+                  setIsEditTestimonialsOpen(false);
+                  setIsDeleteTestimonialsListOpen(true);
+                }}
+                className="w-full h-[50px] bg-[#0A0A0A] hover:bg-[#1A1A1A] border border-[#FBAB3C]/20 hover:border-[#FBAB3C]/40 rounded-lg font-sans text-sm font-semibold uppercase tracking-wider text-[#FBAB3C] transition-all duration-300 cursor-pointer"
+              >
+                DELETE TESTIMONIAL
+              </button>
+            </div>
+
+            <div className="flex justify-end">
+              <button
+                type="button"
+                onClick={() => setIsEditTestimonialsOpen(false)}
+                className="border border-white/10 rounded-[50px] font-sans text-xs md:text-sm font-semibold uppercase tracking-wider text-white hover:border-[#FBAB3C] transition-colors cursor-pointer"
+                style={{ padding: "10px 20px" }}
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Add Testimonial Tertiary Modal */}
+      {isAddTestimonialOpen && (
+        <div className="fixed inset-0 bg-black/90 backdrop-blur-sm z-[60] flex items-center justify-center p-4">
+          <div 
+            className="w-full max-w-[500px] bg-[#151515] border border-[#FBAB3C]/20 rounded-2xl shadow-[0_20px_50px_rgba(0,0,0,0.9)] relative"
+            style={{ padding: "20px" }}
+          >
+            <h3 
+              className="font-editorial text-2xl md:text-3xl font-bold tracking-wider text-[#FBAB3C] uppercase text-center"
+              style={{ marginBottom: "20px" }}
+            >
+              ADD TESTIMONIAL
+            </h3>
+            
+            <div className="flex flex-col gap-4">
+              {/* Field 1: Testimonial Text */}
+              <div>
+                <label 
+                  className="font-sans text-[11px] font-bold text-neutral-grey uppercase tracking-widest text-left"
+                  style={{ marginBottom: "8px", display: "block" }}
+                >
+                  Testimonial Text
+                </label>
+                <textarea
+                  value={testimonialQuoteInput}
+                  onChange={(e) => setTestimonialQuoteInput(e.target.value)}
+                  rows={5}
+                  className="w-full bg-[#1A1A1A] border border-white/10 rounded px-4 py-3 text-sm text-foreground placeholder-neutral-500 focus:outline-none focus:border-[#FBAB3C] transition-colors resize-y font-sans"
+                  placeholder="Enter testimonial text..."
+                />
+              </div>
+
+              {/* Field 2: Author */}
+              <div>
+                <label 
+                  className="font-sans text-[11px] font-bold text-neutral-grey uppercase tracking-widest text-left"
+                  style={{ marginBottom: "8px", display: "block" }}
+                >
+                  Author Name
+                </label>
+                <input
+                  type="text"
+                  value={testimonialAuthorInput}
+                  onChange={(e) => setTestimonialAuthorInput(e.target.value)}
+                  className="w-full bg-[#1A1A1A] border border-white/10 rounded px-4 py-3 text-sm text-foreground placeholder-neutral-500 focus:outline-none focus:border-[#FBAB3C] transition-colors"
+                  placeholder="Gordon L. Schmitz"
+                />
+              </div>
+
+              {/* Field 3: Title */}
+              <div>
+                <label 
+                  className="font-sans text-[11px] font-bold text-neutral-grey uppercase tracking-widest text-left"
+                  style={{ marginBottom: "8px", display: "block" }}
+                >
+                  Title / Company
+                </label>
+                <input
+                  type="text"
+                  value={testimonialTitleInput}
+                  onChange={(e) => setTestimonialTitleInput(e.target.value)}
+                  className="w-full bg-[#1A1A1A] border border-white/10 rounded px-4 py-3 text-sm text-foreground placeholder-neutral-500 focus:outline-none focus:border-[#FBAB3C] transition-colors"
+                  placeholder="Artistic Director • The Mad and Merry Men, Prague"
+                />
+              </div>
+            </div>
+
+            <div style={{ height: "20px" }} />
+
+            <div 
+              className="flex justify-end"
+              style={{ gap: "10px" }}
+            >
+              <button
+                type="button"
+                onClick={() => {
+                  setIsAddTestimonialOpen(false);
+                  setTestimonialQuoteInput("");
+                  setTestimonialAuthorInput("");
+                  setTestimonialTitleInput("");
+                }}
+                className="border border-white/10 rounded-[50px] font-sans text-xs md:text-sm font-semibold uppercase tracking-wider text-white hover:border-[#FBAB3C] transition-colors cursor-pointer"
+                style={{ padding: "10px 20px" }}
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={handleSaveTestimonial}
+                className="bg-[#FBAB3C] hover:bg-[#E59A2B] text-black rounded-[50px] font-sans text-xs md:text-sm font-semibold uppercase tracking-wider transition-colors cursor-pointer"
+                style={{ padding: "10px 20px" }}
+              >
+                Save Testimonial
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Delete Testimonial Panel */}
+      {isDeleteTestimonialsListOpen && (
+        <div className="fixed inset-0 bg-black/85 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <div 
+            className="w-full max-w-[600px] bg-[#151515] border border-[#FBAB3C]/20 rounded-2xl shadow-[0_20px_50px_rgba(0,0,0,0.8)] relative flex flex-col"
+            style={{ padding: "20px", maxHeight: "80vh" }}
+          >
+            <h3 
+              className="font-editorial text-2xl md:text-3xl font-bold tracking-wider text-[#FBAB3C] uppercase text-center"
+              style={{ marginBottom: "20px" }}
+            >
+              DELETE TESTIMONIAL
+            </h3>
+            
+            <div className="flex-1 overflow-y-auto pr-1 flex flex-col gap-3" style={{ maxHeight: "50vh" }}>
+              {testimonials.length === 0 ? (
+                <div className="text-center py-8 text-neutral-500 font-sans text-sm">
+                  No testimonials found.
+                </div>
+              ) : (
+                testimonials.map((item) => (
+                  <div 
+                    key={item.id} 
+                    className="flex items-center justify-between gap-4 p-3 bg-[#0A0A0A] border border-white/5 rounded-lg hover:border-[#FBAB3C]/10 transition-colors"
+                  >
+                    <div className="min-w-0 flex-1 text-left">
+                      <span className="font-sans text-xs md:text-sm text-white font-medium block truncate">
+                        &quot;{item.quote}&quot;
+                      </span>
+                      <span className="font-sans text-[10px] text-neutral-grey uppercase tracking-wider block mt-0.5">
+                        {item.author} &bull; {item.title}
+                      </span>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setDeletingTestimonial(item);
+                        setIsConfirmDeleteTestimonialOpen(true);
+                      }}
+                      className="px-4 py-2 border border-red-500/20 hover:border-red-500 hover:bg-red-500/10 text-red-500 hover:text-white rounded-[50px] font-sans text-[11px] font-bold uppercase tracking-wider transition-all duration-300 cursor-pointer whitespace-nowrap"
+                    >
+                      Delete
+                    </button>
+                  </div>
+                ))
+              )}
+            </div>
+
+            <div style={{ height: "20px" }} />
+
+            <div className="flex justify-end">
+              <button
+                type="button"
+                onClick={() => {
+                  setIsDeleteTestimonialsListOpen(false);
+                  setIsEditTestimonialsOpen(true);
+                }}
+                className="border border-white/10 rounded-[50px] font-sans text-xs md:text-sm font-semibold uppercase tracking-wider text-white hover:border-[#FBAB3C] transition-colors cursor-pointer"
+                style={{ padding: "10px 20px" }}
+              >
+                Back to Edit
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Delete Testimonial Confirmation Modal */}
+      {isConfirmDeleteTestimonialOpen && deletingTestimonial && (
+        <div className="fixed inset-0 bg-black/90 backdrop-blur-sm z-[70] flex items-center justify-center p-4">
+          <div 
+            className="w-full max-w-[450px] bg-[#151515] border border-[#FBAB3C]/20 rounded-2xl shadow-[0_25px_60px_rgba(0,0,0,0.95)] relative text-center"
+            style={{ padding: "25px" }}
+          >
+            <h4 
+              className="font-sans text-sm font-bold tracking-widest text-[#FBAB3C] uppercase"
+              style={{ marginBottom: "15px" }}
+            >
+              CONFIRM DELETION
+            </h4>
+            
+            <p className="font-sans text-sm text-white/90 leading-relaxed mb-6">
+              Are You Sure You Want To Delete Testimonial by {deletingTestimonial.author}?
+            </p>
+
+            <div className="flex justify-center gap-4">
+              <button
+                type="button"
+                onClick={() => {
+                  setIsConfirmDeleteTestimonialOpen(false);
+                  setIsDeleteTestimonialsListOpen(false);
+                  setIsEditTestimonialsOpen(true);
+                  setDeletingTestimonial(null);
+                }}
+                className="w-[100px] py-2.5 border border-white/10 rounded-[50px] font-sans text-xs md:text-sm font-semibold uppercase tracking-wider text-white hover:border-[#FBAB3C] transition-colors cursor-pointer"
+              >
+                No
+              </button>
+              <button
+                type="button"
+                onClick={handleDeleteTestimonialConfirm}
+                className="w-[100px] py-2.5 bg-red-600 hover:bg-red-700 text-white rounded-[50px] font-sans text-xs md:text-sm font-semibold uppercase tracking-wider transition-colors cursor-pointer"
+              >
+                Yes
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Update Testimonials List Panel */}
+      {isUpdateTestimonialsListOpen && (
+        <div className="fixed inset-0 bg-black/85 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <div 
+            className="w-full max-w-[600px] bg-[#151515] border border-[#FBAB3C]/20 rounded-2xl shadow-[0_20px_50px_rgba(0,0,0,0.8)] relative flex flex-col"
+            style={{ padding: "20px", maxHeight: "80vh" }}
+          >
+            <h3 
+              className="font-editorial text-2xl md:text-3xl font-bold tracking-wider text-[#FBAB3C] uppercase text-center"
+              style={{ marginBottom: "20px" }}
+            >
+              UPDATE TESTIMONIAL
+            </h3>
+            
+            <div className="flex-1 overflow-y-auto pr-1 flex flex-col gap-3" style={{ maxHeight: "50vh" }}>
+              {testimonials.length === 0 ? (
+                <div className="text-center py-8 text-neutral-500 font-sans text-sm">
+                  No testimonials found.
+                </div>
+              ) : (
+                testimonials.map((item) => (
+                  <div 
+                    key={item.id} 
+                    className="flex items-center justify-between gap-4 p-3 bg-[#0A0A0A] border border-white/5 rounded-lg hover:border-[#FBAB3C]/10 transition-colors"
+                  >
+                    <div className="min-w-0 flex-1 text-left">
+                      <span className="font-sans text-xs md:text-sm text-white font-medium block truncate">
+                        &quot;{item.quote}&quot;
+                      </span>
+                      <span className="font-sans text-[10px] text-neutral-grey uppercase tracking-wider block mt-0.5">
+                        {item.author} &bull; {item.title}
+                      </span>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setUpdatingTestimonial(item);
+                        setTestimonialQuoteInput(item.quote);
+                        setTestimonialAuthorInput(item.author);
+                        setTestimonialTitleInput(item.title);
+                        setIsUpdateTestimonialDetailsOpen(true);
+                      }}
+                      className="px-4 py-2 border border-[#FBAB3C]/20 hover:border-[#FBAB3C] hover:bg-[#FBAB3C]/10 text-[#FBAB3C] rounded-[50px] font-sans text-[11px] font-bold uppercase tracking-wider transition-all duration-300 cursor-pointer whitespace-nowrap"
+                    >
+                      UPDATE
+                    </button>
+                  </div>
+                ))
+              )}
+            </div>
+
+            <div style={{ height: "20px" }} />
+
+            <div className="flex justify-end">
+              <button
+                type="button"
+                onClick={() => {
+                  setIsUpdateTestimonialsListOpen(false);
+                  setIsEditTestimonialsOpen(true);
+                }}
+                className="border border-white/10 rounded-[50px] font-sans text-xs md:text-sm font-semibold uppercase tracking-wider text-white hover:border-[#FBAB3C] transition-colors cursor-pointer"
+                style={{ padding: "10px 20px" }}
+              >
+                Back to Edit
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Update Testimonial Details Tertiary Modal */}
+      {isUpdateTestimonialDetailsOpen && updatingTestimonial && (
+        <div className="fixed inset-0 bg-black/90 backdrop-blur-sm z-[60] flex items-center justify-center p-4">
+          <div 
+            className="w-full max-w-[500px] bg-[#151515] border border-[#FBAB3C]/20 rounded-2xl shadow-[0_20px_50px_rgba(0,0,0,0.9)] relative"
+            style={{ padding: "20px" }}
+          >
+            <h3 
+              className="font-editorial text-2xl md:text-3xl font-bold tracking-wider text-[#FBAB3C] uppercase text-center"
+              style={{ marginBottom: "20px" }}
+            >
+              UPDATE TESTIMONIAL DETAILS
+            </h3>
+            
+            <div className="flex flex-col gap-4">
+              {/* Field 1: Testimonial Text */}
+              <div>
+                <label 
+                  className="font-sans text-[11px] font-bold text-neutral-grey uppercase tracking-widest text-left"
+                  style={{ marginBottom: "8px", display: "block" }}
+                >
+                  Testimonial Text
+                </label>
+                <textarea
+                  value={testimonialQuoteInput}
+                  onChange={(e) => setTestimonialQuoteInput(e.target.value)}
+                  rows={5}
+                  className="w-full bg-[#1A1A1A] border border-white/10 rounded px-4 py-3 text-sm text-foreground placeholder-neutral-500 focus:outline-none focus:border-[#FBAB3C] transition-colors resize-y font-sans"
+                  placeholder="Enter testimonial text..."
+                />
+              </div>
+
+              {/* Field 2: Author */}
+              <div>
+                <label 
+                  className="font-sans text-[11px] font-bold text-neutral-grey uppercase tracking-widest text-left"
+                  style={{ marginBottom: "8px", display: "block" }}
+                >
+                  Author Name
+                </label>
+                <input
+                  type="text"
+                  value={testimonialAuthorInput}
+                  onChange={(e) => setTestimonialAuthorInput(e.target.value)}
+                  className="w-full bg-[#1A1A1A] border border-white/10 rounded px-4 py-3 text-sm text-foreground placeholder-neutral-500 focus:outline-none focus:border-[#FBAB3C] transition-colors"
+                  placeholder="Gordon L. Schmitz"
+                />
+              </div>
+
+              {/* Field 3: Title */}
+              <div>
+                <label 
+                  className="font-sans text-[11px] font-bold text-neutral-grey uppercase tracking-widest text-left"
+                  style={{ marginBottom: "8px", display: "block" }}
+                >
+                  Title / Company
+                </label>
+                <input
+                  type="text"
+                  value={testimonialTitleInput}
+                  onChange={(e) => setTestimonialTitleInput(e.target.value)}
+                  className="w-full bg-[#1A1A1A] border border-white/10 rounded px-4 py-3 text-sm text-foreground placeholder-neutral-500 focus:outline-none focus:border-[#FBAB3C] transition-colors"
+                  placeholder="Artistic Director • The Mad and Merry Men, Prague"
+                />
+              </div>
+            </div>
+
+            <div style={{ height: "20px" }} />
+
+            <div 
+              className="flex justify-end"
+              style={{ gap: "10px" }}
+            >
+              <button
+                type="button"
+                onClick={() => {
+                  setIsUpdateTestimonialDetailsOpen(false);
+                  setUpdatingTestimonial(null);
+                  setTestimonialQuoteInput("");
+                  setTestimonialAuthorInput("");
+                  setTestimonialTitleInput("");
+                }}
+                className="border border-white/10 rounded-[50px] font-sans text-xs md:text-sm font-semibold uppercase tracking-wider text-white hover:border-[#FBAB3C] transition-colors cursor-pointer"
+                style={{ padding: "10px 20px" }}
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={handleApplyTestimonialUpdate}
                 className="bg-[#FBAB3C] hover:bg-[#E59A2B] text-black rounded-[50px] font-sans text-xs md:text-sm font-semibold uppercase tracking-wider transition-colors cursor-pointer"
                 style={{ padding: "10px 20px" }}
               >
