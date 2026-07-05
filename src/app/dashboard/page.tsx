@@ -4,11 +4,31 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { LogOut, ArrowRight } from "lucide-react";
 import Image from "next/image";
-import { PortfolioItem, PORTFOLIO_ITEMS } from "@/components/panels/PortfolioPanel";
-import { Testimonial, DEFAULT_TESTIMONIALS } from "@/components/panels/TestimonialsPanel";
+import { useQuery, useMutation } from "convex/react";
+import { api } from "../../../convex/_generated/api";
+import { Doc } from "../../../convex/_generated/dataModel";
 
 export default function DashboardPage() {
   const router = useRouter();
+
+  // Convex Hooks
+  const settings = useQuery(api.settings.get);
+  const experiences = useQuery(api.experience.list);
+  const skillsList = useQuery(api.skills.list);
+  const portfolioItemsDb = useQuery(api.portfolio.list);
+  const testimonialsDb = useQuery(api.testimonials.list);
+
+  const updateSettings = useMutation(api.settings.update);
+  const updateExperiences = useMutation(api.experience.updateAll);
+  const updateSkills = useMutation(api.skills.updateAll);
+  const addPortfolio = useMutation(api.portfolio.add);
+  const updatePortfolio = useMutation(api.portfolio.update);
+  const removePortfolio = useMutation(api.portfolio.remove);
+  const addTestimonial = useMutation(api.testimonials.add);
+  const updateTestimonial = useMutation(api.testimonials.update);
+  const removeTestimonial = useMutation(api.testimonials.remove);
+  const generateUploadUrl = useMutation(api.cv.generateUploadUrl);
+
   const [isMounted, setIsMounted] = useState(false);
   const [isEditHomeOpen, setIsEditHomeOpen] = useState(false);
   const [isEditAboutOpen, setIsEditAboutOpen] = useState(false);
@@ -28,13 +48,13 @@ export default function DashboardPage() {
   const [cvUrlInput, setCvUrlInput] = useState("");
   const [isUploading, setIsUploading] = useState(false);
   const [uploadError, setUploadError] = useState("");
-  const [portfolioItems, setPortfolioItems] = useState<PortfolioItem[]>([]);
+  const [portfolioItems, setPortfolioItems] = useState<Doc<"portfolio">[]>([]);
   const [isDeletePortfolioOpen, setIsDeletePortfolioOpen] = useState(false);
   const [isConfirmDeleteOpen, setIsConfirmDeleteOpen] = useState(false);
-  const [deletingItem, setDeletingItem] = useState<PortfolioItem | null>(null);
+  const [deletingItem, setDeletingItem] = useState<Doc<"portfolio"> | null>(null);
   const [isUpdatePortfolioOpen, setIsUpdatePortfolioOpen] = useState(false);
   const [isUpdateItemOpen, setIsUpdateItemOpen] = useState(false);
-  const [updatingItem, setUpdatingItem] = useState<PortfolioItem | null>(null);
+  const [updatingItem, setUpdatingItem] = useState<Doc<"portfolio"> | null>(null);
   const [updateItemTitle, setUpdateItemTitle] = useState("");
   const [updateItemCategory, setUpdateItemCategory] = useState<"short films" | "3d animations" | "marketing">("short films");
   const [updateItemYear, setUpdateItemYear] = useState("");
@@ -48,14 +68,14 @@ export default function DashboardPage() {
   const [isDeleteTestimonialsListOpen, setIsDeleteTestimonialsListOpen] = useState(false);
   const [isConfirmDeleteTestimonialOpen, setIsConfirmDeleteTestimonialOpen] = useState(false);
 
-  const [testimonials, setTestimonials] = useState<Testimonial[]>([]);
+  const [testimonials, setTestimonials] = useState<Doc<"testimonials">[]>([]);
   const [testimonialQuoteInput, setTestimonialQuoteInput] = useState("");
   const [testimonialAuthorInput, setTestimonialAuthorInput] = useState(" ");
   const [testimonialTitleInput, setTestimonialTitleInput] = useState(" ");
   const [testimonialCompanyInput, setTestimonialCompanyInput] = useState(" ");
   
-  const [deletingTestimonial, setDeletingTestimonial] = useState<Testimonial | null>(null);
-  const [updatingTestimonial, setUpdatingTestimonial] = useState<Testimonial | null>(null);
+  const [deletingTestimonial, setDeletingTestimonial] = useState<Doc<"testimonials"> | null>(null);
+  const [updatingTestimonial, setUpdatingTestimonial] = useState<Doc<"testimonials"> | null>(null);
 
   // Contact CMS States
   const [isEditContactOpen, setIsEditContactOpen] = useState(false);
@@ -69,106 +89,90 @@ export default function DashboardPage() {
   const [socialYoutubeInput, setSocialYoutubeInput] = useState("");
   const [socialTiktokInput, setSocialTiktokInput] = useState("");
 
+  // Synchronize state from Convex queries
   useEffect(() => {
-    if (isEditHomeOpen && typeof window !== "undefined") {
-      const savedUrl = localStorage.getItem("home_bg_video_url") || "https://www.youtube.com/watch?v=BoUrWXaQUQQ";
-      const savedShowreelUrl = localStorage.getItem("home_showreel_video_url") || "https://www.youtube.com/watch?v=BoUrWXaQUQQ";
-      const savedYear = localStorage.getItem("copyright_year") || "2026";
-      setVideoUrlInput(savedUrl);
-      setShowreelUrlInput(savedShowreelUrl);
-      setYearInput(savedYear);
+    if (portfolioItemsDb) {
+      setPortfolioItems(portfolioItemsDb);
     }
-  }, [isEditHomeOpen]);
+  }, [portfolioItemsDb]);
 
   useEffect(() => {
-    if (isEditAboutOpen && typeof window !== "undefined") {
-      const savedBio = localStorage.getItem("about_biography") || 
-        "A dynamic filmmaker with over 7 years of filmmaking experience, adept at creating a wide range of video content (from 3D animation to interviews & social media content). Possessing strong problem-solving skills and a naturally outgoing personality, I communicate effectively with a diverse clientele for projects.\n\nI am committed to maintaining high standards of quality and efficiency in all of my projects.";
-      setBiographyInput(savedBio);
-
-      const savedExp = localStorage.getItem("about_experience");
-      if (savedExp) {
-        try {
-          const parsed = JSON.parse(savedExp);
-          if (Array.isArray(parsed)) {
-            const formatted = parsed.map((exp: { company?: string; period?: string; role?: string }) => `${exp.company || ""} | ${exp.period || ""} | ${exp.role || ""}`).join("\n");
-            setExperienceInput(formatted);
-          } else {
-            setExperienceInput("The Mad & Merry Men Theatre Company, Prague | 2024 – 2026 | Social Media Manager & Photographer\nSad Man’s Tongue Restaurant, Prague | 2023 – 2024 | Host & Waitress");
-          }
-        } catch {
-          setExperienceInput("The Mad & Merry Men Theatre Company, Prague | 2024 – 2026 | Social Media Manager & Photographer\nSad Man’s Tongue Restaurant, Prague | 2023 – 2024 | Host & Waitress");
-        }
-      } else {
-        setExperienceInput("The Mad & Merry Men Theatre Company, Prague | 2024 – 2026 | Social Media Manager & Photographer\nSad Man’s Tongue Restaurant, Prague | 2023 – 2024 | Host & Waitress");
-      }
-      const savedSkills = localStorage.getItem("about_skills");
-      if (savedSkills) {
-        try {
-          const parsed = JSON.parse(savedSkills);
-          if (Array.isArray(parsed)) {
-            const formatted = parsed.map((skill: { category?: string; items?: string }) => `${skill.category || ""} | ${skill.items || ""}`).join("\n");
-            setSkillsInput(formatted);
-          } else {
-            setSkillsInput("Filmmaking & Creative | Filmmaking (directing, editing, script writing, acting) • 3D Modelling + 3D Animation • Problem solving • Teamwork • Time management • Effective communication\nSoftware & Tools | DaVinci Resolve (film editing) • Blender (3D modelling) • Photoshop (photo editing)");
-          }
-        } catch {
-          setSkillsInput("Filmmaking & Creative | Filmmaking (directing, editing, script writing, acting) • 3D Modelling + 3D Animation • Problem solving • Teamwork • Time management • Effective communication\nSoftware & Tools | DaVinci Resolve (film editing) • Blender (3D modelling) • Photoshop (photo editing)");
-        }
-      } else {
-        setSkillsInput("Filmmaking & Creative | Filmmaking (directing, editing, script writing, acting) • 3D Modelling + 3D Animation • Problem solving • Teamwork • Time management • Effective communication\nSoftware & Tools | DaVinci Resolve (film editing) • Blender (3D modelling) • Photoshop (photo editing)");
-      }
-      const savedCvUrl = localStorage.getItem("about_cv_url") || "/Alexandra-Clarke-CV-English-v2.pdf";
-      setCvUrlInput(savedCvUrl);
+    if (testimonialsDb) {
+      setTestimonials(testimonialsDb);
     }
-  }, [isEditAboutOpen]);
+  }, [testimonialsDb]);
 
   useEffect(() => {
-    if (isEditContactOpen && typeof window !== "undefined") {
-      const savedSubtitle = localStorage.getItem("contact_subtitle") || "Have a project in mind? Let’s create something extraordinary.";
-      const savedEmail = localStorage.getItem("contact_email") || "studio@alexandraclarke.media";
-      const savedLocation = localStorage.getItem("contact_location") || "Prague";
-      setContactSubtitleInput(savedSubtitle);
-      setContactEmailInput(savedEmail);
-      setContactLocationInput(savedLocation);
+    if (isEditHomeOpen && settings) {
+      setVideoUrlInput(settings.homeBgVideoUrl || "https://www.youtube.com/watch?v=BoUrWXaQUQQ");
+      setShowreelUrlInput(settings.homeShowreelVideoUrl || "https://www.youtube.com/watch?v=BoUrWXaQUQQ");
+      setYearInput(settings.copyrightYear || "2026");
     }
-  }, [isEditContactOpen]);
+  }, [isEditHomeOpen, settings]);
 
-  const handleSaveContact = () => {
+  useEffect(() => {
+    if (isEditAboutOpen && settings) {
+      setBiographyInput(settings.aboutBiography || "");
+      setCvUrlInput(settings.aboutCvUrl || "");
+    }
+    if (isEditAboutOpen && experiences) {
+      const formatted = experiences.map((exp) => `${exp.company || ""} | ${exp.period || ""} | ${exp.role || ""}`).join("\n");
+      setExperienceInput(formatted);
+    }
+    if (isEditAboutOpen && skillsList) {
+      const formatted = skillsList.map((skill) => `${skill.category || ""} | ${skill.items || ""}`).join("\n");
+      setSkillsInput(formatted);
+    }
+  }, [isEditAboutOpen, settings, experiences, skillsList]);
+
+  useEffect(() => {
+    if (isEditContactOpen && settings) {
+      setContactSubtitleInput(settings.contactSubtitle || "Have a project in mind? Let’s create something extraordinary.");
+      setContactEmailInput(settings.contactEmail || "studio@alexandraclarke.media");
+      setContactLocationInput(settings.contactLocation || "Prague");
+    }
+  }, [isEditContactOpen, settings]);
+
+  const handleSaveContact = async () => {
     if (!contactSubtitleInput.trim() || !contactEmailInput.trim() || !contactLocationInput.trim()) {
       alert("Please fill in all fields.");
       return;
     }
-    if (typeof window !== "undefined") {
-      localStorage.setItem("contact_subtitle", contactSubtitleInput.trim());
-      localStorage.setItem("contact_email", contactEmailInput.trim());
-      localStorage.setItem("contact_location", contactLocationInput.trim());
+    try {
+      await updateSettings({
+        contactSubtitle: contactSubtitleInput.trim(),
+        contactEmail: contactEmailInput.trim(),
+        contactLocation: contactLocationInput.trim(),
+      });
+      setIsEditContactOpen(false);
+    } catch {
+      alert("Failed to save contact settings.");
     }
-    setIsEditContactOpen(false);
   };
 
   useEffect(() => {
-    if (isEditSocialOpen && typeof window !== "undefined") {
-      const savedInsta = localStorage.getItem("social_instagram_url") || "https://www.instagram.com/alexandra.lexi.clarke/";
-      const savedYt = localStorage.getItem("social_youtube_url") || "https://www.youtube.com/channel/UCrj_CL9J9GvSdUxoOE0Jzgg";
-      const savedTiktok = localStorage.getItem("social_tiktok_url") || "https://www.tiktok.com/@its.keeby.and.kirby";
-      setSocialInstagramInput(savedInsta);
-      setSocialYoutubeInput(savedYt);
-      setSocialTiktokInput(savedTiktok);
+    if (isEditSocialOpen && settings) {
+      setSocialInstagramInput(settings.instagramUrl || "https://www.instagram.com/alexandra.lexi.clarke/");
+      setSocialYoutubeInput(settings.youtubeUrl || "https://www.youtube.com/channel/UCrj_CL9J9GvSdUxoOE0Jzgg");
+      setSocialTiktokInput(settings.tiktokUrl || "https://www.tiktok.com/@its.keeby.and.kirby");
     }
-  }, [isEditSocialOpen]);
+  }, [isEditSocialOpen, settings]);
 
-  const handleSaveSocial = () => {
+  const handleSaveSocial = async () => {
     if (!socialInstagramInput.trim() || !socialYoutubeInput.trim() || !socialTiktokInput.trim()) {
       alert("Please fill in all fields.");
       return;
     }
-    if (typeof window !== "undefined") {
-      localStorage.setItem("social_instagram_url", socialInstagramInput.trim());
-      localStorage.setItem("social_youtube_url", socialYoutubeInput.trim());
-      localStorage.setItem("social_tiktok_url", socialTiktokInput.trim());
+    try {
+      await updateSettings({
+        instagramUrl: socialInstagramInput.trim(),
+        youtubeUrl: socialYoutubeInput.trim(),
+        tiktokUrl: socialTiktokInput.trim(),
+      });
+      setIsEditSocialOpen(false);
+    } catch {
+      alert("Failed to save social links.");
     }
-    setIsEditSocialOpen(false);
   };
 
   const extractYouTubeId = (url: string): string => {
@@ -181,29 +185,36 @@ export default function DashboardPage() {
     return (match && match[2].length === 11) ? match[2] : "BoUrWXaQUQQ";
   };
 
-  const getThumbnailUrl = (item: PortfolioItem) => {
+  const getThumbnailUrl = (item: Doc<"portfolio">) => {
     if (item.videoUrl) {
       return `https://img.youtube.com/vi/${item.videoUrl}/hqdefault.jpg`;
     }
     return item.image || "/placeholder-thumbnail.webp";
   };
 
-  const handleSave = () => {
-    if (typeof window !== "undefined") {
+  const handleSave = async () => {
+    try {
       const videoId = extractYouTubeId(videoUrlInput);
       const showreelId = extractYouTubeId(showreelUrlInput);
-      localStorage.setItem("home_bg_video_url", videoUrlInput);
-      localStorage.setItem("home_bg_video_id", videoId);
-      localStorage.setItem("home_showreel_video_url", showreelUrlInput);
-      localStorage.setItem("home_showreel_video_id", showreelId);
-      localStorage.setItem("copyright_year", yearInput);
+      await updateSettings({
+        homeBgVideoUrl: videoUrlInput,
+        homeBgVideoId: videoId,
+        homeShowreelVideoUrl: showreelUrlInput,
+        homeShowreelVideoId: showreelId,
+        copyrightYear: yearInput,
+      });
+      setIsEditHomeOpen(false);
+    } catch {
+      alert("Failed to save home settings.");
     }
-    setIsEditHomeOpen(false);
   };
 
-  const handleSaveAbout = () => {
-    if (typeof window !== "undefined") {
-      localStorage.setItem("about_biography", biographyInput);
+  const handleSaveAbout = async () => {
+    try {
+      await updateSettings({
+        aboutBiography: biographyInput,
+        aboutCvUrl: cvUrlInput,
+      });
 
       const lines = experienceInput.split("\n").filter(line => line.trim());
       const parsedExp = lines.map(line => {
@@ -214,7 +225,7 @@ export default function DashboardPage() {
           role: (parts[2] || "").trim()
         };
       });
-      localStorage.setItem("about_experience", JSON.stringify(parsedExp));
+      await updateExperiences({ items: parsedExp });
 
       const skillLines = skillsInput.split("\n").filter(line => line.trim());
       const parsedSkills = skillLines.map(line => {
@@ -224,48 +235,30 @@ export default function DashboardPage() {
           items: (parts[1] || "").trim()
         };
       });
-      localStorage.setItem("about_skills", JSON.stringify(parsedSkills));
-      localStorage.setItem("about_cv_url", cvUrlInput);
+      await updateSkills({ items: parsedSkills });
+
+      setIsEditAboutOpen(false);
+    } catch {
+      alert("Failed to save about settings.");
     }
-    setIsEditAboutOpen(false);
   };
 
-  const handleSavePortfolioItem = () => {
+  const handleSavePortfolioItem = async () => {
     if (!newItemTitle.trim() || !newItemYoutubeUrl.trim() || !newItemYear.trim() || !newItemLength.trim()) {
       alert("Please fill in all fields.");
       return;
     }
 
-    if (typeof window !== "undefined") {
-      const savedItems = localStorage.getItem("portfolio_items");
-      let itemsList: PortfolioItem[] = [];
-
-      if (savedItems) {
-        try {
-          itemsList = JSON.parse(savedItems);
-        } catch {
-          itemsList = [...PORTFOLIO_ITEMS];
-        }
-      } else {
-        itemsList = [...PORTFOLIO_ITEMS];
-      }
-
+    try {
       const videoId = extractYouTubeId(newItemYoutubeUrl);
-      const maxId = itemsList.reduce((max, item) => (item.id > max ? item.id : max), 0);
-      
-      const newItem = {
-        id: maxId + 1,
+      await addPortfolio({
         title: newItemTitle.trim(),
         category: newItemCategory,
         image: `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`,
         year: newItemYear.trim(),
         length: newItemLength.trim(),
         videoUrl: videoId,
-      };
-
-      itemsList.push(newItem);
-      localStorage.setItem("portfolio_items", JSON.stringify(itemsList));
-      setPortfolioItems(itemsList);
+      });
 
       setNewItemTitle("");
       setNewItemYoutubeUrl("");
@@ -273,124 +266,108 @@ export default function DashboardPage() {
       setNewItemYear("");
       setNewItemLength("");
       setIsAddItemOpen(false);
+    } catch {
+      alert("Failed to add portfolio item.");
     }
   };
 
-  const handleDeleteConfirm = () => {
+  const handleDeleteConfirm = async () => {
     if (deletingItem) {
-      const updated = portfolioItems.filter((item) => item.id !== deletingItem.id);
-      setPortfolioItems(updated);
-      if (typeof window !== "undefined") {
-        localStorage.setItem("portfolio_items", JSON.stringify(updated));
+      try {
+        await removePortfolio({ id: deletingItem._id });
+        setIsConfirmDeleteOpen(false);
+        setDeletingItem(null);
+      } catch {
+        alert("Failed to delete portfolio item.");
       }
-      setIsConfirmDeleteOpen(false);
-      setDeletingItem(null);
     }
   };
 
-  const handleApplyUpdate = () => {
+  const handleApplyUpdate = async () => {
     if (!updateItemTitle.trim() || !updateItemYear.trim() || !updateItemLength.trim()) {
       alert("Please fill in all fields.");
       return;
     }
 
     if (updatingItem) {
-      const updated = portfolioItems.map((item) => {
-        if (item.id === updatingItem.id) {
-          return {
-            ...item,
-            title: updateItemTitle.trim(),
-            category: updateItemCategory,
-            year: updateItemYear.trim(),
-            length: updateItemLength.trim(),
-          };
-        }
-        return item;
-      });
-
-      setPortfolioItems(updated);
-      if (typeof window !== "undefined") {
-        localStorage.setItem("portfolio_items", JSON.stringify(updated));
+      try {
+        await updatePortfolio({
+          id: updatingItem._id,
+          title: updateItemTitle.trim(),
+          category: updateItemCategory,
+          year: updateItemYear.trim(),
+          length: updateItemLength.trim(),
+        });
+        setIsUpdateItemOpen(false);
+        setUpdatingItem(null);
+        setUpdateItemTitle("");
+        setUpdateItemYear("");
+        setUpdateItemLength("");
+      } catch {
+        alert("Failed to update portfolio item.");
       }
-      setIsUpdateItemOpen(false);
-      setUpdatingItem(null);
-      setUpdateItemTitle("");
-      setUpdateItemYear("");
-      setUpdateItemLength("");
     }
   };
 
-  const handleSaveTestimonial = () => {
+  const handleSaveTestimonial = async () => {
     if (!testimonialQuoteInput.trim() || !testimonialAuthorInput.trim() || !testimonialTitleInput.trim() || !testimonialCompanyInput.trim()) {
       alert("Please fill in all fields.");
       return;
     }
 
-    if (typeof window !== "undefined") {
-      const maxId = testimonials.reduce((max, item) => (item.id > max ? item.id : max), 0);
-      const newTestimonial: Testimonial = {
-        id: maxId + 1,
+    try {
+      await addTestimonial({
         quote: testimonialQuoteInput.trim(),
         author: testimonialAuthorInput.trim(),
         title: `${testimonialTitleInput.trim()} • ${testimonialCompanyInput.trim()}`,
-      };
+      });
 
-      const updated = [...testimonials, newTestimonial];
-      setTestimonials(updated);
-      localStorage.setItem("testimonial_items", JSON.stringify(updated));
-
-      // Reset
       setTestimonialQuoteInput("");
       setTestimonialAuthorInput(" ");
       setTestimonialTitleInput(" ");
       setTestimonialCompanyInput(" ");
       setIsAddTestimonialOpen(false);
+    } catch {
+      alert("Failed to add testimonial.");
     }
   };
 
-  const handleApplyTestimonialUpdate = () => {
+  const handleApplyTestimonialUpdate = async () => {
     if (!testimonialQuoteInput.trim() || !testimonialAuthorInput.trim() || !testimonialTitleInput.trim() || !testimonialCompanyInput.trim()) {
       alert("Please fill in all fields.");
       return;
     }
 
     if (updatingTestimonial) {
-      const updated = testimonials.map((item) => {
-        if (item.id === updatingTestimonial.id) {
-          return {
-            ...item,
-            quote: testimonialQuoteInput.trim(),
-            author: testimonialAuthorInput.trim(),
-            title: `${testimonialTitleInput.trim()} • ${testimonialCompanyInput.trim()}`,
-          };
-        }
-        return item;
-      });
+      try {
+        await updateTestimonial({
+          id: updatingTestimonial._id,
+          quote: testimonialQuoteInput.trim(),
+          author: testimonialAuthorInput.trim(),
+          title: `${testimonialTitleInput.trim()} • ${testimonialCompanyInput.trim()}`,
+        });
 
-      setTestimonials(updated);
-      if (typeof window !== "undefined") {
-        localStorage.setItem("testimonial_items", JSON.stringify(updated));
+        setTestimonialQuoteInput("");
+        setTestimonialAuthorInput(" ");
+        setTestimonialTitleInput(" ");
+        setTestimonialCompanyInput(" ");
+        setIsUpdateTestimonialDetailsOpen(false);
+        setUpdatingTestimonial(null);
+      } catch {
+        alert("Failed to update testimonial.");
       }
-
-      // Reset
-      setTestimonialQuoteInput("");
-      setTestimonialAuthorInput(" ");
-      setTestimonialTitleInput(" ");
-      setTestimonialCompanyInput(" ");
-      setIsUpdateTestimonialDetailsOpen(false);
-      setUpdatingTestimonial(null);
     }
   };
 
-  const handleDeleteTestimonialConfirm = () => {
+  const handleDeleteTestimonialConfirm = async () => {
     if (deletingTestimonial) {
-      const updated = testimonials.filter((item) => item.id !== deletingTestimonial.id);
-      setTestimonials(updated);
-      if (typeof window !== "undefined") {
-        localStorage.setItem("testimonial_items", JSON.stringify(updated));
+      try {
+        await removeTestimonial({ id: deletingTestimonial._id });
+        setIsConfirmDeleteTestimonialOpen(false);
+        setDeletingTestimonial(null);
+      } catch {
+        alert("Failed to delete testimonial.");
       }
-      setIsConfirmDeleteTestimonialOpen(false);
-      setDeletingTestimonial(null);
     }
   };
 
@@ -401,25 +378,20 @@ export default function DashboardPage() {
     setIsUploading(true);
     setUploadError("");
 
-    const formData = new FormData();
-    formData.append("file", file);
-
     try {
-      const response = await fetch("/api/upload-cv", {
+      const uploadUrl = await generateUploadUrl();
+
+      const result = await fetch(uploadUrl, {
         method: "POST",
-        body: formData,
+        headers: { "Content-Type": file.type },
+        body: file,
       });
 
-      if (!response.ok) {
-        throw new Error("Failed to upload CV file");
-      }
+      if (!result.ok) throw new Error("Upload failed");
 
-      const data = await response.json();
-      if (data.success && data.url) {
-        setCvUrlInput(data.url);
-      } else {
-        throw new Error(data.error || "Upload failed");
-      }
+      const { storageId } = await result.json();
+      const fileUrl = `${process.env.NEXT_PUBLIC_CONVEX_SITE_URL}/api/storage/${storageId}`;
+      setCvUrlInput(fileUrl);
     } catch (err) {
       console.error(err);
       const errorMessage = err instanceof Error ? err.message : "Something went wrong during file upload";
@@ -431,35 +403,10 @@ export default function DashboardPage() {
 
   useEffect(() => {
     setIsMounted(true);
-    // Simple client-side auth check
     if (typeof window !== "undefined") {
       const session = localStorage.getItem("lexi_cms_session");
       if (!session) {
         router.push("/lexilogin");
-      }
-
-      const savedItems = localStorage.getItem("portfolio_items");
-      if (savedItems) {
-        try {
-          setPortfolioItems(JSON.parse(savedItems));
-        } catch {
-          setPortfolioItems(PORTFOLIO_ITEMS);
-        }
-      } else {
-        setPortfolioItems(PORTFOLIO_ITEMS);
-        localStorage.setItem("portfolio_items", JSON.stringify(PORTFOLIO_ITEMS));
-      }
-
-      const savedTestimonials = localStorage.getItem("testimonial_items");
-      if (savedTestimonials) {
-        try {
-          setTestimonials(JSON.parse(savedTestimonials));
-        } catch {
-          setTestimonials(DEFAULT_TESTIMONIALS);
-        }
-      } else {
-        setTestimonials(DEFAULT_TESTIMONIALS);
-        localStorage.setItem("testimonial_items", JSON.stringify(DEFAULT_TESTIMONIALS));
       }
     }
   }, [router]);
@@ -1049,7 +996,7 @@ export default function DashboardPage() {
               ) : (
                 portfolioItems.map((item) => (
                   <div 
-                    key={item.id} 
+                    key={item._id} 
                     className="flex items-center justify-between gap-4 p-3 bg-[#0A0A0A] border border-white/5 rounded-lg hover:border-[#FBAB3C]/10 transition-colors"
                   >
                     <div className="flex items-center gap-4 min-w-0 flex-1">
@@ -1172,7 +1119,7 @@ export default function DashboardPage() {
               ) : (
                 portfolioItems.map((item) => (
                   <div 
-                    key={item.id} 
+                    key={item._id} 
                     className="flex items-center justify-between gap-4 p-3 bg-[#0A0A0A] border border-white/5 rounded-lg hover:border-[#FBAB3C]/10 transition-colors"
                   >
                     <div className="flex items-center gap-4 min-w-0 flex-1">
@@ -1556,7 +1503,7 @@ export default function DashboardPage() {
               ) : (
                 testimonials.map((item) => (
                   <div 
-                    key={item.id} 
+                    key={item._id} 
                     className="flex items-center justify-between gap-4 p-3 bg-[#0A0A0A] border border-white/5 rounded-lg hover:border-[#FBAB3C]/10 transition-colors"
                   >
                     <div className="min-w-0 flex-1 text-left">
@@ -1666,7 +1613,7 @@ export default function DashboardPage() {
               ) : (
                 testimonials.map((item) => (
                   <div 
-                    key={item.id} 
+                    key={item._id} 
                     className="flex items-center justify-between gap-4 p-3 bg-[#0A0A0A] border border-white/5 rounded-lg hover:border-[#FBAB3C]/10 transition-colors"
                   >
                     <div className="min-w-0 flex-1 text-left">

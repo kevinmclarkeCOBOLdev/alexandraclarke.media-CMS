@@ -2,8 +2,14 @@
 
 import { useEffect, useState } from "react";
 import Image from "next/image";
+import { useQuery } from "convex/react";
+import { api } from "../../../convex/_generated/api";
 
 export default function AboutPanel() {
+  const settings = useQuery(api.settings.get);
+  const experiences = useQuery(api.experience.list);
+  const skillsList = useQuery(api.skills.list);
+
   const [biography, setBiography] = useState(
     "A dynamic filmmaker with over 7 years of filmmaking experience, adept at creating a wide range of video content (from 3D animation to interviews & social media content). Possessing strong problem-solving skills and a naturally outgoing personality, I communicate effectively with a diverse clientele for projects.\n\nI am committed to maintaining high standards of quality and efficiency in all of my projects."
   );
@@ -38,45 +44,26 @@ export default function AboutPanel() {
   const [tiktokUrl, setTiktokUrl] = useState("https://www.tiktok.com/@its.keeby.and.kirby");
 
   useEffect(() => {
-    if (typeof window !== "undefined") {
-      const savedBio = localStorage.getItem("about_biography");
-      if (savedBio) {
-        setBiography(savedBio);
-      }
-      const savedExp = localStorage.getItem("about_experience");
-      if (savedExp) {
-        try {
-          const parsed = JSON.parse(savedExp);
-          if (Array.isArray(parsed)) {
-            setExperience(parsed);
-          }
-        } catch (e) {
-          console.error("Error parsing experience from localStorage", e);
-        }
-      }
-      const savedSkills = localStorage.getItem("about_skills");
-      if (savedSkills) {
-        try {
-          const parsed = JSON.parse(savedSkills);
-          if (Array.isArray(parsed)) {
-            setSkills(parsed);
-          }
-        } catch (e) {
-          console.error("Error parsing skills from localStorage", e);
-        }
-      }
-      const savedCvUrl = localStorage.getItem("about_cv_url");
-      if (savedCvUrl) {
-        setCvUrl(savedCvUrl);
-      }
-      const savedInsta = localStorage.getItem("social_instagram_url");
-      const savedYt = localStorage.getItem("social_youtube_url");
-      const savedTiktok = localStorage.getItem("social_tiktok_url");
-      if (savedInsta) setInstagramUrl(savedInsta);
-      if (savedYt) setYoutubeUrl(savedYt);
-      if (savedTiktok) setTiktokUrl(savedTiktok);
+    if (settings) {
+      if (settings.aboutBiography) setBiography(settings.aboutBiography);
+      if (settings.aboutCvUrl) setCvUrl(settings.aboutCvUrl);
+      if (settings.instagramUrl) setInstagramUrl(settings.instagramUrl);
+      if (settings.youtubeUrl) setYoutubeUrl(settings.youtubeUrl);
+      if (settings.tiktokUrl) setTiktokUrl(settings.tiktokUrl);
     }
-  }, []);
+  }, [settings]);
+
+  useEffect(() => {
+    if (experiences) {
+      setExperience(experiences);
+    }
+  }, [experiences]);
+
+  useEffect(() => {
+    if (skillsList) {
+      setSkills(skillsList);
+    }
+  }, [skillsList]);
 
   const education = [
     {

@@ -6,6 +6,8 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { ArrowRight, AlertCircle, CheckCircle2 } from "lucide-react";
+import { useMutation } from "convex/react";
+import { api } from "../../../convex/_generated/api";
 
 // Define the validation schema using Zod
 const loginSchema = z.object({
@@ -21,6 +23,7 @@ export default function LexiLogin() {
   const [loginError, setLoginError] = useState<string | null>(null);
   const [loginSuccess, setLoginSuccess] = useState(false);
   const [isMounted, setIsMounted] = useState(false);
+  const login = useMutation(api.auth.login);
 
   // Avoid hydration mismatch by waiting until client mount
   useEffect(() => {
@@ -43,19 +46,27 @@ export default function LexiLogin() {
     setIsLoading(true);
     setLoginError(null);
 
-    // Simulate network delay
-    await new Promise((resolve) => setTimeout(resolve, 1200));
+    try {
+      const result = await login({ username: data.email, password: data.password });
+      if (result.success) {
+        setLoginSuccess(true);
+        if (typeof window !== "undefined") {
+          localStorage.setItem("lexi_cms_session", result.token || "true");
+          localStorage.setItem("lexi_cms_user", JSON.stringify(result.user));
+        }
 
-    setLoginSuccess(true);
-    if (typeof window !== "undefined") {
-      localStorage.setItem("lexi_cms_session", "true");
-      localStorage.setItem("lexi_cms_user", JSON.stringify({ email: data.email, role: "admin" }));
+        // Delay redirect to show success message
+        setTimeout(() => {
+          router.push("/dashboard");
+        }, 1000);
+      } else {
+        setLoginError(result.error || "Invalid username or password");
+      }
+    } catch {
+      setLoginError("A network error occurred. Please try again.");
+    } finally {
+      setIsLoading(false);
     }
-
-    // Delay redirect to show success message
-    setTimeout(() => {
-      router.push("/dashboard");
-    }, 1000);
   };
 
   if (!isMounted) {

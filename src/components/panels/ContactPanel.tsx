@@ -29,7 +29,11 @@ interface Bubble {
   size: number;
 }
 
+import { useQuery } from "convex/react";
+import { api } from "../../../convex/_generated/api";
+
 export default function ContactPanel() {
+  const settings = useQuery(api.settings.get);
   const [localTime, setLocalTime] = useState("");
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [bubbles, setBubbles] = useState<Bubble[]>([]);
@@ -38,15 +42,12 @@ export default function ContactPanel() {
   const [location, setLocation] = useState("Prague");
 
   useEffect(() => {
-    if (typeof window !== "undefined") {
-      const savedSubtitle = localStorage.getItem("contact_subtitle");
-      const savedEmail = localStorage.getItem("contact_email");
-      const savedLocation = localStorage.getItem("contact_location");
-      if (savedSubtitle) setSubtitle(savedSubtitle);
-      if (savedEmail) setEmail(savedEmail);
-      if (savedLocation) setLocation(savedLocation);
+    if (settings) {
+      if (settings.contactSubtitle) setSubtitle(settings.contactSubtitle);
+      if (settings.contactEmail) setEmail(settings.contactEmail);
+      if (settings.contactLocation) setLocation(settings.contactLocation);
     }
-  }, []);
+  }, [settings]);
 
   const {
     register,

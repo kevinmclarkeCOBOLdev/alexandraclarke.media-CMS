@@ -2,8 +2,11 @@
 
 import { useState, useEffect, useRef } from "react";
 import Image from "next/image";
+import { useQuery } from "convex/react";
+import { api } from "../../../convex/_generated/api";
 
 export default function HomePanel() {
+  const settings = useQuery(api.settings.get);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isVideoEnded, setIsVideoEnded] = useState(false);
   const [isPageLoaded, setIsPageLoaded] = useState(false);
@@ -20,27 +23,15 @@ export default function HomePanel() {
   const [tiktokUrl, setTiktokUrl] = useState("https://www.tiktok.com/@its.keeby.and.kirby");
 
   useEffect(() => {
-    if (typeof window !== "undefined") {
-      const savedVideoId = localStorage.getItem("home_bg_video_id");
-      if (savedVideoId) {
-        setBgVideoId(savedVideoId);
-      }
-      const savedShowreelId = localStorage.getItem("home_showreel_video_id");
-      if (savedShowreelId) {
-        setShowreelVideoId(savedShowreelId);
-      }
-      const savedYear = localStorage.getItem("copyright_year");
-      if (savedYear) {
-        setCopyrightYear(savedYear);
-      }
-      const savedInsta = localStorage.getItem("social_instagram_url");
-      const savedYt = localStorage.getItem("social_youtube_url");
-      const savedTiktok = localStorage.getItem("social_tiktok_url");
-      if (savedInsta) setInstagramUrl(savedInsta);
-      if (savedYt) setYoutubeUrl(savedYt);
-      if (savedTiktok) setTiktokUrl(savedTiktok);
+    if (settings) {
+      if (settings.homeBgVideoId) setBgVideoId(settings.homeBgVideoId);
+      if (settings.homeShowreelVideoId) setShowreelVideoId(settings.homeShowreelVideoId);
+      if (settings.copyrightYear) setCopyrightYear(settings.copyrightYear);
+      if (settings.instagramUrl) setInstagramUrl(settings.instagramUrl);
+      if (settings.youtubeUrl) setYoutubeUrl(settings.youtubeUrl);
+      if (settings.tiktokUrl) setTiktokUrl(settings.tiktokUrl);
     }
-  }, []);
+  }, [settings]);
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const playerRef = useRef<any>(null);

@@ -36,7 +36,13 @@ export const DEFAULT_TESTIMONIALS: Testimonial[] = [
   },
 ];
 
+import { useQuery } from "convex/react";
+import { api } from "../../../convex/_generated/api";
+
 export default function TestimonialsPanel() {
+  const settings = useQuery(api.settings.get);
+  const testimonialsDb = useQuery(api.testimonials.list);
+
   const [activeIndex, setActiveIndex] = useState(0);
   const [testimonials, setTestimonials] = useState<Testimonial[]>([]);
   const cardRef = useRef<HTMLDivElement>(null);
@@ -45,26 +51,22 @@ export default function TestimonialsPanel() {
   const [tiktokUrl, setTiktokUrl] = useState("https://www.tiktok.com/@its.keeby.and.kirby");
 
   useEffect(() => {
-    if (typeof window !== "undefined") {
-      const saved = localStorage.getItem("testimonial_items");
-      if (saved) {
-        try {
-          setTestimonials(JSON.parse(saved));
-        } catch {
-          setTestimonials(DEFAULT_TESTIMONIALS);
-        }
-      } else {
-        setTestimonials(DEFAULT_TESTIMONIALS);
-        localStorage.setItem("testimonial_items", JSON.stringify(DEFAULT_TESTIMONIALS));
-      }
-      const savedInsta = localStorage.getItem("social_instagram_url");
-      const savedYt = localStorage.getItem("social_youtube_url");
-      const savedTiktok = localStorage.getItem("social_tiktok_url");
-      if (savedInsta) setInstagramUrl(savedInsta);
-      if (savedYt) setYoutubeUrl(savedYt);
-      if (savedTiktok) setTiktokUrl(savedTiktok);
+    if (settings) {
+      if (settings.instagramUrl) setInstagramUrl(settings.instagramUrl);
+      if (settings.youtubeUrl) setYoutubeUrl(settings.youtubeUrl);
+      if (settings.tiktokUrl) setTiktokUrl(settings.tiktokUrl);
     }
-  }, []);
+  }, [settings]);
+
+  useEffect(() => {
+    if (testimonialsDb) {
+      const mapped = testimonialsDb.map((item, index) => ({
+        ...item,
+        id: index + 1,
+      }));
+      setTestimonials(mapped);
+    }
+  }, [testimonialsDb]);
 
   useEffect(() => {
     if (cardRef.current && testimonials.length > 0) {

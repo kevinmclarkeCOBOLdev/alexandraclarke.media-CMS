@@ -45,7 +45,13 @@ export const PORTFOLIO_ITEMS: PortfolioItem[] = [
   },
 ];
 
+import { useQuery } from "convex/react";
+import { api } from "../../../convex/_generated/api";
+
 export default function PortfolioPanel() {
+  const settings = useQuery(api.settings.get);
+  const portfolioItemsDb = useQuery(api.portfolio.list);
+
   const [selectedCategory, setSelectedCategory] = useState<string>("all");
   const [activeIndex, setActiveIndex] = useState<number>(0);
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
@@ -58,26 +64,22 @@ export default function PortfolioPanel() {
   const [tiktokUrl, setTiktokUrl] = useState("https://www.tiktok.com/@its.keeby.and.kirby");
 
   useEffect(() => {
-    if (typeof window !== "undefined") {
-      const savedItems = localStorage.getItem("portfolio_items");
-      if (savedItems) {
-        try {
-          setPortfolioItems(JSON.parse(savedItems));
-        } catch {
-          setPortfolioItems(PORTFOLIO_ITEMS);
-        }
-      } else {
-        setPortfolioItems(PORTFOLIO_ITEMS);
-        localStorage.setItem("portfolio_items", JSON.stringify(PORTFOLIO_ITEMS));
-      }
-      const savedInsta = localStorage.getItem("social_instagram_url");
-      const savedYt = localStorage.getItem("social_youtube_url");
-      const savedTiktok = localStorage.getItem("social_tiktok_url");
-      if (savedInsta) setInstagramUrl(savedInsta);
-      if (savedYt) setYoutubeUrl(savedYt);
-      if (savedTiktok) setTiktokUrl(savedTiktok);
+    if (settings) {
+      if (settings.instagramUrl) setInstagramUrl(settings.instagramUrl);
+      if (settings.youtubeUrl) setYoutubeUrl(settings.youtubeUrl);
+      if (settings.tiktokUrl) setTiktokUrl(settings.tiktokUrl);
     }
-  }, []);
+  }, [settings]);
+
+  useEffect(() => {
+    if (portfolioItemsDb) {
+      const mapped = portfolioItemsDb.map((item, index) => ({
+        ...item,
+        id: index + 1,
+      }));
+      setPortfolioItems(mapped);
+    }
+  }, [portfolioItemsDb]);
 
   const getInstagramShortcode = (embedHtml?: string) => {
     if (!embedHtml) return null;
