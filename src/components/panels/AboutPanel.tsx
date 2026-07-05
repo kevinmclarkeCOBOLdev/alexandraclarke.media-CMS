@@ -54,13 +54,13 @@ export default function AboutPanel() {
   }, [settings]);
 
   useEffect(() => {
-    if (experiences) {
+    if (experiences && experiences.length > 0) {
       setExperience(experiences);
     }
   }, [experiences]);
 
   useEffect(() => {
-    if (skillsList) {
+    if (skillsList && skillsList.length > 0) {
       setSkills(skillsList);
     }
   }, [skillsList]);

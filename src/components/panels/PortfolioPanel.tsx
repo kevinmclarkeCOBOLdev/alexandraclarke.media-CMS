@@ -58,7 +58,7 @@ export default function PortfolioPanel() {
   const [modalVideoId, setModalVideoId] = useState<string>("");
   const [modalEmbedHtml, setModalEmbedHtml] = useState<string>("");
   const [imageErrors, setImageErrors] = useState<Record<string, boolean>>({});
-  const [portfolioItems, setPortfolioItems] = useState<PortfolioItem[]>([]);
+  const [portfolioItems, setPortfolioItems] = useState<PortfolioItem[]>(PORTFOLIO_ITEMS);
   const [instagramUrl, setInstagramUrl] = useState("https://www.instagram.com/alexandra.lexi.clarke/");
   const [youtubeUrl, setYoutubeUrl] = useState("https://www.youtube.com/channel/UCrj_CL9J9GvSdUxoOE0Jzgg");
   const [tiktokUrl, setTiktokUrl] = useState("https://www.tiktok.com/@its.keeby.and.kirby");
@@ -72,7 +72,7 @@ export default function PortfolioPanel() {
   }, [settings]);
 
   useEffect(() => {
-    if (portfolioItemsDb) {
+    if (portfolioItemsDb && portfolioItemsDb.length > 0) {
       const mapped = portfolioItemsDb.map((item, index) => ({
         ...item,
         id: index + 1,

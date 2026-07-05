@@ -44,7 +44,7 @@ export default function TestimonialsPanel() {
   const testimonialsDb = useQuery(api.testimonials.list);
 
   const [activeIndex, setActiveIndex] = useState(0);
-  const [testimonials, setTestimonials] = useState<Testimonial[]>([]);
+  const [testimonials, setTestimonials] = useState<Testimonial[]>(DEFAULT_TESTIMONIALS);
   const cardRef = useRef<HTMLDivElement>(null);
   const [instagramUrl, setInstagramUrl] = useState("https://www.instagram.com/alexandra.lexi.clarke/");
   const [youtubeUrl, setYoutubeUrl] = useState("https://www.youtube.com/channel/UCrj_CL9J9GvSdUxoOE0Jzgg");
@@ -59,7 +59,7 @@ export default function TestimonialsPanel() {
   }, [settings]);
 
   useEffect(() => {
-    if (testimonialsDb) {
+    if (testimonialsDb && testimonialsDb.length > 0) {
       const mapped = testimonialsDb.map((item, index) => ({
         ...item,
         id: index + 1,
