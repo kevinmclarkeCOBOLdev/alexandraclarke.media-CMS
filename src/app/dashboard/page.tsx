@@ -46,8 +46,9 @@ export default function DashboardPage() {
 
   const [testimonials, setTestimonials] = useState<Testimonial[]>([]);
   const [testimonialQuoteInput, setTestimonialQuoteInput] = useState("");
-  const [testimonialAuthorInput, setTestimonialAuthorInput] = useState("");
-  const [testimonialTitleInput, setTestimonialTitleInput] = useState("");
+  const [testimonialAuthorInput, setTestimonialAuthorInput] = useState(" ");
+  const [testimonialTitleInput, setTestimonialTitleInput] = useState(" ");
+  const [testimonialCompanyInput, setTestimonialCompanyInput] = useState(" ");
   
   const [deletingTestimonial, setDeletingTestimonial] = useState<Testimonial | null>(null);
   const [updatingTestimonial, setUpdatingTestimonial] = useState<Testimonial | null>(null);
@@ -249,7 +250,7 @@ export default function DashboardPage() {
   };
 
   const handleSaveTestimonial = () => {
-    if (!testimonialQuoteInput.trim() || !testimonialAuthorInput.trim() || !testimonialTitleInput.trim()) {
+    if (!testimonialQuoteInput.trim() || !testimonialAuthorInput.trim() || !testimonialTitleInput.trim() || !testimonialCompanyInput.trim()) {
       alert("Please fill in all fields.");
       return;
     }
@@ -260,7 +261,7 @@ export default function DashboardPage() {
         id: maxId + 1,
         quote: testimonialQuoteInput.trim(),
         author: testimonialAuthorInput.trim(),
-        title: testimonialTitleInput.trim(),
+        title: `${testimonialTitleInput.trim()} • ${testimonialCompanyInput.trim()}`,
       };
 
       const updated = [...testimonials, newTestimonial];
@@ -269,14 +270,15 @@ export default function DashboardPage() {
 
       // Reset
       setTestimonialQuoteInput("");
-      setTestimonialAuthorInput("");
-      setTestimonialTitleInput("");
+      setTestimonialAuthorInput(" ");
+      setTestimonialTitleInput(" ");
+      setTestimonialCompanyInput(" ");
       setIsAddTestimonialOpen(false);
     }
   };
 
   const handleApplyTestimonialUpdate = () => {
-    if (!testimonialQuoteInput.trim() || !testimonialAuthorInput.trim() || !testimonialTitleInput.trim()) {
+    if (!testimonialQuoteInput.trim() || !testimonialAuthorInput.trim() || !testimonialTitleInput.trim() || !testimonialCompanyInput.trim()) {
       alert("Please fill in all fields.");
       return;
     }
@@ -288,7 +290,7 @@ export default function DashboardPage() {
             ...item,
             quote: testimonialQuoteInput.trim(),
             author: testimonialAuthorInput.trim(),
-            title: testimonialTitleInput.trim(),
+            title: `${testimonialTitleInput.trim()} • ${testimonialCompanyInput.trim()}`,
           };
         }
         return item;
@@ -301,8 +303,9 @@ export default function DashboardPage() {
 
       // Reset
       setTestimonialQuoteInput("");
-      setTestimonialAuthorInput("");
-      setTestimonialTitleInput("");
+      setTestimonialAuthorInput(" ");
+      setTestimonialTitleInput(" ");
+      setTestimonialCompanyInput(" ");
       setIsUpdateTestimonialDetailsOpen(false);
       setUpdatingTestimonial(null);
     }
@@ -1220,7 +1223,13 @@ export default function DashboardPage() {
             <div className="flex flex-col gap-4" style={{ marginBottom: "20px" }}>
               <button
                 type="button"
-                onClick={() => setIsAddTestimonialOpen(true)}
+                onClick={() => {
+                  setTestimonialQuoteInput("");
+                  setTestimonialAuthorInput(" ");
+                  setTestimonialTitleInput(" ");
+                  setTestimonialCompanyInput(" ");
+                  setIsAddTestimonialOpen(true);
+                }}
                 className="w-full h-[50px] bg-[#0A0A0A] hover:bg-[#1A1A1A] border border-[#FBAB3C]/20 hover:border-[#FBAB3C]/40 rounded-lg font-sans text-sm font-semibold uppercase tracking-wider text-[#FBAB3C] transition-all duration-300 cursor-pointer"
               >
                 ADD TESTIMONIAL
@@ -1307,8 +1316,7 @@ export default function DashboardPage() {
                   type="text"
                   value={testimonialAuthorInput}
                   onChange={(e) => setTestimonialAuthorInput(e.target.value)}
-                  className="w-full bg-[#1A1A1A] border border-white/10 rounded px-4 py-3 text-sm text-foreground placeholder-neutral-500 focus:outline-none focus:border-[#FBAB3C] transition-colors"
-                  placeholder="Gordon L. Schmitz"
+                  className="w-full bg-[#1A1A1A] border border-white/10 rounded px-4 py-3 text-sm text-foreground focus:outline-none focus:border-[#FBAB3C] transition-colors"
                 />
               </div>
 
@@ -1318,14 +1326,29 @@ export default function DashboardPage() {
                   className="font-sans text-[11px] font-bold text-neutral-grey uppercase tracking-widest text-left"
                   style={{ marginBottom: "8px", display: "block" }}
                 >
-                  Title / Company
+                  Title
                 </label>
                 <input
                   type="text"
                   value={testimonialTitleInput}
                   onChange={(e) => setTestimonialTitleInput(e.target.value)}
-                  className="w-full bg-[#1A1A1A] border border-white/10 rounded px-4 py-3 text-sm text-foreground placeholder-neutral-500 focus:outline-none focus:border-[#FBAB3C] transition-colors"
-                  placeholder="Artistic Director • The Mad and Merry Men, Prague"
+                  className="w-full bg-[#1A1A1A] border border-white/10 rounded px-4 py-3 text-sm text-foreground focus:outline-none focus:border-[#FBAB3C] transition-colors"
+                />
+              </div>
+
+              {/* Field 4: Company */}
+              <div>
+                <label 
+                  className="font-sans text-[11px] font-bold text-neutral-grey uppercase tracking-widest text-left"
+                  style={{ marginBottom: "8px", display: "block" }}
+                >
+                  Company
+                </label>
+                <input
+                  type="text"
+                  value={testimonialCompanyInput}
+                  onChange={(e) => setTestimonialCompanyInput(e.target.value)}
+                  className="w-full bg-[#1A1A1A] border border-white/10 rounded px-4 py-3 text-sm text-foreground focus:outline-none focus:border-[#FBAB3C] transition-colors"
                 />
               </div>
             </div>
@@ -1341,8 +1364,9 @@ export default function DashboardPage() {
                 onClick={() => {
                   setIsAddTestimonialOpen(false);
                   setTestimonialQuoteInput("");
-                  setTestimonialAuthorInput("");
-                  setTestimonialTitleInput("");
+                  setTestimonialAuthorInput(" ");
+                  setTestimonialTitleInput(" ");
+                  setTestimonialCompanyInput(" ");
                 }}
                 className="border border-white/10 rounded-[50px] font-sans text-xs md:text-sm font-semibold uppercase tracking-wider text-white hover:border-[#FBAB3C] transition-colors cursor-pointer"
                 style={{ padding: "10px 20px" }}
@@ -1508,10 +1532,15 @@ export default function DashboardPage() {
                     <button
                       type="button"
                       onClick={() => {
+                        const parts = item.title.split(" • ");
+                        const tTitle = parts[0] || "";
+                        const tCompany = parts.slice(1).join(" • ") || "";
+
                         setUpdatingTestimonial(item);
                         setTestimonialQuoteInput(item.quote);
                         setTestimonialAuthorInput(item.author);
-                        setTestimonialTitleInput(item.title);
+                        setTestimonialTitleInput(tTitle);
+                        setTestimonialCompanyInput(tCompany);
                         setIsUpdateTestimonialDetailsOpen(true);
                       }}
                       className="px-4 py-2 border border-[#FBAB3C]/20 hover:border-[#FBAB3C] hover:bg-[#FBAB3C]/10 text-[#FBAB3C] rounded-[50px] font-sans text-[11px] font-bold uppercase tracking-wider transition-all duration-300 cursor-pointer whitespace-nowrap"
@@ -1597,14 +1626,29 @@ export default function DashboardPage() {
                   className="font-sans text-[11px] font-bold text-neutral-grey uppercase tracking-widest text-left"
                   style={{ marginBottom: "8px", display: "block" }}
                 >
-                  Title / Company
+                  Title
                 </label>
                 <input
                   type="text"
                   value={testimonialTitleInput}
                   onChange={(e) => setTestimonialTitleInput(e.target.value)}
-                  className="w-full bg-[#1A1A1A] border border-white/10 rounded px-4 py-3 text-sm text-foreground placeholder-neutral-500 focus:outline-none focus:border-[#FBAB3C] transition-colors"
-                  placeholder="Artistic Director • The Mad and Merry Men, Prague"
+                  className="w-full bg-[#1A1A1A] border border-white/10 rounded px-4 py-3 text-sm text-foreground focus:outline-none focus:border-[#FBAB3C] transition-colors"
+                />
+              </div>
+
+              {/* Field 4: Company */}
+              <div>
+                <label 
+                  className="font-sans text-[11px] font-bold text-neutral-grey uppercase tracking-widest text-left"
+                  style={{ marginBottom: "8px", display: "block" }}
+                >
+                  Company
+                </label>
+                <input
+                  type="text"
+                  value={testimonialCompanyInput}
+                  onChange={(e) => setTestimonialCompanyInput(e.target.value)}
+                  className="w-full bg-[#1A1A1A] border border-white/10 rounded px-4 py-3 text-sm text-foreground focus:outline-none focus:border-[#FBAB3C] transition-colors"
                 />
               </div>
             </div>
@@ -1621,8 +1665,9 @@ export default function DashboardPage() {
                   setIsUpdateTestimonialDetailsOpen(false);
                   setUpdatingTestimonial(null);
                   setTestimonialQuoteInput("");
-                  setTestimonialAuthorInput("");
-                  setTestimonialTitleInput("");
+                  setTestimonialAuthorInput(" ");
+                  setTestimonialTitleInput(" ");
+                  setTestimonialCompanyInput(" ");
                 }}
                 className="border border-white/10 rounded-[50px] font-sans text-xs md:text-sm font-semibold uppercase tracking-wider text-white hover:border-[#FBAB3C] transition-colors cursor-pointer"
                 style={{ padding: "10px 20px" }}
