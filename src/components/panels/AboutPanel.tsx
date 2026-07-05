@@ -33,6 +33,9 @@ export default function AboutPanel() {
   ]);
 
   const [cvUrl, setCvUrl] = useState("/Alexandra-Clarke-CV-English-v2.pdf");
+  const [instagramUrl, setInstagramUrl] = useState("https://www.instagram.com/alexandra.lexi.clarke/");
+  const [youtubeUrl, setYoutubeUrl] = useState("https://www.youtube.com/channel/UCrj_CL9J9GvSdUxoOE0Jzgg");
+  const [tiktokUrl, setTiktokUrl] = useState("https://www.tiktok.com/@its.keeby.and.kirby");
 
   useEffect(() => {
     if (typeof window !== "undefined") {
@@ -66,6 +69,12 @@ export default function AboutPanel() {
       if (savedCvUrl) {
         setCvUrl(savedCvUrl);
       }
+      const savedInsta = localStorage.getItem("social_instagram_url");
+      const savedYt = localStorage.getItem("social_youtube_url");
+      const savedTiktok = localStorage.getItem("social_tiktok_url");
+      if (savedInsta) setInstagramUrl(savedInsta);
+      if (savedYt) setYoutubeUrl(savedYt);
+      if (savedTiktok) setTiktokUrl(savedTiktok);
     }
   }, []);
 
@@ -261,8 +270,9 @@ export default function AboutPanel() {
       {/* Social Icons (bottom left - persistent and non-scrolling!) */}
       <div className="hidden md:flex absolute bottom-6 left-6 md:bottom-12 md:left-12 lg:bottom-16 lg:left-16 z-20 flex-col gap-3">
         {/* Instagram */}
+        {/* Instagram */}
         <a
-          href="https://www.instagram.com/alexandra.lexi.clarke/"
+          href={instagramUrl}
           target="_blank"
           rel="noopener noreferrer"
           data-cursor="pointer"
@@ -277,7 +287,7 @@ export default function AboutPanel() {
 
         {/* YouTube */}
         <a
-          href="https://www.youtube.com/channel/UCrj_CL9J9GvSdUxoOE0Jzgg"
+          href={youtubeUrl}
           target="_blank"
           rel="noopener noreferrer"
           data-cursor="pointer"
@@ -292,7 +302,7 @@ export default function AboutPanel() {
 
         {/* TikTok */}
         <a
-          href="https://www.tiktok.com/@its.keeby.and.kirby"
+          href={tiktokUrl}
           target="_blank"
           rel="noopener noreferrer"
           data-cursor="pointer"

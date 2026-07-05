@@ -33,6 +33,20 @@ export default function ContactPanel() {
   const [localTime, setLocalTime] = useState("");
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [bubbles, setBubbles] = useState<Bubble[]>([]);
+  const [subtitle, setSubtitle] = useState("Have a project in mind? Let’s create something extraordinary.");
+  const [email, setEmail] = useState("studio@alexandraclarke.media");
+  const [location, setLocation] = useState("Prague");
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const savedSubtitle = localStorage.getItem("contact_subtitle");
+      const savedEmail = localStorage.getItem("contact_email");
+      const savedLocation = localStorage.getItem("contact_location");
+      if (savedSubtitle) setSubtitle(savedSubtitle);
+      if (savedEmail) setEmail(savedEmail);
+      if (savedLocation) setLocation(savedLocation);
+    }
+  }, []);
 
   const {
     register,
@@ -51,23 +65,79 @@ export default function ContactPanel() {
   });
 
   useEffect(() => {
+    const mapLocationToTimezone = (loc: string): string => {
+      const clean = loc.toLowerCase().trim();
+      if (clean.includes("prague")) return "Europe/Prague";
+      if (clean.includes("london")) return "Europe/London";
+      if (clean.includes("new york") || clean.includes("nyc")) return "America/New_York";
+      if (clean.includes("los angeles") || clean.includes("la")) return "America/Los_Angeles";
+      if (clean.includes("chicago")) return "America/Chicago";
+      if (clean.includes("denver")) return "America/Denver";
+      if (clean.includes("tokyo")) return "Asia/Tokyo";
+      if (clean.includes("paris")) return "Europe/Paris";
+      if (clean.includes("berlin")) return "Europe/Berlin";
+      if (clean.includes("rome")) return "Europe/Rome";
+      if (clean.includes("sydney")) return "Australia/Sydney";
+      if (clean.includes("melbourne")) return "Australia/Melbourne";
+      if (clean.includes("toronto")) return "America/Toronto";
+      if (clean.includes("vancouver")) return "America/Vancouver";
+      if (clean.includes("singapore")) return "Asia/Singapore";
+      if (clean.includes("hong kong")) return "Asia/Hong_Kong";
+      if (clean.includes("dubai")) return "Asia/Dubai";
+      if (clean.includes("mumbai") || clean.includes("kolkata")) return "Asia/Kolkata";
+      if (clean.includes("cape town") || clean.includes("johannesburg")) return "Africa/Johannesburg";
+      if (clean.includes("sao paulo")) return "America/Sao_Paulo";
+      if (clean.includes("buenos aires")) return "America/Argentina/Buenos_Aires";
+      if (clean.includes("mexico city")) return "America/Mexico_City";
+      if (clean.includes("reykjavik")) return "Atlantic/Reykjavik";
+      if (clean.includes("copenhagen")) return "Europe/Copenhagen";
+      if (clean.includes("stockholm")) return "Europe/Stockholm";
+      if (clean.includes("oslo")) return "Europe/Oslo";
+      if (clean.includes("helsinki")) return "Europe/Helsinki";
+      if (clean.includes("amsterdam")) return "Europe/Amsterdam";
+      if (clean.includes("brussels")) return "Europe/Brussels";
+      if (clean.includes("vienna")) return "Europe/Vienna";
+      if (clean.includes("zurich") || clean.includes("geneva")) return "Europe/Zurich";
+      if (clean.includes("madrid") || clean.includes("barcelona")) return "Europe/Madrid";
+      if (clean.includes("lisbon")) return "Europe/Lisbon";
+      if (clean.includes("athens")) return "Europe/Athens";
+      if (clean.includes("istanbul")) return "Europe/Istanbul";
+      if (clean.includes("seoul")) return "Asia/Seoul";
+      if (clean.includes("bangkok")) return "Asia/Bangkok";
+      if (clean.includes("shanghai") || clean.includes("beijing")) return "Asia/Shanghai";
+      return "Europe/Prague";
+    };
+
     const updateTime = () => {
       const now = new Date();
-      // Format time in Prague timezone
-      const timeString = now.toLocaleTimeString("en-GB", {
-        timeZone: "Europe/Prague",
-        hour: "2-digit",
-        minute: "2-digit",
-        second: "2-digit",
-        hour12: false,
-      });
-      setLocalTime(timeString + " CEST");
+      let timeString = "";
+      try {
+        const tz = mapLocationToTimezone(location);
+        timeString = now.toLocaleTimeString("en-GB", {
+          timeZone: tz,
+          hour: "2-digit",
+          minute: "2-digit",
+          second: "2-digit",
+          hour12: false,
+          timeZoneName: "short",
+        });
+      } catch {
+        timeString = now.toLocaleTimeString("en-GB", {
+          timeZone: "Europe/Prague",
+          hour: "2-digit",
+          minute: "2-digit",
+          second: "2-digit",
+          hour12: false,
+          timeZoneName: "short",
+        });
+      }
+      setLocalTime(timeString);
     };
 
     updateTime();
     const interval = setInterval(updateTime, 1000);
     return () => clearInterval(interval);
-  }, []);
+  }, [location]);
 
   useEffect(() => {
     const iconCount = 6;
@@ -272,7 +342,7 @@ export default function ContactPanel() {
               </h3>
             </div>
             <p className="font-sans text-xs md:text-sm text-neutral-grey mt-4 leading-relaxed tracking-wide">
-              Have a project in mind? Let’s create something extraordinary.
+              {subtitle}
             </p>
           </div>
 
@@ -288,11 +358,11 @@ export default function ContactPanel() {
                   Direct Email
                 </p>
                 <a
-                  href="mailto:studio@alexandraclarke.media"
+                  href={`mailto:${email}`}
                   data-cursor="pointer"
                   className="font-sans text-xs font-bold text-foreground hover:text-accent transition-colors"
                 >
-                  studio@alexandraclarke.media
+                  {email}
                 </a>
               </div>
             </div>
@@ -307,7 +377,7 @@ export default function ContactPanel() {
                   Location
                 </p>
                 <p className="font-sans text-xs font-bold text-foreground">
-                  Prague
+                  {location}
                 </p>
               </div>
             </div>
@@ -315,7 +385,7 @@ export default function ContactPanel() {
             {/* Time Zone details (Clock) */}
             <div className="hidden md:flex p-4 bg-neutral-dark rounded border border-white/5 flex-col justify-center">
               <p className="font-sans text-[9px] text-neutral-grey uppercase tracking-widest">
-                Local Studio Time (Prague)
+                Local Studio Time ({location})
               </p>
               <p className="font-sans text-lg font-bold mt-1" style={{ color: "#FBAB3C" }}>{localTime || "12:00:00 CEST"}</p>
             </div>

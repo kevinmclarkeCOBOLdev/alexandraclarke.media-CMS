@@ -10,6 +10,7 @@ export interface PortfolioItem {
   category: "short films" | "3d animations" | "marketing";
   image: string;
   year: string;
+  length?: string;
   videoUrl?: string;
   embedHtml?: string;
 }
@@ -20,7 +21,8 @@ export const PORTFOLIO_ITEMS: PortfolioItem[] = [
     title: "JUST ANOTHER ASEXUAL FILM",
     category: "short films",
     image: "/portfolio/just-another-asexual-film-thumb.webp",
-    year: "17:58",
+    year: "2024",
+    length: "17:58",
     videoUrl: "oJklZVMczpg",
   },
   {
@@ -28,7 +30,8 @@ export const PORTFOLIO_ITEMS: PortfolioItem[] = [
     title: "CABBAGE - THE TRAILER",
     category: "3d animations",
     image: "/portfolio/cabbage-thumb.webp",
-    year: "0:47",
+    year: "2024",
+    length: "0:47",
     videoUrl: "WPLEGkbvzPg",
   },
   {
@@ -36,7 +39,8 @@ export const PORTFOLIO_ITEMS: PortfolioItem[] = [
     title: "THE CASUAL LIVES OF YOUR EVERYDAY TRANSGENDERS - A SHORT TRANS DOCUMENTARY",
     category: "short films",
     image: "/portfolio/casual-lives-trans-documentary-thumb.webp",
-    year: "11:42",
+    year: "2024",
+    length: "11:42",
     videoUrl: "V_BiZEc6YSo",
   },
 ];
@@ -49,6 +53,9 @@ export default function PortfolioPanel() {
   const [modalEmbedHtml, setModalEmbedHtml] = useState<string>("");
   const [imageErrors, setImageErrors] = useState<Record<string, boolean>>({});
   const [portfolioItems, setPortfolioItems] = useState<PortfolioItem[]>([]);
+  const [instagramUrl, setInstagramUrl] = useState("https://www.instagram.com/alexandra.lexi.clarke/");
+  const [youtubeUrl, setYoutubeUrl] = useState("https://www.youtube.com/channel/UCrj_CL9J9GvSdUxoOE0Jzgg");
+  const [tiktokUrl, setTiktokUrl] = useState("https://www.tiktok.com/@its.keeby.and.kirby");
 
   useEffect(() => {
     if (typeof window !== "undefined") {
@@ -63,6 +70,12 @@ export default function PortfolioPanel() {
         setPortfolioItems(PORTFOLIO_ITEMS);
         localStorage.setItem("portfolio_items", JSON.stringify(PORTFOLIO_ITEMS));
       }
+      const savedInsta = localStorage.getItem("social_instagram_url");
+      const savedYt = localStorage.getItem("social_youtube_url");
+      const savedTiktok = localStorage.getItem("social_tiktok_url");
+      if (savedInsta) setInstagramUrl(savedInsta);
+      if (savedYt) setYoutubeUrl(savedYt);
+      if (savedTiktok) setTiktokUrl(savedTiktok);
     }
   }, []);
 
@@ -265,6 +278,7 @@ export default function PortfolioPanel() {
                 <span className="text-[11px] font-bold tracking-[2px] text-[#FBAB3C] uppercase" style={{ fontFamily: "var(--font-poppins)" }}>
                   {filteredItems[activeIndex]?.category}
                   {filteredItems[activeIndex]?.year ? ` • ${filteredItems[activeIndex].year}` : ""}
+                  {filteredItems[activeIndex]?.length ? ` • ${filteredItems[activeIndex].length}` : ""}
                 </span>
                 <h4 className="font-editorial text-[18px] md:text-[22.5px] font-bold text-foreground mt-1 uppercase tracking-wide">
                   {filteredItems[activeIndex]?.title}
@@ -327,7 +341,7 @@ export default function PortfolioPanel() {
       <div className="hidden md:flex absolute bottom-6 left-6 md:bottom-12 md:left-12 lg:bottom-16 lg:left-16 z-20 flex-col gap-3">
         {/* Instagram */}
         <a
-          href="https://www.instagram.com/alexandra.lexi.clarke/"
+          href={instagramUrl}
           target="_blank"
           rel="noopener noreferrer"
           data-cursor="pointer"
@@ -342,7 +356,7 @@ export default function PortfolioPanel() {
 
         {/* YouTube */}
         <a
-          href="https://www.youtube.com/channel/UCrj_CL9J9GvSdUxoOE0Jzgg"
+          href={youtubeUrl}
           target="_blank"
           rel="noopener noreferrer"
           data-cursor="pointer"
@@ -357,7 +371,7 @@ export default function PortfolioPanel() {
 
         {/* TikTok */}
         <a
-          href="https://www.tiktok.com/@its.keeby.and.kirby"
+          href={tiktokUrl}
           target="_blank"
           rel="noopener noreferrer"
           data-cursor="pointer"

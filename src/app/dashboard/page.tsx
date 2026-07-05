@@ -17,6 +17,8 @@ export default function DashboardPage() {
   const [newItemTitle, setNewItemTitle] = useState("");
   const [newItemYoutubeUrl, setNewItemYoutubeUrl] = useState("");
   const [newItemCategory, setNewItemCategory] = useState<"short films" | "3d animations" | "marketing">("short films");
+  const [newItemYear, setNewItemYear] = useState("");
+  const [newItemLength, setNewItemLength] = useState("");
   const [videoUrlInput, setVideoUrlInput] = useState("");
   const [showreelUrlInput, setShowreelUrlInput] = useState("");
   const [yearInput, setYearInput] = useState("");
@@ -35,6 +37,8 @@ export default function DashboardPage() {
   const [updatingItem, setUpdatingItem] = useState<PortfolioItem | null>(null);
   const [updateItemTitle, setUpdateItemTitle] = useState("");
   const [updateItemCategory, setUpdateItemCategory] = useState<"short films" | "3d animations" | "marketing">("short films");
+  const [updateItemYear, setUpdateItemYear] = useState("");
+  const [updateItemLength, setUpdateItemLength] = useState("");
 
   // Testimonials CMS States
   const [isEditTestimonialsOpen, setIsEditTestimonialsOpen] = useState(false);
@@ -52,6 +56,18 @@ export default function DashboardPage() {
   
   const [deletingTestimonial, setDeletingTestimonial] = useState<Testimonial | null>(null);
   const [updatingTestimonial, setUpdatingTestimonial] = useState<Testimonial | null>(null);
+
+  // Contact CMS States
+  const [isEditContactOpen, setIsEditContactOpen] = useState(false);
+  const [contactSubtitleInput, setContactSubtitleInput] = useState("");
+  const [contactEmailInput, setContactEmailInput] = useState("");
+  const [contactLocationInput, setContactLocationInput] = useState("");
+
+  // Social Media Icons CMS States
+  const [isEditSocialOpen, setIsEditSocialOpen] = useState(false);
+  const [socialInstagramInput, setSocialInstagramInput] = useState("");
+  const [socialYoutubeInput, setSocialYoutubeInput] = useState("");
+  const [socialTiktokInput, setSocialTiktokInput] = useState("");
 
   useEffect(() => {
     if (isEditHomeOpen && typeof window !== "undefined") {
@@ -106,6 +122,54 @@ export default function DashboardPage() {
       setCvUrlInput(savedCvUrl);
     }
   }, [isEditAboutOpen]);
+
+  useEffect(() => {
+    if (isEditContactOpen && typeof window !== "undefined") {
+      const savedSubtitle = localStorage.getItem("contact_subtitle") || "Have a project in mind? Let’s create something extraordinary.";
+      const savedEmail = localStorage.getItem("contact_email") || "studio@alexandraclarke.media";
+      const savedLocation = localStorage.getItem("contact_location") || "Prague";
+      setContactSubtitleInput(savedSubtitle);
+      setContactEmailInput(savedEmail);
+      setContactLocationInput(savedLocation);
+    }
+  }, [isEditContactOpen]);
+
+  const handleSaveContact = () => {
+    if (!contactSubtitleInput.trim() || !contactEmailInput.trim() || !contactLocationInput.trim()) {
+      alert("Please fill in all fields.");
+      return;
+    }
+    if (typeof window !== "undefined") {
+      localStorage.setItem("contact_subtitle", contactSubtitleInput.trim());
+      localStorage.setItem("contact_email", contactEmailInput.trim());
+      localStorage.setItem("contact_location", contactLocationInput.trim());
+    }
+    setIsEditContactOpen(false);
+  };
+
+  useEffect(() => {
+    if (isEditSocialOpen && typeof window !== "undefined") {
+      const savedInsta = localStorage.getItem("social_instagram_url") || "https://www.instagram.com/alexandra.lexi.clarke/";
+      const savedYt = localStorage.getItem("social_youtube_url") || "https://www.youtube.com/channel/UCrj_CL9J9GvSdUxoOE0Jzgg";
+      const savedTiktok = localStorage.getItem("social_tiktok_url") || "https://www.tiktok.com/@its.keeby.and.kirby";
+      setSocialInstagramInput(savedInsta);
+      setSocialYoutubeInput(savedYt);
+      setSocialTiktokInput(savedTiktok);
+    }
+  }, [isEditSocialOpen]);
+
+  const handleSaveSocial = () => {
+    if (!socialInstagramInput.trim() || !socialYoutubeInput.trim() || !socialTiktokInput.trim()) {
+      alert("Please fill in all fields.");
+      return;
+    }
+    if (typeof window !== "undefined") {
+      localStorage.setItem("social_instagram_url", socialInstagramInput.trim());
+      localStorage.setItem("social_youtube_url", socialYoutubeInput.trim());
+      localStorage.setItem("social_tiktok_url", socialTiktokInput.trim());
+    }
+    setIsEditSocialOpen(false);
+  };
 
   const extractYouTubeId = (url: string): string => {
     if (!url) return "BoUrWXaQUQQ";
@@ -167,7 +231,7 @@ export default function DashboardPage() {
   };
 
   const handleSavePortfolioItem = () => {
-    if (!newItemTitle.trim() || !newItemYoutubeUrl.trim()) {
+    if (!newItemTitle.trim() || !newItemYoutubeUrl.trim() || !newItemYear.trim() || !newItemLength.trim()) {
       alert("Please fill in all fields.");
       return;
     }
@@ -194,7 +258,8 @@ export default function DashboardPage() {
         title: newItemTitle.trim(),
         category: newItemCategory,
         image: `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`,
-        year: "",
+        year: newItemYear.trim(),
+        length: newItemLength.trim(),
         videoUrl: videoId,
       };
 
@@ -205,6 +270,8 @@ export default function DashboardPage() {
       setNewItemTitle("");
       setNewItemYoutubeUrl("");
       setNewItemCategory("short films");
+      setNewItemYear("");
+      setNewItemLength("");
       setIsAddItemOpen(false);
     }
   };
@@ -222,8 +289,8 @@ export default function DashboardPage() {
   };
 
   const handleApplyUpdate = () => {
-    if (!updateItemTitle.trim()) {
-      alert("Please enter a title.");
+    if (!updateItemTitle.trim() || !updateItemYear.trim() || !updateItemLength.trim()) {
+      alert("Please fill in all fields.");
       return;
     }
 
@@ -234,6 +301,8 @@ export default function DashboardPage() {
             ...item,
             title: updateItemTitle.trim(),
             category: updateItemCategory,
+            year: updateItemYear.trim(),
+            length: updateItemLength.trim(),
           };
         }
         return item;
@@ -246,6 +315,8 @@ export default function DashboardPage() {
       setIsUpdateItemOpen(false);
       setUpdatingItem(null);
       setUpdateItemTitle("");
+      setUpdateItemYear("");
+      setUpdateItemLength("");
     }
   };
 
@@ -481,6 +552,8 @@ export default function DashboardPage() {
                     setIsEditPortfolioOpen(true);
                   } else if (panel === "Testimonials") {
                     setIsEditTestimonialsOpen(true);
+                  } else if (panel === "Contact") {
+                    setIsEditContactOpen(true);
                   }
                 }}
                 className="group relative flex items-center justify-center w-full h-[50px] bg-[#0A0A0A] border border-[#FBAB3C]/15 rounded-lg px-6 font-sans text-sm font-semibold uppercase tracking-[1.5px] text-neutral-grey hover:text-[#FBAB3C] hover:border-[#FBAB3C]/40 transition-all duration-300"
@@ -493,6 +566,7 @@ export default function DashboardPage() {
               href="#"
               onClick={(e) => {
                 e.preventDefault();
+                setIsEditSocialOpen(true);
               }}
               className="group relative flex items-center justify-center w-full h-[50px] bg-[#0A0A0A] border border-[#FBAB3C]/15 rounded-lg px-6 font-sans text-sm font-semibold uppercase tracking-[1.5px] text-neutral-grey hover:text-[#FBAB3C] hover:border-[#FBAB3C]/40 transition-all duration-300"
             >
@@ -880,6 +954,40 @@ export default function DashboardPage() {
                   <option value="marketing">MARKETING</option>
                 </select>
               </div>
+
+              {/* Field 4: Year */}
+              <div>
+                <label 
+                  className="font-sans text-[11px] font-bold text-neutral-grey uppercase tracking-widest text-left"
+                  style={{ marginBottom: "8px", display: "block" }}
+                >
+                  Year
+                </label>
+                <input
+                  type="text"
+                  value={newItemYear}
+                  onChange={(e) => setNewItemYear(e.target.value)}
+                  className="w-full bg-[#1A1A1A] border border-white/10 rounded px-4 py-3 text-sm text-foreground placeholder-neutral-500 focus:outline-none focus:border-[#FBAB3C] transition-colors"
+                  placeholder="e.g. 2024"
+                />
+              </div>
+
+              {/* Field 5: Length */}
+              <div>
+                <label 
+                  className="font-sans text-[11px] font-bold text-neutral-grey uppercase tracking-widest text-left"
+                  style={{ marginBottom: "8px", display: "block" }}
+                >
+                  Length
+                </label>
+                <input
+                  type="text"
+                  value={newItemLength}
+                  onChange={(e) => setNewItemLength(e.target.value)}
+                  className="w-full bg-[#1A1A1A] border border-white/10 rounded px-4 py-3 text-sm text-foreground placeholder-neutral-500 focus:outline-none focus:border-[#FBAB3C] transition-colors"
+                  placeholder="e.g. 17:58"
+                />
+              </div>
             </div>
 
             {/* Spacer */}
@@ -897,6 +1005,8 @@ export default function DashboardPage() {
                   setNewItemTitle("");
                   setNewItemYoutubeUrl("");
                   setNewItemCategory("short films");
+                  setNewItemYear("");
+                  setNewItemLength("");
                 }}
                 className="border border-white/10 rounded-[50px] font-sans text-xs md:text-sm font-semibold uppercase tracking-wider text-white hover:border-[#FBAB3C] transition-colors cursor-pointer"
                 style={{ padding: "10px 20px" }}
@@ -1090,6 +1200,8 @@ export default function DashboardPage() {
                         setUpdatingItem(item);
                         setUpdateItemTitle(item.title);
                         setUpdateItemCategory(item.category);
+                        setUpdateItemYear(item.year || "");
+                        setUpdateItemLength(item.length || "");
                         setIsUpdateItemOpen(true);
                       }}
                       className="px-4 py-2 border border-[#FBAB3C]/20 hover:border-[#FBAB3C] hover:bg-[#FBAB3C]/10 text-[#FBAB3C] rounded-[50px] font-sans text-[11px] font-bold uppercase tracking-wider transition-all duration-300 cursor-pointer whitespace-nowrap"
@@ -1171,6 +1283,40 @@ export default function DashboardPage() {
                   <option value="marketing">MARKETING</option>
                 </select>
               </div>
+
+              {/* Field 3: Year */}
+              <div>
+                <label 
+                  className="font-sans text-[11px] font-bold text-neutral-grey uppercase tracking-widest text-left"
+                  style={{ marginBottom: "8px", display: "block" }}
+                >
+                  Year
+                </label>
+                <input
+                  type="text"
+                  value={updateItemYear}
+                  onChange={(e) => setUpdateItemYear(e.target.value)}
+                  className="w-full bg-[#1A1A1A] border border-white/10 rounded px-4 py-3 text-sm text-foreground placeholder-neutral-500 focus:outline-none focus:border-[#FBAB3C] transition-colors"
+                  placeholder="e.g. 2024"
+                />
+              </div>
+
+              {/* Field 4: Length */}
+              <div>
+                <label 
+                  className="font-sans text-[11px] font-bold text-neutral-grey uppercase tracking-widest text-left"
+                  style={{ marginBottom: "8px", display: "block" }}
+                >
+                  Length
+                </label>
+                <input
+                  type="text"
+                  value={updateItemLength}
+                  onChange={(e) => setUpdateItemLength(e.target.value)}
+                  className="w-full bg-[#1A1A1A] border border-white/10 rounded px-4 py-3 text-sm text-foreground placeholder-neutral-500 focus:outline-none focus:border-[#FBAB3C] transition-colors"
+                  placeholder="e.g. 17:58"
+                />
+              </div>
             </div>
 
             {/* Spacer */}
@@ -1187,6 +1333,8 @@ export default function DashboardPage() {
                   setUpdatingItem(null);
                   setUpdateItemTitle("");
                   setUpdateItemCategory("short films");
+                  setUpdateItemYear("");
+                  setUpdateItemLength("");
                 }}
                 className="border border-white/10 rounded-[50px] font-sans text-xs md:text-sm font-semibold uppercase tracking-wider text-white hover:border-[#FBAB3C] transition-colors cursor-pointer"
                 style={{ padding: "10px 20px" }}
@@ -1681,6 +1829,188 @@ export default function DashboardPage() {
                 style={{ padding: "10px 20px" }}
               >
                 APPLY
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Edit Contact Panel Modal */}
+      {isEditContactOpen && (
+        <div className="fixed inset-0 bg-black/85 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <div 
+            className="w-full max-w-[500px] bg-[#151515] border border-[#FBAB3C]/20 rounded-2xl shadow-[0_20px_50px_rgba(0,0,0,0.8)] relative"
+            style={{ padding: "20px" }}
+          >
+            <h3 
+              className="font-editorial text-2xl md:text-3xl font-bold tracking-wider text-[#FBAB3C] uppercase text-center"
+              style={{ marginBottom: "20px" }}
+            >
+              EDIT CONTACT
+            </h3>
+            
+            <div className="flex flex-col gap-4">
+              {/* Subtitle */}
+              <div>
+                <label 
+                  className="font-sans text-[11px] font-bold text-neutral-grey uppercase tracking-widest text-left"
+                  style={{ marginBottom: "8px", display: "block" }}
+                >
+                  Subtitle
+                </label>
+                <textarea
+                  value={contactSubtitleInput}
+                  onChange={(e) => setContactSubtitleInput(e.target.value)}
+                  rows={3}
+                  className="w-full bg-[#1A1A1A] border border-white/10 rounded px-4 py-3 text-sm text-foreground focus:outline-none focus:border-[#FBAB3C] transition-colors resize-y font-sans"
+                />
+              </div>
+
+              {/* Direct Email */}
+              <div>
+                <label 
+                  className="font-sans text-[11px] font-bold text-neutral-grey uppercase tracking-widest text-left"
+                  style={{ marginBottom: "8px", display: "block" }}
+                >
+                  Direct Email
+                </label>
+                <input
+                  type="email"
+                  value={contactEmailInput}
+                  onChange={(e) => setContactEmailInput(e.target.value)}
+                  className="w-full bg-[#1A1A1A] border border-white/10 rounded px-4 py-3 text-sm text-foreground focus:outline-none focus:border-[#FBAB3C] transition-colors"
+                />
+              </div>
+
+              {/* Location */}
+              <div>
+                <label 
+                  className="font-sans text-[11px] font-bold text-neutral-grey uppercase tracking-widest text-left"
+                  style={{ marginBottom: "8px", display: "block" }}
+                >
+                  Location
+                </label>
+                <input
+                  type="text"
+                  value={contactLocationInput}
+                  onChange={(e) => setContactLocationInput(e.target.value)}
+                  className="w-full bg-[#1A1A1A] border border-white/10 rounded px-4 py-3 text-sm text-foreground focus:outline-none focus:border-[#FBAB3C] transition-colors"
+                />
+              </div>
+            </div>
+
+            <div style={{ height: "20px" }} />
+
+            <div 
+              className="flex justify-end"
+              style={{ gap: "10px" }}
+            >
+              <button
+                type="button"
+                onClick={() => setIsEditContactOpen(false)}
+                className="border border-white/10 rounded-[50px] font-sans text-xs md:text-sm font-semibold uppercase tracking-wider text-white hover:border-[#FBAB3C] transition-colors cursor-pointer"
+                style={{ padding: "10px 20px" }}
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={handleSaveContact}
+                className="bg-[#FBAB3C] hover:bg-[#E59A2B] text-black rounded-[50px] font-sans text-xs md:text-sm font-semibold uppercase tracking-wider transition-colors cursor-pointer"
+                style={{ padding: "10px 20px" }}
+              >
+                Save Changes
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Edit Social Media Icons Modal */}
+      {isEditSocialOpen && (
+        <div className="fixed inset-0 bg-black/85 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <div 
+            className="w-full max-w-[500px] bg-[#151515] border border-[#FBAB3C]/20 rounded-2xl shadow-[0_20px_50px_rgba(0,0,0,0.8)] relative"
+            style={{ padding: "20px" }}
+          >
+            <h3 
+              className="font-editorial text-2xl md:text-3xl font-bold tracking-wider text-[#FBAB3C] uppercase text-center"
+              style={{ marginBottom: "20px" }}
+            >
+              EDIT SOCIAL MEDIA ICONS
+            </h3>
+
+            <div className="flex flex-col gap-4">
+              {/* Instagram URL */}
+              <div>
+                <label 
+                  className="font-sans text-[11px] font-bold text-neutral-grey uppercase tracking-widest text-left"
+                  style={{ marginBottom: "8px", display: "block" }}
+                >
+                  Instagram URL
+                </label>
+                <input
+                  type="text"
+                  value={socialInstagramInput}
+                  onChange={(e) => setSocialInstagramInput(e.target.value)}
+                  className="w-full bg-[#1A1A1A] border border-white/10 rounded px-4 py-3 text-sm text-foreground focus:outline-none focus:border-[#FBAB3C] transition-colors font-sans"
+                />
+              </div>
+
+              {/* YouTube URL */}
+              <div>
+                <label 
+                  className="font-sans text-[11px] font-bold text-neutral-grey uppercase tracking-widest text-left"
+                  style={{ marginBottom: "8px", display: "block" }}
+                >
+                  YouTube URL
+                </label>
+                <input
+                  type="text"
+                  value={socialYoutubeInput}
+                  onChange={(e) => setSocialYoutubeInput(e.target.value)}
+                  className="w-full bg-[#1A1A1A] border border-white/10 rounded px-4 py-3 text-sm text-foreground focus:outline-none focus:border-[#FBAB3C] transition-colors font-sans"
+                />
+              </div>
+
+              {/* TikTok URL */}
+              <div>
+                <label 
+                  className="font-sans text-[11px] font-bold text-neutral-grey uppercase tracking-widest text-left"
+                  style={{ marginBottom: "8px", display: "block" }}
+                >
+                  TikTok URL
+                </label>
+                <input
+                  type="text"
+                  value={socialTiktokInput}
+                  onChange={(e) => setSocialTiktokInput(e.target.value)}
+                  className="w-full bg-[#1A1A1A] border border-white/10 rounded px-4 py-3 text-sm text-foreground focus:outline-none focus:border-[#FBAB3C] transition-colors font-sans"
+                />
+              </div>
+            </div>
+
+            <div style={{ height: "20px" }} />
+
+            <div 
+              className="flex justify-end"
+              style={{ gap: "10px" }}
+            >
+              <button
+                type="button"
+                onClick={() => setIsEditSocialOpen(false)}
+                className="border border-white/10 rounded-[50px] font-sans text-xs md:text-sm font-semibold uppercase tracking-wider text-white hover:border-[#FBAB3C] transition-colors cursor-pointer"
+                style={{ padding: "10px 20px" }}
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={handleSaveSocial}
+                className="bg-[#FBAB3C] hover:bg-[#E59A2B] text-black rounded-[50px] font-sans text-xs md:text-sm font-semibold uppercase tracking-wider transition-colors cursor-pointer"
+                style={{ padding: "10px 20px" }}
+              >
+                Save Changes
               </button>
             </div>
           </div>

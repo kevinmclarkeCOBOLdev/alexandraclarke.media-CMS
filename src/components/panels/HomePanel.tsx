@@ -15,6 +15,9 @@ export default function HomePanel() {
   const [bgVideoId, setBgVideoId] = useState("BoUrWXaQUQQ");
   const [showreelVideoId, setShowreelVideoId] = useState("BoUrWXaQUQQ");
   const [copyrightYear, setCopyrightYear] = useState("2026");
+  const [instagramUrl, setInstagramUrl] = useState("https://www.instagram.com/alexandra.lexi.clarke/");
+  const [youtubeUrl, setYoutubeUrl] = useState("https://www.youtube.com/channel/UCrj_CL9J9GvSdUxoOE0Jzgg");
+  const [tiktokUrl, setTiktokUrl] = useState("https://www.tiktok.com/@its.keeby.and.kirby");
 
   useEffect(() => {
     if (typeof window !== "undefined") {
@@ -30,6 +33,12 @@ export default function HomePanel() {
       if (savedYear) {
         setCopyrightYear(savedYear);
       }
+      const savedInsta = localStorage.getItem("social_instagram_url");
+      const savedYt = localStorage.getItem("social_youtube_url");
+      const savedTiktok = localStorage.getItem("social_tiktok_url");
+      if (savedInsta) setInstagramUrl(savedInsta);
+      if (savedYt) setYoutubeUrl(savedYt);
+      if (savedTiktok) setTiktokUrl(savedTiktok);
     }
   }, []);
 
@@ -283,7 +292,7 @@ export default function HomePanel() {
       <div className="absolute bottom-6 left-6 md:bottom-12 md:left-12 lg:bottom-16 lg:left-16 z-10 flex flex-col gap-2 md:gap-3">
         {/* Instagram */}
         <a
-          href="https://www.instagram.com/alexandra.lexi.clarke/"
+          href={instagramUrl}
           target="_blank"
           rel="noopener noreferrer"
           data-cursor="pointer"
@@ -298,7 +307,7 @@ export default function HomePanel() {
 
         {/* YouTube */}
         <a
-          href="https://www.youtube.com/channel/UCrj_CL9J9GvSdUxoOE0Jzgg"
+          href={youtubeUrl}
           target="_blank"
           rel="noopener noreferrer"
           data-cursor="pointer"
@@ -313,7 +322,7 @@ export default function HomePanel() {
 
         {/* TikTok */}
         <a
-          href="https://www.tiktok.com/@its.keeby.and.kirby"
+          href={tiktokUrl}
           target="_blank"
           rel="noopener noreferrer"
           data-cursor="pointer"
