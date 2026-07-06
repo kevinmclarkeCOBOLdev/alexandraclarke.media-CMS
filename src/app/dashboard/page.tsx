@@ -118,8 +118,19 @@ export default function DashboardPage() {
   const [showNewPassword, setShowNewPassword] = useState(false);
   const [showUpdatePassword, setShowUpdatePassword] = useState(false);
 
-  const [isErrorModalOpen, setIsErrorModalOpen] = useState(false);
-  const [errorMessage, setErrorMessage] = useState("");
+  const [addUserErrors, setAddUserErrors] = useState({
+    name: "",
+    email: "",
+    username: "",
+    password: "",
+  });
+
+  const [updateUserErrors, setUpdateUserErrors] = useState({
+    name: "",
+    email: "",
+    username: "",
+    password: "",
+  });
 
   // Synchronize state from Convex queries
   useEffect(() => {
@@ -469,15 +480,34 @@ export default function DashboardPage() {
   };
 
   const handleSaveUser = async () => {
-    if (!newUsername.trim() || !newPassword.trim() || !newName.trim() || !newEmail.trim()) {
-      alert("Please fill in all fields.");
-      return;
+    let hasError = false;
+    const errors = { name: "", email: "", username: "", password: "" };
+
+    if (!newName.trim()) {
+      errors.name = "Name is required";
+      hasError = true;
+    }
+    if (!newEmail.trim()) {
+      errors.email = "Email is required";
+      hasError = true;
+    }
+    if (!newUsername.trim()) {
+      errors.username = "Username is required";
+      hasError = true;
+    }
+    if (!newPassword.trim()) {
+      errors.password = "Password is required";
+      hasError = true;
+    } else {
+      const { isValid } = validatePasswordStrength(newPassword);
+      if (!isValid) {
+        errors.password = "Password fails strength test";
+        hasError = true;
+      }
     }
 
-    const { isValid, message } = validatePasswordStrength(newPassword);
-    if (!isValid) {
-      setErrorMessage(message);
-      setIsErrorModalOpen(true);
+    if (hasError) {
+      setAddUserErrors(errors);
       return;
     }
 
@@ -493,6 +523,7 @@ export default function DashboardPage() {
       setNewName("");
       setNewEmail("");
       setShowNewPassword(false);
+      setAddUserErrors({ name: "", email: "", username: "", password: "" });
       setIsAddUserOpen(false);
     } catch (err) {
       const msg = err instanceof Error ? err.message : "Failed to add user.";
@@ -501,18 +532,32 @@ export default function DashboardPage() {
   };
 
   const handleApplyUserUpdate = async () => {
-    if (!updateUsername.trim() || !updateName.trim() || !updateEmail.trim()) {
-      alert("Username, Name, and Email are required.");
-      return;
+    let hasError = false;
+    const errors = { name: "", email: "", username: "", password: "" };
+
+    if (!updateName.trim()) {
+      errors.name = "Name is required";
+      hasError = true;
+    }
+    if (!updateEmail.trim()) {
+      errors.email = "Email is required";
+      hasError = true;
+    }
+    if (!updateUsername.trim()) {
+      errors.username = "Username is required";
+      hasError = true;
+    }
+    if (updatePassword.trim()) {
+      const { isValid } = validatePasswordStrength(updatePassword);
+      if (!isValid) {
+        errors.password = "Password fails strength test";
+        hasError = true;
+      }
     }
 
-    if (updatePassword) {
-      const { isValid, message } = validatePasswordStrength(updatePassword);
-      if (!isValid) {
-        setErrorMessage(message);
-        setIsErrorModalOpen(true);
-        return;
-      }
+    if (hasError) {
+      setUpdateUserErrors(errors);
+      return;
     }
 
     if (updatingUser) {
@@ -530,6 +575,7 @@ export default function DashboardPage() {
         setUpdateName("");
         setUpdateEmail("");
         setShowUpdatePassword(false);
+        setUpdateUserErrors({ name: "", email: "", username: "", password: "" });
         setIsUpdateUserDetailsOpen(false);
       } catch (err) {
         const msg = err instanceof Error ? err.message : "Failed to update user.";
@@ -2136,6 +2182,7 @@ export default function DashboardPage() {
                   setNewPassword("");
                   setNewName("");
                   setNewEmail("");
+                  setAddUserErrors({ name: "", email: "", username: "", password: "" });
                   setIsAddUserOpen(true);
                 }}
                 className="w-full h-[50px] bg-[#0A0A0A] hover:bg-[#1A1A1A] border border-[#FBAB3C]/20 hover:border-[#FBAB3C]/40 rounded-lg font-sans text-sm font-semibold uppercase tracking-wider text-[#FBAB3C] transition-all duration-300 cursor-pointer"
@@ -2206,10 +2253,18 @@ export default function DashboardPage() {
                 <input
                   type="text"
                   value={newName}
-                  onChange={(e) => setNewName(e.target.value)}
+                  onChange={(e) => {
+                    setNewName(e.target.value);
+                    if (addUserErrors.name) setAddUserErrors((prev) => ({ ...prev, name: "" }));
+                  }}
                   className="w-full bg-[#1A1A1A] border border-white/10 rounded px-4 py-3 text-sm text-foreground focus:outline-none focus:border-[#FBAB3C] transition-colors"
                   placeholder="Enter full name..."
                 />
+                {addUserErrors.name && (
+                  <span className="block font-sans text-[10px] text-red-500 mt-1 text-left">
+                    {addUserErrors.name}
+                  </span>
+                )}
               </div>
 
               {/* Field 2: Email */}
@@ -2223,10 +2278,18 @@ export default function DashboardPage() {
                 <input
                   type="email"
                   value={newEmail}
-                  onChange={(e) => setNewEmail(e.target.value)}
+                  onChange={(e) => {
+                    setNewEmail(e.target.value);
+                    if (addUserErrors.email) setAddUserErrors((prev) => ({ ...prev, email: "" }));
+                  }}
                   className="w-full bg-[#1A1A1A] border border-white/10 rounded px-4 py-3 text-sm text-foreground focus:outline-none focus:border-[#FBAB3C] transition-colors"
                   placeholder="Enter email address..."
                 />
+                {addUserErrors.email && (
+                  <span className="block font-sans text-[10px] text-red-500 mt-1 text-left">
+                    {addUserErrors.email}
+                  </span>
+                )}
               </div>
 
               {/* Field 3: Username */}
@@ -2240,10 +2303,18 @@ export default function DashboardPage() {
                 <input
                   type="text"
                   value={newUsername}
-                  onChange={(e) => setNewUsername(e.target.value)}
+                  onChange={(e) => {
+                    setNewUsername(e.target.value);
+                    if (addUserErrors.username) setAddUserErrors((prev) => ({ ...prev, username: "" }));
+                  }}
                   className="w-full bg-[#1A1A1A] border border-white/10 rounded px-4 py-3 text-sm text-foreground focus:outline-none focus:border-[#FBAB3C] transition-colors"
                   placeholder="Enter username..."
                 />
+                {addUserErrors.username && (
+                  <span className="block font-sans text-[10px] text-red-500 mt-1 text-left">
+                    {addUserErrors.username}
+                  </span>
+                )}
               </div>
 
               {/* Field 4: Password */}
@@ -2258,7 +2329,10 @@ export default function DashboardPage() {
                   <input
                     type={showNewPassword ? "text" : "password"}
                     value={newPassword}
-                    onChange={(e) => setNewPassword(e.target.value)}
+                    onChange={(e) => {
+                      setNewPassword(e.target.value);
+                      if (addUserErrors.password) setAddUserErrors((prev) => ({ ...prev, password: "" }));
+                    }}
                     className="w-full bg-[#1A1A1A] border border-white/10 rounded pl-4 pr-10 py-3 text-sm text-foreground focus:outline-none focus:border-[#FBAB3C] transition-colors"
                     placeholder="Enter password..."
                   />
@@ -2278,6 +2352,11 @@ export default function DashboardPage() {
                 <p className="font-sans text-[10px] text-neutral-grey/70 uppercase tracking-widest text-left" style={{ marginTop: "6px", lineHeight: "1.4" }}>
                   Must be at least 8 characters and contain: uppercase, lowercase, number, and symbol.
                 </p>
+                {addUserErrors.password && (
+                  <span className="block font-sans text-[10px] text-red-500 mt-1 text-left">
+                    {addUserErrors.password}
+                  </span>
+                )}
               </div>
             </div>
 
@@ -2296,6 +2375,7 @@ export default function DashboardPage() {
                   setNewName("");
                   setNewEmail("");
                   setShowNewPassword(false);
+                  setAddUserErrors({ name: "", email: "", username: "", password: "" });
                 }}
                 className="border border-white/10 rounded-[50px] font-sans text-xs md:text-sm font-semibold uppercase tracking-wider text-white hover:border-[#FBAB3C] transition-colors cursor-pointer"
                 style={{ padding: "10px 20px" }}
@@ -2356,6 +2436,7 @@ export default function DashboardPage() {
                         setUpdateName(user.name || "");
                         setUpdateEmail(user.email || "");
                         setUpdatePassword("");
+                        setUpdateUserErrors({ name: "", email: "", username: "", password: "" });
                         setIsUpdateUserDetailsOpen(true);
                       }}
                       className="px-4 py-2 border border-[#FBAB3C]/20 hover:border-[#FBAB3C] hover:bg-[#FBAB3C]/10 text-[#FBAB3C] rounded-[50px] font-sans text-[11px] font-bold uppercase tracking-wider transition-all duration-300 cursor-pointer whitespace-nowrap"
@@ -2412,9 +2493,17 @@ export default function DashboardPage() {
                 <input
                   type="text"
                   value={updateName}
-                  onChange={(e) => setUpdateName(e.target.value)}
+                  onChange={(e) => {
+                    setUpdateName(e.target.value);
+                    if (updateUserErrors.name) setUpdateUserErrors((prev) => ({ ...prev, name: "" }));
+                  }}
                   className="w-full bg-[#1A1A1A] border border-white/10 rounded px-4 py-3 text-sm text-foreground focus:outline-none focus:border-[#FBAB3C] transition-colors"
                 />
+                {updateUserErrors.name && (
+                  <span className="block font-sans text-[10px] text-red-500 mt-1 text-left">
+                    {updateUserErrors.name}
+                  </span>
+                )}
               </div>
 
               {/* Field 2: Email */}
@@ -2428,9 +2517,17 @@ export default function DashboardPage() {
                 <input
                   type="email"
                   value={updateEmail}
-                  onChange={(e) => setUpdateEmail(e.target.value)}
+                  onChange={(e) => {
+                    setUpdateEmail(e.target.value);
+                    if (updateUserErrors.email) setUpdateUserErrors((prev) => ({ ...prev, email: "" }));
+                  }}
                   className="w-full bg-[#1A1A1A] border border-white/10 rounded px-4 py-3 text-sm text-foreground focus:outline-none focus:border-[#FBAB3C] transition-colors"
                 />
+                {updateUserErrors.email && (
+                  <span className="block font-sans text-[10px] text-red-500 mt-1 text-left">
+                    {updateUserErrors.email}
+                  </span>
+                )}
               </div>
 
               {/* Field 3: Username */}
@@ -2444,9 +2541,17 @@ export default function DashboardPage() {
                 <input
                   type="text"
                   value={updateUsername}
-                  onChange={(e) => setUpdateUsername(e.target.value)}
+                  onChange={(e) => {
+                    setUpdateUsername(e.target.value);
+                    if (updateUserErrors.username) setUpdateUserErrors((prev) => ({ ...prev, username: "" }));
+                  }}
                   className="w-full bg-[#1A1A1A] border border-white/10 rounded px-4 py-3 text-sm text-foreground focus:outline-none focus:border-[#FBAB3C] transition-colors"
                 />
+                {updateUserErrors.username && (
+                  <span className="block font-sans text-[10px] text-red-500 mt-1 text-left">
+                    {updateUserErrors.username}
+                  </span>
+                )}
               </div>
 
               {/* Field 4: Password */}
@@ -2461,7 +2566,10 @@ export default function DashboardPage() {
                   <input
                     type={showUpdatePassword ? "text" : "password"}
                     value={updatePassword}
-                    onChange={(e) => setUpdatePassword(e.target.value)}
+                    onChange={(e) => {
+                      setUpdatePassword(e.target.value);
+                      if (updateUserErrors.password) setUpdateUserErrors((prev) => ({ ...prev, password: "" }));
+                    }}
                     className="w-full bg-[#1A1A1A] border border-white/10 rounded pl-4 pr-10 py-3 text-sm text-foreground focus:outline-none focus:border-[#FBAB3C] transition-colors"
                     placeholder="Enter new password..."
                   />
@@ -2481,6 +2589,11 @@ export default function DashboardPage() {
                 <p className="font-sans text-[10px] text-neutral-grey/70 uppercase tracking-widest text-left" style={{ marginTop: "6px", lineHeight: "1.4" }}>
                   Must be at least 8 characters and contain: uppercase, lowercase, number, and symbol.
                 </p>
+                {updateUserErrors.password && (
+                  <span className="block font-sans text-[10px] text-red-500 mt-1 text-left">
+                    {updateUserErrors.password}
+                  </span>
+                )}
               </div>
             </div>
 
@@ -2500,6 +2613,7 @@ export default function DashboardPage() {
                   setUpdateName("");
                   setUpdateEmail("");
                   setShowUpdatePassword(false);
+                  setUpdateUserErrors({ name: "", email: "", username: "", password: "" });
                 }}
                 className="border border-white/10 rounded-[50px] font-sans text-xs md:text-sm font-semibold uppercase tracking-wider text-white hover:border-[#FBAB3C] transition-colors cursor-pointer"
                 style={{ padding: "10px 20px" }}
@@ -2623,40 +2737,6 @@ export default function DashboardPage() {
                 className="w-[100px] py-2.5 bg-red-600 hover:bg-red-700 text-white rounded-[50px] font-sans text-xs md:text-sm font-semibold uppercase tracking-wider transition-colors cursor-pointer"
               >
                 Yes
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Password Policy Error Modal */}
-      {isErrorModalOpen && (
-        <div className="fixed inset-0 bg-black/95 backdrop-blur-sm z-[80] flex items-center justify-center p-4">
-          <div 
-            className="w-full max-w-[450px] bg-[#151515] border border-red-500/25 rounded-2xl shadow-[0_25px_60px_rgba(0,0,0,0.95)] relative text-center"
-            style={{ padding: "25px" }}
-          >
-            <h4 
-              className="font-sans text-sm font-bold tracking-widest text-red-500 uppercase"
-              style={{ marginBottom: "15px" }}
-            >
-              WEAK PASSWORD
-            </h4>
-            
-            <p className="font-sans text-sm text-white/90 leading-relaxed mb-6">
-              {errorMessage}
-            </p>
-
-            <div className="flex justify-center">
-              <button
-                type="button"
-                onClick={() => {
-                  setIsErrorModalOpen(false);
-                  setErrorMessage("");
-                }}
-                className="px-8 py-2.5 bg-red-600 hover:bg-red-700 text-white rounded-[50px] font-sans text-xs md:text-sm font-semibold uppercase tracking-wider transition-colors cursor-pointer"
-              >
-                Dismiss
               </button>
             </div>
           </div>
