@@ -118,6 +118,9 @@ export default function DashboardPage() {
   const [showNewPassword, setShowNewPassword] = useState(false);
   const [showUpdatePassword, setShowUpdatePassword] = useState(false);
 
+  const [isErrorModalOpen, setIsErrorModalOpen] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
+
   // Synchronize state from Convex queries
   useEffect(() => {
     if (portfolioItemsDb) {
@@ -446,11 +449,38 @@ export default function DashboardPage() {
     }
   }, [router]);
 
+  const validatePasswordStrength = (password: string): { isValid: boolean; message: string } => {
+    if (password.length < 8) {
+      return { isValid: false, message: "Password must be at least 8 characters long." };
+    }
+    if (!/[A-Z]/.test(password)) {
+      return { isValid: false, message: "Password must contain at least one uppercase character." };
+    }
+    if (!/[a-z]/.test(password)) {
+      return { isValid: false, message: "Password must contain at least one lowercase character." };
+    }
+    if (!/\d/.test(password)) {
+      return { isValid: false, message: "Password must contain at least one digit." };
+    }
+    if (!/[^A-Za-z0-9\s]/.test(password)) {
+      return { isValid: false, message: "Password must contain at least one symbol character (e.g., !, @, #, $, etc.)." };
+    }
+    return { isValid: true, message: "" };
+  };
+
   const handleSaveUser = async () => {
     if (!newUsername.trim() || !newPassword.trim() || !newName.trim() || !newEmail.trim()) {
       alert("Please fill in all fields.");
       return;
     }
+
+    const { isValid, message } = validatePasswordStrength(newPassword);
+    if (!isValid) {
+      setErrorMessage(message);
+      setIsErrorModalOpen(true);
+      return;
+    }
+
     try {
       await addUser({
         username: newUsername.trim(),
@@ -475,6 +505,16 @@ export default function DashboardPage() {
       alert("Username, Name, and Email are required.");
       return;
     }
+
+    if (updatePassword) {
+      const { isValid, message } = validatePasswordStrength(updatePassword);
+      if (!isValid) {
+        setErrorMessage(message);
+        setIsErrorModalOpen(true);
+        return;
+      }
+    }
+
     if (updatingUser) {
       try {
         await updateUser({
@@ -2235,6 +2275,9 @@ export default function DashboardPage() {
                     )}
                   </button>
                 </div>
+                <p className="font-sans text-[10px] text-neutral-grey/70 uppercase tracking-widest text-left" style={{ marginTop: "6px", lineHeight: "1.4" }}>
+                  Must be at least 8 characters and contain: uppercase, lowercase, number, and symbol.
+                </p>
               </div>
             </div>
 
@@ -2435,6 +2478,9 @@ export default function DashboardPage() {
                     )}
                   </button>
                 </div>
+                <p className="font-sans text-[10px] text-neutral-grey/70 uppercase tracking-widest text-left" style={{ marginTop: "6px", lineHeight: "1.4" }}>
+                  Must be at least 8 characters and contain: uppercase, lowercase, number, and symbol.
+                </p>
               </div>
             </div>
 
@@ -2577,6 +2623,40 @@ export default function DashboardPage() {
                 className="w-[100px] py-2.5 bg-red-600 hover:bg-red-700 text-white rounded-[50px] font-sans text-xs md:text-sm font-semibold uppercase tracking-wider transition-colors cursor-pointer"
               >
                 Yes
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Password Policy Error Modal */}
+      {isErrorModalOpen && (
+        <div className="fixed inset-0 bg-black/95 backdrop-blur-sm z-[80] flex items-center justify-center p-4">
+          <div 
+            className="w-full max-w-[450px] bg-[#151515] border border-red-500/25 rounded-2xl shadow-[0_25px_60px_rgba(0,0,0,0.95)] relative text-center"
+            style={{ padding: "25px" }}
+          >
+            <h4 
+              className="font-sans text-sm font-bold tracking-widest text-red-500 uppercase"
+              style={{ marginBottom: "15px" }}
+            >
+              WEAK PASSWORD
+            </h4>
+            
+            <p className="font-sans text-sm text-white/90 leading-relaxed mb-6">
+              {errorMessage}
+            </p>
+
+            <div className="flex justify-center">
+              <button
+                type="button"
+                onClick={() => {
+                  setIsErrorModalOpen(false);
+                  setErrorMessage("");
+                }}
+                className="px-8 py-2.5 bg-red-600 hover:bg-red-700 text-white rounded-[50px] font-sans text-xs md:text-sm font-semibold uppercase tracking-wider transition-colors cursor-pointer"
+              >
+                Dismiss
               </button>
             </div>
           </div>
