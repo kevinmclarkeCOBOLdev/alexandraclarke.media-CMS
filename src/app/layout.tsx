@@ -27,20 +27,20 @@ const poppins = Poppins({
 });
 
 export const metadata: Metadata = {
-  title: "Alexandra Clarke | Creative Director, Filmmaker & Visual Storyteller",
+  title: "Alexandra Clarke | Film-maker, 3d Modeller, Animator, and Social Marketing Manager",
   description:
-    "Portfolio of Alexandra Clarke. A premium digital exhibition showcasing cinematic storytelling, creative direction, photography, and filmmaking.",
+    "A dynamic filmmaker with over 7 years of filmmaking experience, adept at creating a wide range of video content (from 3D animation to interviews & social media content).",
   openGraph: {
-    title: "Alexandra Clarke | Creative Director & Filmmaker",
+    title: "Alexandra Clarke | Film-maker, 3d Modeller, Animator, and Social Marketing Manager",
     description:
-      "A premium digital exhibition showcasing cinematic storytelling, creative direction, and visual art.",
+      "A dynamic filmmaker with over 7 years of filmmaking experience, adept at creating a wide range of video content (from 3D animation to interviews & social media content).",
     type: "website",
   },
   twitter: {
     card: "summary_large_image",
-    title: "Alexandra Clarke | Creative Director & Filmmaker",
+    title: "Alexandra Clarke | Film-maker, 3d Modeller, Animator, and Social Marketing Manager",
     description:
-      "A premium digital exhibition showcasing cinematic storytelling, creative direction, and visual art.",
+      "A dynamic filmmaker with over 7 years of filmmaking experience, adept at creating a wide range of video content (from 3D animation to interviews & social media content).",
   },
 };
 
