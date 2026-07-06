@@ -460,8 +460,9 @@ export default function DashboardPage() {
       setNewName("");
       setNewEmail("");
       setIsAddUserOpen(false);
-    } catch (err: any) {
-      alert(err.message || "Failed to add user.");
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : "Failed to add user.";
+      alert(msg);
     }
   };
 
@@ -485,8 +486,9 @@ export default function DashboardPage() {
         setUpdateName("");
         setUpdateEmail("");
         setIsUpdateUserDetailsOpen(false);
-      } catch (err: any) {
-        alert(err.message || "Failed to update user.");
+      } catch (err) {
+        const msg = err instanceof Error ? err.message : "Failed to update user.";
+        alert(msg);
       }
     }
   };
@@ -497,8 +499,9 @@ export default function DashboardPage() {
         await removeUser({ id: deletingUser._id });
         setIsConfirmDeleteUserOpen(false);
         setDeletingUser(null);
-      } catch (err: any) {
-        alert(err.message || "Failed to delete user.");
+      } catch (err) {
+        const msg = err instanceof Error ? err.message : "Failed to delete user.";
+        alert(msg);
       }
     }
   };

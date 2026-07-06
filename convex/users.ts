@@ -66,7 +66,13 @@ export const update = mutation({
       }
     }
 
-    const patch: any = {
+    const patch: {
+      username: string;
+      name?: string;
+      email?: string;
+      passwordHash?: string;
+      salt?: string;
+    } = {
       username: args.username,
       name: args.name,
       email: args.email,
