@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { LogOut, ArrowRight } from "lucide-react";
+import { LogOut, ArrowRight, Eye, EyeOff } from "lucide-react";
 import Image from "next/image";
 import { useQuery, useMutation } from "convex/react";
 import { api } from "../../../convex/_generated/api";
@@ -114,6 +114,9 @@ export default function DashboardPage() {
   const [updateEmail, setUpdateEmail] = useState("");
 
   const [deletingUser, setDeletingUser] = useState<Doc<"users"> | null>(null);
+
+  const [showNewPassword, setShowNewPassword] = useState(false);
+  const [showUpdatePassword, setShowUpdatePassword] = useState(false);
 
   // Synchronize state from Convex queries
   useEffect(() => {
@@ -459,6 +462,7 @@ export default function DashboardPage() {
       setNewPassword("");
       setNewName("");
       setNewEmail("");
+      setShowNewPassword(false);
       setIsAddUserOpen(false);
     } catch (err) {
       const msg = err instanceof Error ? err.message : "Failed to add user.";
@@ -485,6 +489,7 @@ export default function DashboardPage() {
         setUpdatePassword("");
         setUpdateName("");
         setUpdateEmail("");
+        setShowUpdatePassword(false);
         setIsUpdateUserDetailsOpen(false);
       } catch (err) {
         const msg = err instanceof Error ? err.message : "Failed to update user.";
@@ -2209,13 +2214,27 @@ export default function DashboardPage() {
                 >
                   Password
                 </label>
-                <input
-                  type="password"
-                  value={newPassword}
-                  onChange={(e) => setNewPassword(e.target.value)}
-                  className="w-full bg-[#1A1A1A] border border-white/10 rounded px-4 py-3 text-sm text-foreground focus:outline-none focus:border-[#FBAB3C] transition-colors"
-                  placeholder="Enter password..."
-                />
+                <div className="relative">
+                  <input
+                    type={showNewPassword ? "text" : "password"}
+                    value={newPassword}
+                    onChange={(e) => setNewPassword(e.target.value)}
+                    className="w-full bg-[#1A1A1A] border border-white/10 rounded pl-4 pr-10 py-3 text-sm text-foreground focus:outline-none focus:border-[#FBAB3C] transition-colors"
+                    placeholder="Enter password..."
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowNewPassword(!showNewPassword)}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-neutral-500 hover:text-white transition-colors cursor-pointer focus:outline-none flex items-center justify-center"
+                    aria-label={showNewPassword ? "Hide password" : "Show password"}
+                  >
+                    {showNewPassword ? (
+                      <EyeOff className="h-4 w-4" />
+                    ) : (
+                      <Eye className="h-4 w-4" />
+                    )}
+                  </button>
+                </div>
               </div>
             </div>
 
@@ -2233,6 +2252,7 @@ export default function DashboardPage() {
                   setNewPassword("");
                   setNewName("");
                   setNewEmail("");
+                  setShowNewPassword(false);
                 }}
                 className="border border-white/10 rounded-[50px] font-sans text-xs md:text-sm font-semibold uppercase tracking-wider text-white hover:border-[#FBAB3C] transition-colors cursor-pointer"
                 style={{ padding: "10px 20px" }}
@@ -2394,13 +2414,27 @@ export default function DashboardPage() {
                 >
                   Password (Leave blank to keep current)
                 </label>
-                <input
-                  type="password"
-                  value={updatePassword}
-                  onChange={(e) => setUpdatePassword(e.target.value)}
-                  className="w-full bg-[#1A1A1A] border border-white/10 rounded px-4 py-3 text-sm text-foreground focus:outline-none focus:border-[#FBAB3C] transition-colors"
-                  placeholder="Enter new password..."
-                />
+                <div className="relative">
+                  <input
+                    type={showUpdatePassword ? "text" : "password"}
+                    value={updatePassword}
+                    onChange={(e) => setUpdatePassword(e.target.value)}
+                    className="w-full bg-[#1A1A1A] border border-white/10 rounded pl-4 pr-10 py-3 text-sm text-foreground focus:outline-none focus:border-[#FBAB3C] transition-colors"
+                    placeholder="Enter new password..."
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowUpdatePassword(!showUpdatePassword)}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-neutral-500 hover:text-white transition-colors cursor-pointer focus:outline-none flex items-center justify-center"
+                    aria-label={showUpdatePassword ? "Hide password" : "Show password"}
+                  >
+                    {showUpdatePassword ? (
+                      <EyeOff className="h-4 w-4" />
+                    ) : (
+                      <Eye className="h-4 w-4" />
+                    )}
+                  </button>
+                </div>
               </div>
             </div>
 
@@ -2419,6 +2453,7 @@ export default function DashboardPage() {
                   setUpdatePassword("");
                   setUpdateName("");
                   setUpdateEmail("");
+                  setShowUpdatePassword(false);
                 }}
                 className="border border-white/10 rounded-[50px] font-sans text-xs md:text-sm font-semibold uppercase tracking-wider text-white hover:border-[#FBAB3C] transition-colors cursor-pointer"
                 style={{ padding: "10px 20px" }}
