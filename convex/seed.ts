@@ -115,6 +115,8 @@ export const seedData = mutation({
       username: "admin",
       passwordHash: "3bed13b20e2ff268d8d855cf05dfd9a9d42cd3d6d7d567b02fecf8fa8889c76c",
       salt: "lexisalt",
+      name: "Alexandra Clarke",
+      email: "studio@alexandraclarke.media",
     });
 
     return "Database seed run completed successfully.";

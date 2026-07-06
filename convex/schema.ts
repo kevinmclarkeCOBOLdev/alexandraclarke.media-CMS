@@ -60,5 +60,7 @@ export default defineSchema({
     username: v.string(),
     passwordHash: v.string(), // Hashed using SHA-256 + Salt
     salt: v.string(),
+    name: v.optional(v.string()),
+    email: v.optional(v.string()),
   }).index("by_username", ["username"]),
 });

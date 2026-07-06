@@ -17,6 +17,7 @@ export default function DashboardPage() {
   const skillsList = useQuery(api.skills.list);
   const portfolioItemsDb = useQuery(api.portfolio.list);
   const testimonialsDb = useQuery(api.testimonials.list);
+  const usersDb = useQuery(api.users.list);
 
   const updateSettings = useMutation(api.settings.update);
   const updateExperiences = useMutation(api.experience.updateAll);
@@ -28,6 +29,9 @@ export default function DashboardPage() {
   const updateTestimonial = useMutation(api.testimonials.update);
   const removeTestimonial = useMutation(api.testimonials.remove);
   const generateUploadUrl = useMutation(api.cv.generateUploadUrl);
+  const addUser = useMutation(api.users.add);
+  const updateUser = useMutation(api.users.update);
+  const removeUser = useMutation(api.users.remove);
 
   const [isMounted, setIsMounted] = useState(false);
   const [isEditHomeOpen, setIsEditHomeOpen] = useState(false);
@@ -89,6 +93,28 @@ export default function DashboardPage() {
   const [socialYoutubeInput, setSocialYoutubeInput] = useState("");
   const [socialTiktokInput, setSocialTiktokInput] = useState("");
 
+  // User Management CMS States
+  const [isEditUsersOpen, setIsEditUsersOpen] = useState(false);
+  const [isAddUserOpen, setIsAddUserOpen] = useState(false);
+  const [isUpdateUsersListOpen, setIsUpdateUsersListOpen] = useState(false);
+  const [isUpdateUserDetailsOpen, setIsUpdateUserDetailsOpen] = useState(false);
+  const [isDeleteUsersListOpen, setIsDeleteUsersListOpen] = useState(false);
+  const [isConfirmDeleteUserOpen, setIsConfirmDeleteUserOpen] = useState(false);
+
+  const [usersList, setUsersList] = useState<Doc<"users">[]>([]);
+  const [newUsername, setNewUsername] = useState("");
+  const [newPassword, setNewPassword] = useState("");
+  const [newName, setNewName] = useState("");
+  const [newEmail, setNewEmail] = useState("");
+
+  const [updatingUser, setUpdatingUser] = useState<Doc<"users"> | null>(null);
+  const [updateUsername, setUpdateUsername] = useState("");
+  const [updatePassword, setUpdatePassword] = useState("");
+  const [updateName, setUpdateName] = useState("");
+  const [updateEmail, setUpdateEmail] = useState("");
+
+  const [deletingUser, setDeletingUser] = useState<Doc<"users"> | null>(null);
+
   // Synchronize state from Convex queries
   useEffect(() => {
     if (portfolioItemsDb) {
@@ -101,6 +127,12 @@ export default function DashboardPage() {
       setTestimonials(testimonialsDb);
     }
   }, [testimonialsDb]);
+
+  useEffect(() => {
+    if (usersDb) {
+      setUsersList(usersDb);
+    }
+  }, [usersDb]);
 
   useEffect(() => {
     if (isEditHomeOpen && settings) {
@@ -411,6 +443,66 @@ export default function DashboardPage() {
     }
   }, [router]);
 
+  const handleSaveUser = async () => {
+    if (!newUsername.trim() || !newPassword.trim() || !newName.trim() || !newEmail.trim()) {
+      alert("Please fill in all fields.");
+      return;
+    }
+    try {
+      await addUser({
+        username: newUsername.trim(),
+        password: newPassword,
+        name: newName.trim(),
+        email: newEmail.trim(),
+      });
+      setNewUsername("");
+      setNewPassword("");
+      setNewName("");
+      setNewEmail("");
+      setIsAddUserOpen(false);
+    } catch (err: any) {
+      alert(err.message || "Failed to add user.");
+    }
+  };
+
+  const handleApplyUserUpdate = async () => {
+    if (!updateUsername.trim() || !updateName.trim() || !updateEmail.trim()) {
+      alert("Username, Name, and Email are required.");
+      return;
+    }
+    if (updatingUser) {
+      try {
+        await updateUser({
+          id: updatingUser._id,
+          username: updateUsername.trim(),
+          password: updatePassword.trim() || undefined,
+          name: updateName.trim(),
+          email: updateEmail.trim(),
+        });
+        setUpdatingUser(null);
+        setUpdateUsername("");
+        setUpdatePassword("");
+        setUpdateName("");
+        setUpdateEmail("");
+        setIsUpdateUserDetailsOpen(false);
+      } catch (err: any) {
+        alert(err.message || "Failed to update user.");
+      }
+    }
+  };
+
+  const handleDeleteUserConfirm = async () => {
+    if (deletingUser) {
+      try {
+        await removeUser({ id: deletingUser._id });
+        setIsConfirmDeleteUserOpen(false);
+        setDeletingUser(null);
+      } catch (err: any) {
+        alert(err.message || "Failed to delete user.");
+      }
+    }
+  };
+
   const handleLogout = () => {
     if (typeof window !== "undefined") {
       localStorage.removeItem("lexi_cms_session");
@@ -518,6 +610,17 @@ export default function DashboardPage() {
               className="group relative flex items-center justify-center w-full h-[50px] bg-[#0A0A0A] border border-[#FBAB3C]/15 rounded-lg px-6 font-sans text-sm font-semibold uppercase tracking-[1.5px] text-neutral-grey hover:text-[#FBAB3C] hover:border-[#FBAB3C]/40 transition-all duration-300"
             >
               <span>Edit Social Media Icons</span>
+              <ArrowRight className="absolute right-6 w-4 h-4 text-neutral-grey/50 group-hover:text-[#FBAB3C] group-hover:translate-x-1 transition-all duration-300" />
+            </a>
+            <a
+              href="#"
+              onClick={(e) => {
+                e.preventDefault();
+                setIsEditUsersOpen(true);
+              }}
+              className="group relative flex items-center justify-center w-full h-[50px] bg-[#0A0A0A] border border-[#FBAB3C]/15 rounded-lg px-6 font-sans text-sm font-semibold uppercase tracking-[1.5px] text-neutral-grey hover:text-[#FBAB3C] hover:border-[#FBAB3C]/40 transition-all duration-300"
+            >
+              <span>USER MANAGEMENT</span>
               <ArrowRight className="absolute right-6 w-4 h-4 text-neutral-grey/50 group-hover:text-[#FBAB3C] group-hover:translate-x-1 transition-all duration-300" />
             </a>
           </div>
@@ -1958,6 +2061,484 @@ export default function DashboardPage() {
                 style={{ padding: "10px 20px" }}
               >
                 Save Changes
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+      {/* Edit Users Panel Modal */}
+      {isEditUsersOpen && (
+        <div className="fixed inset-0 bg-black/85 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <div 
+            className="w-full max-w-[500px] bg-[#151515] border border-[#FBAB3C]/20 rounded-2xl shadow-[0_20px_50px_rgba(0,0,0,0.8)] relative"
+            style={{ padding: "20px" }}
+          >
+            <h3 
+              className="font-editorial text-2xl md:text-3xl font-bold tracking-wider text-[#FBAB3C] uppercase text-center"
+              style={{ marginBottom: "20px" }}
+            >
+              USER MANAGEMENT
+            </h3>
+            
+            <div className="flex flex-col gap-4" style={{ marginBottom: "20px" }}>
+              <button
+                type="button"
+                onClick={() => {
+                  setNewUsername("");
+                  setNewPassword("");
+                  setNewName("");
+                  setNewEmail("");
+                  setIsAddUserOpen(true);
+                }}
+                className="w-full h-[50px] bg-[#0A0A0A] hover:bg-[#1A1A1A] border border-[#FBAB3C]/20 hover:border-[#FBAB3C]/40 rounded-lg font-sans text-sm font-semibold uppercase tracking-wider text-[#FBAB3C] transition-all duration-300 cursor-pointer"
+              >
+                ADD USER
+              </button>
+              
+              <button
+                type="button"
+                onClick={() => {
+                  setIsEditUsersOpen(false);
+                  setIsUpdateUsersListOpen(true);
+                }}
+                className="w-full h-[50px] bg-[#0A0A0A] hover:bg-[#1A1A1A] border border-[#FBAB3C]/20 hover:border-[#FBAB3C]/40 rounded-lg font-sans text-sm font-semibold uppercase tracking-wider text-[#FBAB3C] transition-all duration-300 cursor-pointer"
+              >
+                EDIT USER
+              </button>
+              
+              <button
+                type="button"
+                onClick={() => {
+                  setIsEditUsersOpen(false);
+                  setIsDeleteUsersListOpen(true);
+                }}
+                className="w-full h-[50px] bg-[#0A0A0A] hover:bg-[#1A1A1A] border border-[#FBAB3C]/20 hover:border-[#FBAB3C]/40 rounded-lg font-sans text-sm font-semibold uppercase tracking-wider text-[#FBAB3C] transition-all duration-300 cursor-pointer"
+              >
+                DELETE USER
+              </button>
+            </div>
+
+            <div className="flex justify-end">
+              <button
+                type="button"
+                onClick={() => setIsEditUsersOpen(false)}
+                className="border border-white/10 rounded-[50px] font-sans text-xs md:text-sm font-semibold uppercase tracking-wider text-white hover:border-[#FBAB3C] transition-colors cursor-pointer"
+                style={{ padding: "10px 20px" }}
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Add User Tertiary Modal */}
+      {isAddUserOpen && (
+        <div className="fixed inset-0 bg-black/90 backdrop-blur-sm z-[60] flex items-center justify-center p-4">
+          <div 
+            className="w-full max-w-[500px] bg-[#151515] border border-[#FBAB3C]/20 rounded-2xl shadow-[0_20px_50px_rgba(0,0,0,0.9)] relative"
+            style={{ padding: "20px" }}
+          >
+            <h3 
+              className="font-editorial text-2xl md:text-3xl font-bold tracking-wider text-[#FBAB3C] uppercase text-center"
+              style={{ marginBottom: "20px" }}
+            >
+              ADD USER
+            </h3>
+            
+            <div className="flex flex-col gap-4">
+              {/* Field 1: Name */}
+              <div>
+                <label 
+                  className="font-sans text-[11px] font-bold text-neutral-grey uppercase tracking-widest text-left"
+                  style={{ marginBottom: "8px", display: "block" }}
+                >
+                  Name
+                </label>
+                <input
+                  type="text"
+                  value={newName}
+                  onChange={(e) => setNewName(e.target.value)}
+                  className="w-full bg-[#1A1A1A] border border-white/10 rounded px-4 py-3 text-sm text-foreground focus:outline-none focus:border-[#FBAB3C] transition-colors"
+                  placeholder="Enter full name..."
+                />
+              </div>
+
+              {/* Field 2: Email */}
+              <div>
+                <label 
+                  className="font-sans text-[11px] font-bold text-neutral-grey uppercase tracking-widest text-left"
+                  style={{ marginBottom: "8px", display: "block" }}
+                >
+                  Email Address
+                </label>
+                <input
+                  type="email"
+                  value={newEmail}
+                  onChange={(e) => setNewEmail(e.target.value)}
+                  className="w-full bg-[#1A1A1A] border border-white/10 rounded px-4 py-3 text-sm text-foreground focus:outline-none focus:border-[#FBAB3C] transition-colors"
+                  placeholder="Enter email address..."
+                />
+              </div>
+
+              {/* Field 3: Username */}
+              <div>
+                <label 
+                  className="font-sans text-[11px] font-bold text-neutral-grey uppercase tracking-widest text-left"
+                  style={{ marginBottom: "8px", display: "block" }}
+                >
+                  Username
+                </label>
+                <input
+                  type="text"
+                  value={newUsername}
+                  onChange={(e) => setNewUsername(e.target.value)}
+                  className="w-full bg-[#1A1A1A] border border-white/10 rounded px-4 py-3 text-sm text-foreground focus:outline-none focus:border-[#FBAB3C] transition-colors"
+                  placeholder="Enter username..."
+                />
+              </div>
+
+              {/* Field 4: Password */}
+              <div>
+                <label 
+                  className="font-sans text-[11px] font-bold text-neutral-grey uppercase tracking-widest text-left"
+                  style={{ marginBottom: "8px", display: "block" }}
+                >
+                  Password
+                </label>
+                <input
+                  type="password"
+                  value={newPassword}
+                  onChange={(e) => setNewPassword(e.target.value)}
+                  className="w-full bg-[#1A1A1A] border border-white/10 rounded px-4 py-3 text-sm text-foreground focus:outline-none focus:border-[#FBAB3C] transition-colors"
+                  placeholder="Enter password..."
+                />
+              </div>
+            </div>
+
+            <div style={{ height: "20px" }} />
+
+            <div 
+              className="flex justify-end"
+              style={{ gap: "10px" }}
+            >
+              <button
+                type="button"
+                onClick={() => {
+                  setIsAddUserOpen(false);
+                  setNewUsername("");
+                  setNewPassword("");
+                  setNewName("");
+                  setNewEmail("");
+                }}
+                className="border border-white/10 rounded-[50px] font-sans text-xs md:text-sm font-semibold uppercase tracking-wider text-white hover:border-[#FBAB3C] transition-colors cursor-pointer"
+                style={{ padding: "10px 20px" }}
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={handleSaveUser}
+                className="bg-[#FBAB3C] hover:bg-[#E59A2B] text-black rounded-[50px] font-sans text-xs md:text-sm font-semibold uppercase tracking-wider transition-colors cursor-pointer"
+                style={{ padding: "10px 20px" }}
+              >
+                Save User
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Update Users List Panel */}
+      {isUpdateUsersListOpen && (
+        <div className="fixed inset-0 bg-black/85 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <div 
+            className="w-full max-w-[600px] bg-[#151515] border border-[#FBAB3C]/20 rounded-2xl shadow-[0_20px_50px_rgba(0,0,0,0.8)] relative flex flex-col"
+            style={{ padding: "20px", maxHeight: "80vh" }}
+          >
+            <h3 
+              className="font-editorial text-2xl md:text-3xl font-bold tracking-wider text-[#FBAB3C] uppercase text-center"
+              style={{ marginBottom: "20px" }}
+            >
+              EDIT USER
+            </h3>
+            
+            <div className="flex-1 overflow-y-auto pr-1 flex flex-col gap-3" style={{ maxHeight: "50vh" }}>
+              {usersList.length === 0 ? (
+                <div className="text-center py-8 text-neutral-500 font-sans text-sm">
+                  No users found.
+                </div>
+              ) : (
+                usersList.map((user) => (
+                  <div 
+                    key={user._id} 
+                    className="flex items-center justify-between gap-4 p-3 bg-[#0A0A0A] border border-white/5 rounded-lg hover:border-[#FBAB3C]/10 transition-colors"
+                  >
+                    <div className="min-w-0 flex-1 text-left">
+                      <span className="font-sans text-xs md:text-sm text-white font-medium block truncate">
+                        {user.name || "Unnamed"} ({user.username})
+                      </span>
+                      <span className="font-sans text-[10px] text-neutral-grey uppercase tracking-wider block mt-0.5">
+                        {user.email || "No Email"}
+                      </span>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setUpdatingUser(user);
+                        setUpdateUsername(user.username);
+                        setUpdateName(user.name || "");
+                        setUpdateEmail(user.email || "");
+                        setUpdatePassword("");
+                        setIsUpdateUserDetailsOpen(true);
+                      }}
+                      className="px-4 py-2 border border-[#FBAB3C]/20 hover:border-[#FBAB3C] hover:bg-[#FBAB3C]/10 text-[#FBAB3C] rounded-[50px] font-sans text-[11px] font-bold uppercase tracking-wider transition-all duration-300 cursor-pointer whitespace-nowrap"
+                    >
+                      UPDATE
+                    </button>
+                  </div>
+                ))
+              )}
+            </div>
+
+            <div style={{ height: "20px" }} />
+
+            <div className="flex justify-end">
+              <button
+                type="button"
+                onClick={() => {
+                  setIsUpdateUsersListOpen(false);
+                  setIsEditUsersOpen(true);
+                }}
+                className="border border-white/10 rounded-[50px] font-sans text-xs md:text-sm font-semibold uppercase tracking-wider text-white hover:border-[#FBAB3C] transition-colors cursor-pointer"
+                style={{ padding: "10px 20px" }}
+              >
+                Back
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Update User Details Tertiary Modal */}
+      {isUpdateUserDetailsOpen && updatingUser && (
+        <div className="fixed inset-0 bg-black/90 backdrop-blur-sm z-[60] flex items-center justify-center p-4">
+          <div 
+            className="w-full max-w-[500px] bg-[#151515] border border-[#FBAB3C]/20 rounded-2xl shadow-[0_20px_50px_rgba(0,0,0,0.9)] relative"
+            style={{ padding: "20px" }}
+          >
+            <h3 
+              className="font-editorial text-2xl md:text-3xl font-bold tracking-wider text-[#FBAB3C] uppercase text-center"
+              style={{ marginBottom: "20px" }}
+            >
+              UPDATE USER DETAILS
+            </h3>
+            
+            <div className="flex flex-col gap-4">
+              {/* Field 1: Name */}
+              <div>
+                <label 
+                  className="font-sans text-[11px] font-bold text-neutral-grey uppercase tracking-widest text-left"
+                  style={{ marginBottom: "8px", display: "block" }}
+                >
+                  Name
+                </label>
+                <input
+                  type="text"
+                  value={updateName}
+                  onChange={(e) => setUpdateName(e.target.value)}
+                  className="w-full bg-[#1A1A1A] border border-white/10 rounded px-4 py-3 text-sm text-foreground focus:outline-none focus:border-[#FBAB3C] transition-colors"
+                />
+              </div>
+
+              {/* Field 2: Email */}
+              <div>
+                <label 
+                  className="font-sans text-[11px] font-bold text-neutral-grey uppercase tracking-widest text-left"
+                  style={{ marginBottom: "8px", display: "block" }}
+                >
+                  Email Address
+                </label>
+                <input
+                  type="email"
+                  value={updateEmail}
+                  onChange={(e) => setUpdateEmail(e.target.value)}
+                  className="w-full bg-[#1A1A1A] border border-white/10 rounded px-4 py-3 text-sm text-foreground focus:outline-none focus:border-[#FBAB3C] transition-colors"
+                />
+              </div>
+
+              {/* Field 3: Username */}
+              <div>
+                <label 
+                  className="font-sans text-[11px] font-bold text-neutral-grey uppercase tracking-widest text-left"
+                  style={{ marginBottom: "8px", display: "block" }}
+                >
+                  Username
+                </label>
+                <input
+                  type="text"
+                  value={updateUsername}
+                  onChange={(e) => setUpdateUsername(e.target.value)}
+                  className="w-full bg-[#1A1A1A] border border-white/10 rounded px-4 py-3 text-sm text-foreground focus:outline-none focus:border-[#FBAB3C] transition-colors"
+                />
+              </div>
+
+              {/* Field 4: Password */}
+              <div>
+                <label 
+                  className="font-sans text-[11px] font-bold text-neutral-grey uppercase tracking-widest text-left"
+                  style={{ marginBottom: "8px", display: "block" }}
+                >
+                  Password (Leave blank to keep current)
+                </label>
+                <input
+                  type="password"
+                  value={updatePassword}
+                  onChange={(e) => setUpdatePassword(e.target.value)}
+                  className="w-full bg-[#1A1A1A] border border-white/10 rounded px-4 py-3 text-sm text-foreground focus:outline-none focus:border-[#FBAB3C] transition-colors"
+                  placeholder="Enter new password..."
+                />
+              </div>
+            </div>
+
+            <div style={{ height: "20px" }} />
+
+            <div 
+              className="flex justify-end"
+              style={{ gap: "10px" }}
+            >
+              <button
+                type="button"
+                onClick={() => {
+                  setIsUpdateUserDetailsOpen(false);
+                  setUpdatingUser(null);
+                  setUpdateUsername("");
+                  setUpdatePassword("");
+                  setUpdateName("");
+                  setUpdateEmail("");
+                }}
+                className="border border-white/10 rounded-[50px] font-sans text-xs md:text-sm font-semibold uppercase tracking-wider text-white hover:border-[#FBAB3C] transition-colors cursor-pointer"
+                style={{ padding: "10px 20px" }}
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={handleApplyUserUpdate}
+                className="bg-[#FBAB3C] hover:bg-[#E59A2B] text-black rounded-[50px] font-sans text-xs md:text-sm font-semibold uppercase tracking-wider transition-colors cursor-pointer"
+                style={{ padding: "10px 20px" }}
+              >
+                APPLY
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Delete Users List Panel */}
+      {isDeleteUsersListOpen && (
+        <div className="fixed inset-0 bg-black/85 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <div 
+            className="w-full max-w-[600px] bg-[#151515] border border-[#FBAB3C]/20 rounded-2xl shadow-[0_20px_50px_rgba(0,0,0,0.8)] relative flex flex-col"
+            style={{ padding: "20px", maxHeight: "80vh" }}
+          >
+            <h3 
+              className="font-editorial text-2xl md:text-3xl font-bold tracking-wider text-[#FBAB3C] uppercase text-center"
+              style={{ marginBottom: "20px" }}
+            >
+              DELETE USER
+            </h3>
+            
+            <div className="flex-1 overflow-y-auto pr-1 flex flex-col gap-3" style={{ maxHeight: "50vh" }}>
+              {usersList.length === 0 ? (
+                <div className="text-center py-8 text-neutral-500 font-sans text-sm">
+                  No users found.
+                </div>
+              ) : (
+                usersList.map((user) => (
+                  <div 
+                    key={user._id} 
+                    className="flex items-center justify-between gap-4 p-3 bg-[#0A0A0A] border border-white/5 rounded-lg hover:border-[#FBAB3C]/10 transition-colors"
+                  >
+                    <div className="min-w-0 flex-1 text-left">
+                      <span className="font-sans text-xs md:text-sm text-white font-medium block truncate">
+                        {user.name || "Unnamed"} ({user.username})
+                      </span>
+                      <span className="font-sans text-[10px] text-neutral-grey uppercase tracking-wider block mt-0.5">
+                        {user.email || "No Email"}
+                      </span>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setDeletingUser(user);
+                        setIsConfirmDeleteUserOpen(true);
+                      }}
+                      className="px-4 py-2 border border-red-500/20 hover:border-red-500 hover:bg-red-500/10 text-red-500 hover:text-white rounded-[50px] font-sans text-[11px] font-bold uppercase tracking-wider transition-all duration-300 cursor-pointer whitespace-nowrap"
+                    >
+                      Delete
+                    </button>
+                  </div>
+                ))
+              )}
+            </div>
+
+            <div style={{ height: "20px" }} />
+
+            <div className="flex justify-end">
+              <button
+                type="button"
+                onClick={() => {
+                  setIsDeleteUsersListOpen(false);
+                  setIsEditUsersOpen(true);
+                }}
+                className="border border-white/10 rounded-[50px] font-sans text-xs md:text-sm font-semibold uppercase tracking-wider text-white hover:border-[#FBAB3C] transition-colors cursor-pointer"
+                style={{ padding: "10px 20px" }}
+              >
+                Back
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Delete User Confirmation Modal */}
+      {isConfirmDeleteUserOpen && deletingUser && (
+        <div className="fixed inset-0 bg-black/90 backdrop-blur-sm z-[70] flex items-center justify-center p-4">
+          <div 
+            className="w-full max-w-[450px] bg-[#151515] border border-[#FBAB3C]/20 rounded-2xl shadow-[0_25px_60px_rgba(0,0,0,0.95)] relative text-center"
+            style={{ padding: "25px" }}
+          >
+            <h4 
+              className="font-sans text-sm font-bold tracking-widest text-[#FBAB3C] uppercase"
+              style={{ marginBottom: "15px" }}
+            >
+              CONFIRM DELETION
+            </h4>
+            
+            <p className="font-sans text-sm text-white/90 leading-relaxed mb-6">
+              Are You Sure You Want To Delete user &quot;{deletingUser.username}&quot;?
+            </p>
+
+            <div className="flex justify-center gap-4">
+              <button
+                type="button"
+                onClick={() => {
+                  setIsConfirmDeleteUserOpen(false);
+                  setIsDeleteUsersListOpen(false);
+                  setIsEditUsersOpen(true);
+                  setDeletingUser(null);
+                }}
+                className="w-[100px] py-2.5 border border-white/10 rounded-[50px] font-sans text-xs md:text-sm font-semibold uppercase tracking-wider text-white hover:border-[#FBAB3C] transition-colors cursor-pointer"
+              >
+                No
+              </button>
+              <button
+                type="button"
+                onClick={handleDeleteUserConfirm}
+                className="w-[100px] py-2.5 bg-red-600 hover:bg-red-700 text-white rounded-[50px] font-sans text-xs md:text-sm font-semibold uppercase tracking-wider transition-colors cursor-pointer"
+              >
+                Yes
               </button>
             </div>
           </div>

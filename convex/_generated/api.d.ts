@@ -16,6 +16,7 @@ import type * as seed from "../seed.js";
 import type * as settings from "../settings.js";
 import type * as skills from "../skills.js";
 import type * as testimonials from "../testimonials.js";
+import type * as users from "../users.js";
 
 import type {
   ApiFromModules,
@@ -32,6 +33,7 @@ declare const fullApi: ApiFromModules<{
   settings: typeof settings;
   skills: typeof skills;
   testimonials: typeof testimonials;
+  users: typeof users;
 }>;
 
 /**
