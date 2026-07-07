@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { sanitizeText } from "../../../convex/sanitize";
 import * as z from "zod";
 import { ArrowRight, AlertCircle, CheckCircle2 } from "lucide-react";
 import { useMutation } from "convex/react";
@@ -47,7 +48,7 @@ export default function LexiLogin() {
     setLoginError(null);
 
     try {
-      const result = await login({ username: data.email, password: data.password });
+      const result = await login({ username: sanitizeText(data.email), password: data.password });
       if (result.success) {
         setLoginSuccess(true);
         if (typeof window !== "undefined") {

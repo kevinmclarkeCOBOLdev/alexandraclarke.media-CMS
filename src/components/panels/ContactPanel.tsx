@@ -4,6 +4,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { useEffect, useState } from "react";
+import { sanitizeText, sanitizeEmail } from "../../../convex/sanitize";
 import Image from "next/image";
 import { MapPin, Mail, CheckCircle } from "lucide-react";
 
@@ -248,11 +249,11 @@ export default function ContactPanel() {
           "Accept": "application/json",
         },
         body: JSON.stringify({
-          name: data.name,
-          businessName: data.businessName,
-          email: data.email,
-          phone: data.phone,
-          message: data.message,
+          name: sanitizeText(data.name),
+          businessName: data.businessName ? sanitizeText(data.businessName) : "",
+          email: sanitizeEmail(data.email),
+          phone: data.phone ? sanitizeText(data.phone) : "",
+          message: sanitizeText(data.message),
         }),
       });
 

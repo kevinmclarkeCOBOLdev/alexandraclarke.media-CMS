@@ -1,5 +1,6 @@
 import { query, mutation } from "./_generated/server";
 import { v } from "convex/values";
+import { sanitizeText, sanitizeUrl, sanitizeInstagramEmbed } from "./sanitize";
 
 export const list = query({
   args: {},
@@ -20,7 +21,16 @@ export const add = mutation({
   },
   handler: async (ctx, args) => {
     const count = (await ctx.db.query("portfolio").collect()).length;
-    await ctx.db.insert("portfolio", { ...args, order: count });
+    await ctx.db.insert("portfolio", {
+      title: sanitizeText(args.title),
+      category: args.category,
+      image: sanitizeUrl(args.image),
+      year: sanitizeText(args.year),
+      length: sanitizeText(args.length),
+      videoUrl: args.videoUrl ? sanitizeText(args.videoUrl) : undefined,
+      embedHtml: args.embedHtml ? sanitizeInstagramEmbed(args.embedHtml) : undefined,
+      order: count,
+    });
   },
 });
 
@@ -36,8 +46,25 @@ export const update = mutation({
     embedHtml: v.optional(v.string()),
   },
   handler: async (ctx, args) => {
-    const { id, ...data } = args;
-    await ctx.db.patch(id, data);
+    const { id } = args;
+    const sanitizedData: {
+      title?: string;
+      category?: "short films" | "3d animations" | "marketing";
+      image?: string;
+      year?: string;
+      length?: string;
+      videoUrl?: string;
+      embedHtml?: string;
+    } = {};
+    if (args.title !== undefined) sanitizedData.title = sanitizeText(args.title);
+    if (args.category !== undefined) sanitizedData.category = args.category;
+    if (args.image !== undefined) sanitizedData.image = sanitizeUrl(args.image);
+    if (args.year !== undefined) sanitizedData.year = sanitizeText(args.year);
+    if (args.length !== undefined) sanitizedData.length = sanitizeText(args.length);
+    if (args.videoUrl !== undefined) sanitizedData.videoUrl = args.videoUrl ? sanitizeText(args.videoUrl) : undefined;
+    if (args.embedHtml !== undefined) sanitizedData.embedHtml = args.embedHtml ? sanitizeInstagramEmbed(args.embedHtml) : undefined;
+
+    await ctx.db.patch(id, sanitizedData);
   },
 });
 

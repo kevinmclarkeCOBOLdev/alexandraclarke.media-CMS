@@ -1,5 +1,6 @@
 import { query, mutation } from "./_generated/server";
 import { v } from "convex/values";
+import { sanitizeText, sanitizeUrl } from "./sanitize";
 
 export const get = query({
   args: {},
@@ -37,6 +38,21 @@ export const update = mutation({
       throw new Error("Settings configuration not found. Run seed first.");
     }
 
-    await ctx.db.patch(config._id, args);
+    const sanitizedArgs: Record<string, string> = {};
+    if (args.copyrightYear !== undefined) sanitizedArgs.copyrightYear = sanitizeText(args.copyrightYear);
+    if (args.instagramUrl !== undefined) sanitizedArgs.instagramUrl = sanitizeUrl(args.instagramUrl);
+    if (args.youtubeUrl !== undefined) sanitizedArgs.youtubeUrl = sanitizeUrl(args.youtubeUrl);
+    if (args.tiktokUrl !== undefined) sanitizedArgs.tiktokUrl = sanitizeUrl(args.tiktokUrl);
+    if (args.homeBgVideoUrl !== undefined) sanitizedArgs.homeBgVideoUrl = sanitizeUrl(args.homeBgVideoUrl);
+    if (args.homeBgVideoId !== undefined) sanitizedArgs.homeBgVideoId = sanitizeText(args.homeBgVideoId);
+    if (args.homeShowreelVideoUrl !== undefined) sanitizedArgs.homeShowreelVideoUrl = sanitizeUrl(args.homeShowreelVideoUrl);
+    if (args.homeShowreelVideoId !== undefined) sanitizedArgs.homeShowreelVideoId = sanitizeText(args.homeShowreelVideoId);
+    if (args.aboutBiography !== undefined) sanitizedArgs.aboutBiography = sanitizeText(args.aboutBiography);
+    if (args.aboutCvUrl !== undefined) sanitizedArgs.aboutCvUrl = sanitizeUrl(args.aboutCvUrl);
+    if (args.contactSubtitle !== undefined) sanitizedArgs.contactSubtitle = sanitizeText(args.contactSubtitle);
+    if (args.contactEmail !== undefined) sanitizedArgs.contactEmail = sanitizeText(args.contactEmail);
+    if (args.contactLocation !== undefined) sanitizedArgs.contactLocation = sanitizeText(args.contactLocation);
+
+    await ctx.db.patch(config._id, sanitizedArgs);
   },
 });

@@ -228,10 +228,14 @@ export default function PortfolioPanel() {
                       {/* Slide Image */}
                       <div className="absolute inset-0 w-full h-full bg-black">
                         {item.embedHtml && imageErrors[getInstagramShortcode(item.embedHtml) || ""] ? (
-                          <div 
-                            className="w-full h-full flex items-center justify-center bg-black overflow-hidden pointer-events-none"
-                            dangerouslySetInnerHTML={{ __html: item.embedHtml }}
-                          />
+                          <div className="absolute inset-0 w-full h-full pointer-events-none bg-black overflow-hidden flex items-center justify-center">
+                            <iframe
+                              src={`https://www.instagram.com/reel/${getInstagramShortcode(item.embedHtml)}/embed`}
+                              className="w-full h-full border-none"
+                              scrolling="no"
+                              allowTransparency={true}
+                            />
+                          </div>
                         ) : (
                           <Image
                             src={getThumbnailUrl(item)}
@@ -416,10 +420,15 @@ export default function PortfolioPanel() {
                 title="Portfolio Video Player"
               ></iframe>
             ) : (
-              <div 
-                className="flex items-center justify-center w-full h-full p-4 overflow-auto"
-                dangerouslySetInnerHTML={{ __html: modalEmbedHtml }}
-              />
+              <div className="flex items-center justify-center w-full h-full p-4 overflow-auto bg-black">
+                <iframe
+                  className="w-full max-w-[500px] h-[95%] border-none bg-white rounded-lg"
+                  src={`https://www.instagram.com/reel/${getInstagramShortcode(modalEmbedHtml)}/embed`}
+                  allowTransparency={true}
+                  scrolling="no"
+                  title="Instagram Embed"
+                />
+              </div>
             )}
           </div>
         </div>

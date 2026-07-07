@@ -7,6 +7,7 @@ import Image from "next/image";
 import { useQuery, useMutation } from "convex/react";
 import { api } from "../../../convex/_generated/api";
 import { Doc } from "../../../convex/_generated/dataModel";
+import { sanitizeText, sanitizeUrl, sanitizeEmail } from "../../../convex/sanitize";
 
 export default function DashboardPage() {
   const router = useRouter();
@@ -189,9 +190,9 @@ export default function DashboardPage() {
     }
     try {
       await updateSettings({
-        contactSubtitle: contactSubtitleInput.trim(),
-        contactEmail: contactEmailInput.trim(),
-        contactLocation: contactLocationInput.trim(),
+        contactSubtitle: sanitizeText(contactSubtitleInput),
+        contactEmail: sanitizeText(contactEmailInput),
+        contactLocation: sanitizeText(contactLocationInput),
       });
       setIsEditContactOpen(false);
     } catch {
@@ -214,9 +215,9 @@ export default function DashboardPage() {
     }
     try {
       await updateSettings({
-        instagramUrl: socialInstagramInput.trim(),
-        youtubeUrl: socialYoutubeInput.trim(),
-        tiktokUrl: socialTiktokInput.trim(),
+        instagramUrl: sanitizeUrl(socialInstagramInput),
+        youtubeUrl: sanitizeUrl(socialYoutubeInput),
+        tiktokUrl: sanitizeUrl(socialTiktokInput),
       });
       setIsEditSocialOpen(false);
     } catch {
@@ -246,11 +247,11 @@ export default function DashboardPage() {
       const videoId = extractYouTubeId(videoUrlInput);
       const showreelId = extractYouTubeId(showreelUrlInput);
       await updateSettings({
-        homeBgVideoUrl: videoUrlInput,
-        homeBgVideoId: videoId,
-        homeShowreelVideoUrl: showreelUrlInput,
-        homeShowreelVideoId: showreelId,
-        copyrightYear: yearInput,
+        homeBgVideoUrl: sanitizeUrl(videoUrlInput),
+        homeBgVideoId: sanitizeText(videoId),
+        homeShowreelVideoUrl: sanitizeUrl(showreelUrlInput),
+        homeShowreelVideoId: sanitizeText(showreelId),
+        copyrightYear: sanitizeText(yearInput),
       });
       setIsEditHomeOpen(false);
     } catch {
@@ -261,17 +262,17 @@ export default function DashboardPage() {
   const handleSaveAbout = async () => {
     try {
       await updateSettings({
-        aboutBiography: biographyInput,
-        aboutCvUrl: cvUrlInput,
+        aboutBiography: sanitizeText(biographyInput),
+        aboutCvUrl: sanitizeUrl(cvUrlInput),
       });
 
       const lines = experienceInput.split("\n").filter(line => line.trim());
       const parsedExp = lines.map(line => {
         const parts = line.split("|");
         return {
-          company: (parts[0] || "").trim(),
-          period: (parts[1] || "").trim(),
-          role: (parts[2] || "").trim()
+          company: sanitizeText(parts[0] || ""),
+          period: sanitizeText(parts[1] || ""),
+          role: sanitizeText(parts[2] || "")
         };
       });
       await updateExperiences({ items: parsedExp });
@@ -280,8 +281,8 @@ export default function DashboardPage() {
       const parsedSkills = skillLines.map(line => {
         const parts = line.split("|");
         return {
-          category: (parts[0] || "").trim(),
-          items: (parts[1] || "").trim()
+          category: sanitizeText(parts[0] || ""),
+          items: sanitizeText(parts[1] || "")
         };
       });
       await updateSkills({ items: parsedSkills });
@@ -301,12 +302,12 @@ export default function DashboardPage() {
     try {
       const videoId = extractYouTubeId(newItemYoutubeUrl);
       await addPortfolio({
-        title: newItemTitle.trim(),
+        title: sanitizeText(newItemTitle),
         category: newItemCategory,
         image: `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`,
-        year: newItemYear.trim(),
-        length: newItemLength.trim(),
-        videoUrl: videoId,
+        year: sanitizeText(newItemYear),
+        length: sanitizeText(newItemLength),
+        videoUrl: sanitizeText(videoId),
       });
 
       setNewItemTitle("");
@@ -342,10 +343,10 @@ export default function DashboardPage() {
       try {
         await updatePortfolio({
           id: updatingItem._id,
-          title: updateItemTitle.trim(),
+          title: sanitizeText(updateItemTitle),
           category: updateItemCategory,
-          year: updateItemYear.trim(),
-          length: updateItemLength.trim(),
+          year: sanitizeText(updateItemYear),
+          length: sanitizeText(updateItemLength),
         });
         setIsUpdateItemOpen(false);
         setUpdatingItem(null);
@@ -366,9 +367,9 @@ export default function DashboardPage() {
 
     try {
       await addTestimonial({
-        quote: testimonialQuoteInput.trim(),
-        author: testimonialAuthorInput.trim(),
-        title: `${testimonialTitleInput.trim()} • ${testimonialCompanyInput.trim()}`,
+        quote: sanitizeText(testimonialQuoteInput),
+        author: sanitizeText(testimonialAuthorInput),
+        title: `${sanitizeText(testimonialTitleInput)} • ${sanitizeText(testimonialCompanyInput)}`,
       });
 
       setTestimonialQuoteInput("");
@@ -391,9 +392,9 @@ export default function DashboardPage() {
       try {
         await updateTestimonial({
           id: updatingTestimonial._id,
-          quote: testimonialQuoteInput.trim(),
-          author: testimonialAuthorInput.trim(),
-          title: `${testimonialTitleInput.trim()} • ${testimonialCompanyInput.trim()}`,
+          quote: sanitizeText(testimonialQuoteInput),
+          author: sanitizeText(testimonialAuthorInput),
+          title: `${sanitizeText(testimonialTitleInput)} • ${sanitizeText(testimonialCompanyInput)}`,
         });
 
         setTestimonialQuoteInput("");
@@ -423,6 +424,12 @@ export default function DashboardPage() {
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
+
+    const allowedTypes = ["application/pdf", "image/jpeg", "image/png", "image/webp"];
+    if (!file.type || !allowedTypes.includes(file.type)) {
+      setUploadError("Only PDF and standard image files (JPEG, PNG, WEBP) are allowed.");
+      return;
+    }
 
     setIsUploading(true);
     setUploadError("");
@@ -513,10 +520,10 @@ export default function DashboardPage() {
 
     try {
       await addUser({
-        username: newUsername.trim(),
+        username: sanitizeText(newUsername),
         password: newPassword,
-        name: newName.trim(),
-        email: newEmail.trim(),
+        name: sanitizeText(newName),
+        email: sanitizeEmail(newEmail),
       });
       setNewUsername("");
       setNewPassword("");
@@ -564,10 +571,10 @@ export default function DashboardPage() {
       try {
         await updateUser({
           id: updatingUser._id,
-          username: updateUsername.trim(),
+          username: sanitizeText(updateUsername),
           password: updatePassword.trim() || undefined,
-          name: updateName.trim(),
-          email: updateEmail.trim(),
+          name: sanitizeText(updateName),
+          email: sanitizeEmail(updateEmail),
         });
         setUpdatingUser(null);
         setUpdateUsername("");

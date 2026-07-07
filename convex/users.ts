@@ -1,5 +1,6 @@
 import { query, mutation } from "./_generated/server";
 import { v } from "convex/values";
+import { sanitizeText, sanitizeEmail } from "./sanitize";
 
 // List all users
 export const list = query({
@@ -18,9 +19,13 @@ export const add = mutation({
     email: v.string(),
   },
   handler: async (ctx, args) => {
+    const sanitizedUsername = sanitizeText(args.username);
+    const sanitizedName = sanitizeText(args.name);
+    const sanitizedEmail = sanitizeEmail(args.email);
+
     const existing = await ctx.db
       .query("users")
-      .withIndex("by_username", (q) => q.eq("username", args.username))
+      .withIndex("by_username", (q) => q.eq("username", sanitizedUsername))
       .first();
 
     if (existing) {
@@ -31,11 +36,11 @@ export const add = mutation({
     const passwordHash = await computeHash(args.password, salt);
 
     await ctx.db.insert("users", {
-      username: args.username,
+      username: sanitizedUsername,
       passwordHash,
       salt,
-      name: args.name,
-      email: args.email,
+      name: sanitizedName,
+      email: sanitizedEmail,
     });
   },
 });
@@ -55,11 +60,15 @@ export const update = mutation({
       throw new Error("User not found.");
     }
 
+    const sanitizedUsername = sanitizeText(args.username);
+    const sanitizedName = sanitizeText(args.name);
+    const sanitizedEmail = sanitizeEmail(args.email);
+
     // Check if the new username is already taken by another user
-    if (args.username !== existing.username) {
+    if (sanitizedUsername !== existing.username) {
       const duplicate = await ctx.db
         .query("users")
-        .withIndex("by_username", (q) => q.eq("username", args.username))
+        .withIndex("by_username", (q) => q.eq("username", sanitizedUsername))
         .first();
       if (duplicate) {
         throw new Error("Username already exists.");
@@ -73,9 +82,9 @@ export const update = mutation({
       passwordHash?: string;
       salt?: string;
     } = {
-      username: args.username,
-      name: args.name,
-      email: args.email,
+      username: sanitizedUsername,
+      name: sanitizedName,
+      email: sanitizedEmail,
     };
 
     if (args.password) {

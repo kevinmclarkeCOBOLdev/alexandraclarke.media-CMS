@@ -1,5 +1,6 @@
 import { query, mutation } from "./_generated/server";
 import { v } from "convex/values";
+import { sanitizeText } from "./sanitize";
 
 export const list = query({
   args: {},
@@ -24,7 +25,12 @@ export const updateAll = mutation({
       await ctx.db.delete(item._id);
     }
     for (let i = 0; i < args.items.length; i++) {
-      await ctx.db.insert("skills", { ...args.items[i], order: i });
+      const item = args.items[i];
+      await ctx.db.insert("skills", {
+        category: sanitizeText(item.category),
+        items: sanitizeText(item.items),
+        order: i,
+      });
     }
   },
 });
